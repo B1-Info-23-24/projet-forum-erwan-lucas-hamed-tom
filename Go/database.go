@@ -20,8 +20,7 @@ func DataX() {
         username TEXT NOT NULL,
         email TEXT NOT NULL UNIQUE,
         password_hash TEXT NOT NULL,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        last_login DATETIME DEFAULT CURRENT_TIMESTAMP
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
     `
 	if _, err := db.Exec(createUsersTable); err != nil {
@@ -32,27 +31,10 @@ func DataX() {
     CREATE TABLE IF NOT EXISTS Categories (
         category_id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
-        description TEXT,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        description TEXT
     );
     `
 	if _, err := db.Exec(createCategoriesTable); err != nil {
-		log.Fatal(err)
-	}
-
-	createThreadsTable := `
-    CREATE TABLE IF NOT EXISTS Threads (
-        thread_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        category_id INTEGER,
-        user_id INTEGER,
-        title TEXT NOT NULL,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (category_id) REFERENCES Categories(category_id),
-        FOREIGN KEY (user_id) REFERENCES Users(user_id)
-    );
-    `
-	if _, err := db.Exec(createThreadsTable); err != nil {
 		log.Fatal(err)
 	}
 
@@ -61,6 +43,7 @@ func DataX() {
         post_id INTEGER PRIMARY KEY AUTOINCREMENT,
         thread_id INTEGER,
         user_id INTEGER,
+        ping_id INTERGER,
         content TEXT NOT NULL,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
