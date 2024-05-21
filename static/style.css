@@ -3,6 +3,9 @@
 
 body{
     background-color: #E9E9E9;
+    min-height: 100vh;
+    display: flex;
+    margin: 0;
 }
 
 .left-container, .right-container {
