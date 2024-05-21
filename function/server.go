@@ -12,6 +12,10 @@ func Server() {
 	r := mux.NewRouter()
 
 	r.HandleFunc("/", HomeHandler).Methods("GET")
+	r.HandleFunc("/checkUser", func(w http.ResponseWriter, r *http.Request) {
+
+	})
+
 	r.HandleFunc("/hello", HelloHandler).Methods("GET")
 
 	log.Println("http://localhost:8080/")
