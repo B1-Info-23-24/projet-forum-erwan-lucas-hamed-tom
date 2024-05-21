@@ -1,8 +1,8 @@
 package forum
 
 type User struct {
-	id       int    `json:"message"`
-	pseudo   string `json:"message"`
-	email    string `json:"message"`
-	password string `json:"message"`
+	id       int    `json:"id"`
+	pseudo   string `json:"pseudo"`
+	email    string `json:"email"`
+	password string `json:"password"`
 }

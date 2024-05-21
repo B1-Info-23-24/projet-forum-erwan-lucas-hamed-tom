@@ -12,9 +12,7 @@ func Server() {
 	r := mux.NewRouter()
 
 	r.HandleFunc("/", HomeHandler).Methods("GET")
-	r.HandleFunc("/checkUser", func(w http.ResponseWriter, r *http.Request) {
-
-	})
+	http.HandleFunc("/Signup", Signup)
 
 	r.HandleFunc("/hello", HelloHandler).Methods("GET")
 
