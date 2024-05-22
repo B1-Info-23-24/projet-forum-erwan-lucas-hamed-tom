@@ -1,6 +1,7 @@
 -- SQLite
 CREATE TABLE USER (
     id INTEGER PRIMARY KEY,
+
     pseudo TEXT NOT NULL,
     email TEXT NOT NULL,
     password TEXT NOT NULL

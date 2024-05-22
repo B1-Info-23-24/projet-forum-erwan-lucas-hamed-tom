@@ -3,22 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/login.css">
     <title>Forun</title>
 </head>
 <body>
 
-<div class="content" data-anim="2">
-    <form id="eslogin" method="post" action="/checkUser">
-        <input required name="pseudo-sign" id="pseudoLogin" type="text" value="" placeholder="Pseudo"/>
-        <input required name="email-sign" id="emailLogin" type="text" value="" placeholder="E-mail"/>
-        <input required name="password-sign" id="passwordLogin" type="password" value="" placeholder="Password"/>
-        <input required name="verify-password-sign" id="password2Login" type="password" value="" placeholder="Verification Password"/>
+<div class="login-container">
+    <div class="left-section2">
+        <div class="image-content">
+            <img src="/static/img/Login.png" alt="LeftImage">
+        </div>
+    </div>
+    <div class="right-section2">
+        <div class="login-form">
+            <h2>Welcome TO</h2>
+            <h2><span>Forun</span></h2>
+
+            <form method="post" action="/checkUser">
+                <div class="input-group">
+                    <label for="Pseudo">Pseudo</label>
+                    <input required name="pseudo-sign" id="pseudoLogin" type="text" value="" placeholder="Pseudo"/>
+                </div>
+                <div class="input-group">
+                    <label for="E-mail">E-mail</label>
+                    <input required name="email-sign" id="emailLogin" type="text" value="" placeholder="E-mail"/>
+                </div>
+                <div class="input-group">
+                    <label for="Password">Password</label>
+                    <input required name="password-sign" id="passwordLogin" type="password" value="" placeholder="Password"/>
+                </div>
+                <div class="input-group">
+                    <label for="Verification">Verification</label>
+                    <input required name="verify-password-sign" id="password2Login" type="password" value="" placeholder="Verification Password"/>
+                </div>
         <br>
-        <form method="post" action="/checkUser">
             <button name="signin" type="signin">Sing In</button>
-        </form>
+            <p>Already have an account?<a href="#">Log In</a></p>
+
     </form>
+    </div>
 </div>
 </body>
 </html>
