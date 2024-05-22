@@ -11,6 +11,7 @@ body{
 .left-container, .right-container {
     padding: 10px;
     box-sizing: border-box;
+    display: flex;
 }
 
 .container {
@@ -32,6 +33,7 @@ body{
     display: flex;
     flex-direction: column;
     gap: 0,5rem;
+    margin: -100px;
 }
 
 .redirection-button{
