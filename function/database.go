@@ -12,7 +12,7 @@ var db *sql.DB
 
 func init() {
 	db = InitDB()
-	addFakeAccounts(db)
+	Test(db)
 }
 
 func InitDB() *sql.DB {
@@ -56,7 +56,7 @@ func AuthenticateUser(db *sql.DB, email, password string) (bool, error) {
 	return err == nil, err
 }
 
-func addFakeAccounts(db *sql.DB) {
+func Test(db *sql.DB) {
 	users := []struct {
 		username string
 		email    string
