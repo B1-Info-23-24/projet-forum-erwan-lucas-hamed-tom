@@ -17,8 +17,7 @@ func Server() {
 
 	r := mux.NewRouter()
 
-	r.HandleFunc("/login", RenderLoginPageHandler).Methods("GET")
-
+	r.HandleFunc("/login", renderLoginPage).Methods("GET")
 	r.HandleFunc("/signup", renderSignupPage).Methods("GET")
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))
 
@@ -39,6 +38,7 @@ func Server() {
 
 	RegisterRoutes(ginRouter)
 
+	// Start the Gin server
 	go func() {
 		log.Println("Gin server running at http://localhost:8081/api/")
 		log.Fatal(ginRouter.Run(":8081"))
@@ -49,4 +49,8 @@ func Server() {
 
 func renderSignupPage(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "pages/signup.html")
+}
+
+func renderLoginPage(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, "pages/login.html")
 }

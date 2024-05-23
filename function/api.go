@@ -30,18 +30,22 @@ func register(c *gin.Context) {
 }
 
 func login(c *gin.Context) {
-	var request User
-	var user User
-
-	if err := c.ShouldBindJSON(&request); err != nil {
+	var loginInfo struct {
+		Email    string `json:"email"`
+		Password string `json:"password"`
+	}
+	if err := c.ShouldBindJSON(&loginInfo); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	if err := DB.Where("username = ? AND password = ?", request.Username, request.Password).First(&user).Error; err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid username or password"})
+	var user User
+	if err := DB.Where("email = ? AND password = ?", loginInfo.Email, loginInfo.Password).First(&user).Error; err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid email or password"})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Login successful", "user": user})
+	fmt.Printf("User logged in: %s\n", user.Username)
+
+	c.JSON(http.StatusOK, gin.H{"message": "Login successful", "user": user.Username})
 }

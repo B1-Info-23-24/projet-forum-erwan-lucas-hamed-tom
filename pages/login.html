@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <link rel="stylesheet" href="/static/login.css">
+</head>
+<body>
+    <div class="login-container">
+        <div class="left-section">
+            <div class="image-content">
+                <img src="/static/img/Login.png" alt="LeftImage">
+            </div>
+        </div>
+        <div class="right-section">
+            <div class="login-form">
+                <h2>Welcome Back</h2>
+                <h2>To <span>Forum</span></h2>
+                <form id="login-form">
+                    <div class="input-group">
+                        <input type="email" id="email" name="email" placeholder="Email" required>
+                    </div>
+                    <div class="input-group">
+                        <input type="password" id="password" name="password" placeholder="Password" required>
+                        <span class="password-toggle">
+                            <img src="/static/img/icon/Cacher.png" class="eye-closed" alt="Closed Eye">
+                            <img src="/static/img/icon/pascacher.png" class="eye-open" alt="Open Eye" style="display: none;">
+                        </span>
+                    </div>
+                    <button type="submit">Login</button>
+                </form>
+                <p>Don't have an account? <a href="/signup">Sign Up</a></p>
+            </div>
+        </div>
+    </div>
+    <div id="message"></div>
+    <script>
+    document.getElementById('login-form').addEventListener('submit', async function(event) {
+        event.preventDefault();
+
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+
+        const messageDiv = document.getElementById('message');
+
+        const response = await fetch('http://localhost:8081/api/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ email, password })
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            messageDiv.textContent = 'Login successful!';
+        } else {
+            messageDiv.textContent = `Error: ${result.error}`;
+        }
+    });
+    </script>
+</body>
+</html>
