@@ -20,7 +20,3 @@ func Server() {
 	log.Println("http://localhost:8080/")
 	log.Fatal(http.ListenAndServe(":8080", r))
 }
-
-func main() {
-	Server()
-}
