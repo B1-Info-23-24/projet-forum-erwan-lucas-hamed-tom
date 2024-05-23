@@ -1,19 +1,21 @@
 package forum
 
 import (
-	"log"
 	"net/http"
-
-	"github.com/gorilla/mux"
 )
 
 func Server() {
 
-	r := mux.NewRouter()
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		imgpath := "../static/img/character.png"
+		Home(w, r, imgpath)
+	})
+	http.HandleFunc("/profile", func(w http.ResponseWriter, r *http.Request) {
+		imgpath := "../static/img/character.png"
+		Profile(w, r, imgpath)
+	})
 
-	r.HandleFunc("/", HomeHandler).Methods("GET")
-	r.HandleFunc("/hello", HelloHandler).Methods("GET")
-
-	log.Println("http://localhost:8080/")
-	log.Fatal(http.ListenAndServe(":8080", r))
+	fs := http.FileServer(http.Dir("static/"))
+	http.Handle("/static/", http.StripPrefix("/static", fs))
+	http.ListenAndServe(":8080", nil)
 }

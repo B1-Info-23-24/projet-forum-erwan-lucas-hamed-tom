@@ -1,11 +1,28 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&display=swap');
 
-body{
+body {
     background-color: #E9E9E9;
     min-height: 100vh;
     display: flex;
+    flex-direction: column; 
     margin: 0;
+}
+
+.header {
+    background-color: #FFF;
+    display: flex;
+    padding: 10px;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+}
+
+.container {
+    display: flex;
+    width: 100%;
+    margin-top: 100px; 
 }
 
 .left-container, .right-container {
@@ -13,17 +30,12 @@ body{
     box-sizing: border-box;
 }
 
-.container {
-    display: flex;
-    width: 100%;
-}
-
 .left-container {
     width: 20%;
     background-color: #E9E9E9;
     display: flex;
     flex-direction: column;
-    gap: 0,5rem;
+    gap: 0.5rem;
 }
 
 .right-container {
@@ -31,7 +43,8 @@ body{
     background-color: #E9E9E9;
     display: flex;
     flex-direction: column;
-    gap: 0,5rem;
+    gap: 0.5rem; 
+    margin-top: 15px;
 }
 
 .redirection-button{
@@ -55,6 +68,10 @@ body{
     border-radius: 10px;
     border: none;
     margin: 20px 0px 5px 10px;
+}
+
+.button-redirection--post{
+    padding-left: 30px;
 }
 
 .img--icon-redirection{
@@ -141,4 +158,72 @@ body{
     background: #E9EAF0;
     box-shadow: inset -10px -10px 20px rgba(255, 255, 255, 0.7), inset 10px 10px 10px rgba(189, 200, 223, 0.7);
     border-radius: 15px;
+}
+
+.section-account-info{
+    margin-bottom: -20px;
+
+    width: 100%;
+    height: 40%;
+
+    background: #E9EAF0;
+    box-shadow: inset -10px -10px 20px rgba(255, 255, 255, 0.7), inset 10px 10px 10px rgba(189, 200, 223, 0.7);
+    border-radius: 15px;
+}
+
+.img--logo{
+    height: 71px;
+    width: 221px;
+    margin-left: 20px;
+}
+
+.search-bar{
+    margin-top: 17px;
+    display: flex;
+    position: relative;
+}
+
+.img--search{
+    height: 25px;
+    width: 25px;
+    margin-top: 25px;
+    position: absolute; 
+    left: 65px;
+    transform: translateY(-50%)
+}
+
+.button-filter{
+    height: 50px;
+    width: 50px;
+    border-radius: 50%;
+    background-color: #000000;
+    align-items: center;
+    justify-content: center;
+    border: none;
+}
+
+.img--filter{
+    height: 20px;
+    width: 20px;
+}
+
+.input--search-bar{
+    height: 50px;
+    width: 350px;
+    background-color: #EAEAEA;
+    border: none;
+    border-radius: 63px;
+    margin-right: 10px;
+    padding-left: 50px;
+    margin-left: 50px;
+}
+
+.search-bar{
+    margin-left: 100px;
+}
+
+.img--character{
+    width: 80px;
+    height: 80px;
+    margin-left: 300px;
 }
