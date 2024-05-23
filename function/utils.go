@@ -7,6 +7,25 @@ import (
 	"unicode"
 )
 
+var users []User
+
+func FetchAllUsers() ([]User, error) {
+	return users, nil
+}
+
+func AddUser(user User) error {
+	users = append(users, user)
+	return nil
+}
+
+func GetAllUsers() ([]User, error) {
+	return FetchAllUsers()
+}
+
+func CreateUser(user User) error {
+	return AddUser(user)
+}
+
 func Encrypt(password string) string {
 	hash := sha256.Sum256([]byte(password))
 	return fmt.Sprintf("%x", hash)

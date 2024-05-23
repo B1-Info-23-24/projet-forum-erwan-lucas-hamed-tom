@@ -5,85 +5,72 @@ import (
 	"log"
 
 	_ "github.com/mattn/go-sqlite3"
+	"golang.org/x/crypto/bcrypt"
 )
 
-func DataX() {
+var db *sql.DB
+
+func init() {
+	db = InitDB()
+	Test(db)
+}
+
+func InitDB() *sql.DB {
 	db, err := sql.Open("sqlite3", "./database.db")
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer db.Close()
-
-	createUsersTable := `
-    CREATE TABLE IF NOT EXISTS Users (
-        user_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        username TEXT NOT NULL,
-        email TEXT NOT NULL UNIQUE,
-        password_hash TEXT NOT NULL,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    );
-    `
-	if _, err := db.Exec(createUsersTable); err != nil {
+	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS USER (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        pseudo TEXT NOT NULL,
+        email TEXT UNIQUE NOT NULL,
+        password TEXT NOT NULL
+    )`)
+	if err != nil {
 		log.Fatal(err)
 	}
+	return db
+}
 
-	createCategoriesTable := `
-    CREATE TABLE IF NOT EXISTS Categories (
-        category_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL,
-        description TEXT
-    );
-    `
-	if _, err := db.Exec(createCategoriesTable); err != nil {
-		log.Fatal(err)
+func InsertUser(db *sql.DB, username, email, password string) error {
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+	stmt, err := db.Prepare("INSERT INTO USER (pseudo, email, password) VALUES (?, ?, ?)")
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+	_, err = stmt.Exec(username, email, hashedPassword)
+	return err
+}
+
+func AuthenticateUser(db *sql.DB, email, password string) (bool, error) {
+	var hashedPassword string
+	err := db.QueryRow("SELECT password FROM USER WHERE email = ?", email).Scan(&hashedPassword)
+	if err != nil {
+		return false, err
+	}
+	err = bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
+	return err == nil, err
+}
+
+func Test(db *sql.DB) {
+	users := []struct {
+		username string
+		email    string
+		password string
+	}{
+		{"testuser1", "test1@example.com", "password123"},
+		{"testuser2", "test2@example.com", "password123"},
+		{"testuser3", "test3@example.com", "password123"},
 	}
 
-	createPostsTable := `
-    CREATE TABLE IF NOT EXISTS Posts (
-        post_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        thread_id INTEGER,
-        user_id INTEGER,
-        ping_id INTERGER,
-        content TEXT NOT NULL,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (thread_id) REFERENCES Threads(thread_id),
-        FOREIGN KEY (user_id) REFERENCES Users(user_id)
-    );
-    `
-	if _, err := db.Exec(createPostsTable); err != nil {
-		log.Fatal(err)
+	for _, user := range users {
+		err := InsertUser(db, user.username, user.email, user.password)
+		if err != nil {
+			log.Printf("Error inserting user %s: %v", user.username, err)
+		}
 	}
-
-	createCommentsTable := `
-    CREATE TABLE IF NOT EXISTS Comments (
-        comment_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        post_id INTEGER,
-        user_id INTEGER,
-        content TEXT NOT NULL,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (post_id) REFERENCES Posts(post_id),
-        FOREIGN KEY (user_id) REFERENCES Users(user_id)
-    );
-    `
-	if _, err := db.Exec(createCommentsTable); err != nil {
-		log.Fatal(err)
-	}
-
-	createLikesTable := `
-    CREATE TABLE IF NOT EXISTS Likes (
-        like_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id INTEGER,
-        post_id INTEGER,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (user_id) REFERENCES Users(user_id),
-        FOREIGN KEY (post_id) REFERENCES Posts(post_id)
-    );
-    `
-	if _, err := db.Exec(createLikesTable); err != nil {
-		log.Fatal(err)
-	}
-
-	log.Println("Database crée")
 }
