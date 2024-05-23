@@ -17,8 +17,8 @@ func Server() {
 
 	r := mux.NewRouter()
 
-	r.HandleFunc("/login", renderLoginPage).Methods("GET")
-	r.HandleFunc("/signup", renderSignupPage).Methods("GET")
+	r.HandleFunc("/login", RenderLoginPageHandler).Methods("GET")
+	r.HandleFunc("/signup", Signup).Methods("GET")
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))
 
 	go func() {
