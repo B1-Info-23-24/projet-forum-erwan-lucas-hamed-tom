@@ -19,29 +19,64 @@
             <h2>Welcome TO</h2>
             <h2><span>Forun</span></h2>
 
-            <form method="post" action="/checkUser">
+            <form id="signup-form">
                 <div class="input-group">
                     <label for="Pseudo">Pseudo</label>
-                    <input required name="pseudo-sign" id="pseudoLogin" type="text" value="" placeholder="Pseudo"/>
+                    <input required name="pseudo-sign" id="pseudoLogin" type="text" placeholder="Pseudo"/>
                 </div>
                 <div class="input-group">
                     <label for="E-mail">E-mail</label>
-                    <input required name="email-sign" id="emailLogin" type="text" value="" placeholder="E-mail"/>
+                    <input required name="email-sign" id="emailLogin" type="email" placeholder="E-mail"/>
                 </div>
                 <div class="input-group">
                     <label for="Password">Password</label>
-                    <input required name="password-sign" id="passwordLogin" type="password" value="" placeholder="Password"/>
+                    <input required name="password-sign" id="passwordLogin" type="password" placeholder="Password"/>
                 </div>
                 <div class="input-group">
                     <label for="Verification">Verification</label>
-                    <input required name="verify-password-sign" id="password2Login" type="password" value="" placeholder="Verification Password"/>
+                    <input required name="verify-password-sign" id="password2Login" type="password" placeholder="Verification Password"/>
                 </div>
-        <br>
-            <button name="signin" type="signin">Sing In</button>
-            <p>Already have an account?<a href="#">Log In</a></p>
-
-    </form>
+                <br>
+                <button type="submit">Sign In</button>
+                <p>Already have an account?<a href="#">Log In</a></p>
+            </form>
+            <div id="message"></div>
+        </div>
     </div>
 </div>
+
+<script>
+document.getElementById('signup-form').addEventListener('submit', async function(event) {
+    event.preventDefault();
+
+    const username = document.getElementById('pseudoLogin').value;
+    const email = document.getElementById('emailLogin').value;
+    const password = document.getElementById('passwordLogin').value;
+    const password2 = document.getElementById('password2Login').value;
+
+    const messageDiv = document.getElementById('message');
+
+    if (password !== password2) {
+        messageDiv.textContent = 'Passwords do not match';
+        return;
+    }
+
+    const response = await fetch('http://localhost:8081/api/register', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ username, password, email })
+    });
+
+    const result = await response.json();
+
+    if (response.ok) {
+        messageDiv.textContent = 'User registered successfully!';
+    } else {
+        messageDiv.textContent = `Error: ${result.error}`;
+    }
+});
+</script>
 </body>
 </html>
