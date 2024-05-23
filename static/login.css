@@ -16,26 +16,23 @@ body {
 }
 
 .right-section {
-    width: 25%; 
+    width: 22%; 
     border-radius: 15px;
-    overflow: hidden;
     background-color: white;
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-left: -30px; 
-    z-index: 1; 
-    height: 36%;
+    margin-left: -20px; 
+    height: 28%;
 }
 
 .left-section {
-    background-color: #80C2DA;
     display: flex;
     justify-content: center;
     align-items: center;
-    border-radius: 15px;
+    border-radius: -15px;
     overflow: hidden;
-    height: 36%;
+    height: 29%;
 }
 
 .image-content {
@@ -82,7 +79,7 @@ body {
 .input-group input {
     width: 100%;
     padding: 10px;
-    padding-right: 40px; /* Add padding to the right to avoid overlap with the icon */
+    padding-right: 40px; 
     border: 1px solid #ccc;
     border-radius: 5px;
     box-sizing: border-box; 
