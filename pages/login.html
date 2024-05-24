@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <link rel="stylesheet" href="../static/login.css">
+</head>
+<body>
+    <div class="login-container">
+        <div class="left-section">
+            <h1 class="title-welcome">DECOUVREZ<br/>DE NOUVEAU<br/>HORIZONS</h1>
+            <img class="img-welcome" src="../static/img/welcome.png">
+        </div>
+        <div class="right-section">
+            <div class="login-form">
+                <h2 class="title-second">Welcome Back<br/>To <span>Forun</span></h2>
+                <form id="login-form">
+                    <div class="input-auth">
+                        <input type="email" id="email" name="email" placeholder="Email" required>
+                    </div>
+                    <div class="input-auth">
+                        <input type="password" id="password" name="password" placeholder="Password" required>
+                        <span class="password-toggle">
+                            <img src="/static/img/icon/eye_lock.png" class="img-eye" id="closed-eye" onclick="showOpen()">
+                            <img src="/static/img/icon/eye_open.png" class="img-eye" id="open-eye" onclick="showClosed()" style="display: none;">
+                        </span>
+                    </div>
+                    <button class="button-auth" type="submit">Login</button>
+                </form>
+                <p>Don't have an account? <a href="/signup">Sign Up</a></p>
+            </div>
+        </div>
+    </div>
+    <div id="message"></div>
+    <script>
+        function showOpen() {
+            const closedEye = document.getElementById('closed-eye');
+            const openEye = document.getElementById('open-eye');
+            const password = document.getElementById('password');
+            openEye.style.display = "block";
+            closedEye.style.display = "none";
+            password.type = "text";
+        }
+
+        function showClosed() {
+            const closedEye = document.getElementById('closed-eye');
+            const openEye = document.getElementById('open-eye');
+            const password = document.getElementById('password');
+            openEye.style.display = "none";
+            closedEye.style.display = "block";
+            password.type = "password";
+        }
+
+        document.getElementById('login-form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const messageDiv = document.getElementById('message');
+            try {
+                const response = await fetch('http://localhost:8080/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const result = await response.json();
+                messageDiv.textContent = response.ok ? 'Login successful!' : `Error: ${result.error}`;
+            } catch (error) {
+                messageDiv.textContent = `Error: ${error.message}`;
+            }
+        });
+    </script>
+</body>
+</html>

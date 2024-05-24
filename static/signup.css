@@ -1,0 +1,141 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&display=swap');
+
+body {
+    background-color: black;
+    font-family: Outfit, sans-serif;
+}
+
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    height: 100vh;
+}
+
+.img-welcome {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 270px;
+    height: 220px;
+    z-index: 0;
+}
+
+.title-welcome {
+    position: absolute;
+    top: 70px;
+    right: -25px;
+    transform: translate(-30%, -50%);
+    z-index: 0;
+    text-align: center;
+    color: white;
+    white-space: nowrap;
+    text-align: right;
+    line-height: 40px;
+}
+
+.right-section {
+    border-radius: 15px;
+    background-color: #FFF;
+    margin-left: -25px;
+    height: 330px; 
+    width: 330px;
+    padding: 0px 40px 0px 40px;
+    z-index: 2;
+}
+
+.left-section {
+    display: flex;
+    position: relative;
+    justify-content: center;
+    align-items: center;
+    z-index: 1;
+    height: 330px;
+    width: 330px;
+    background-color: #60A9C0;
+    border-radius: 15px;
+}
+
+.login-form {
+    text-align: center;
+    max-width: 400px;
+    width: 100%;
+}
+
+.title-second {
+    margin: 5px 0;
+}
+
+.title-second span {
+    color: #80C2DA;
+}
+
+.input-auth {
+    text-align: left;
+    position: relative;
+}
+
+.input-auth input {
+    margin-bottom: 10px;
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box; 
+}
+
+.button-auth {
+    width: 100%;
+    padding: 10px;
+    background-color: #80C2DA;
+    border: none;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease, transform 0.3s ease; 
+}
+
+.button-auth:hover {
+    background-color: #6eaec0;
+    transform: scale(1.05); 
+}
+
+p {
+    margin-top: 5px;
+}
+
+p a {
+    color: #80C2DA;
+    text-decoration: none;
+}
+
+p a:hover {
+    text-decoration: underline;
+}
+
+.img-eye1 {
+    width: 13px;
+    height: 13px;
+    position: absolute;
+    right: 10px;
+    top: 19%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.img-eye2 {
+    width: 13px;
+    height: 13px;
+    position: absolute;
+    right: 10px;
+    top: 69%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
