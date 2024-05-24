@@ -51,6 +51,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	DeleteCookies(w, r)
 	fmt.Printf("User logged in: %s\n", user.Username)
 	SetCookie(w, user)
 	w.Header().Set("Content-Type", "application/json")

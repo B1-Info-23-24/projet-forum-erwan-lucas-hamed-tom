@@ -15,6 +15,7 @@ func Encrypt(password string) string {
 	hash := sha256.Sum256([]byte(password))
 	return fmt.Sprintf("%x", hash)
 }
+
 func VerifyPassword(s string) bool {
 	var hasNumber, hasUpperCase, hasLowercase, hasSpecial bool
 	for _, c := range s {
@@ -67,4 +68,14 @@ func SetCookie(w http.ResponseWriter, user User) {
 		SameSite: http.SameSiteLaxMode,
 	}
 	http.SetCookie(w, &cookie)
+}
+
+// delete coockie
+func DeleteCookies(w http.ResponseWriter, r *http.Request) {
+	cookies := r.Cookies()
+	for _, cookie := range cookies {
+		cookie.MaxAge = -1
+		cookie.Secure = false
+		http.SetCookie(w, cookie)
+	}
 }
