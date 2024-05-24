@@ -10,8 +10,13 @@ func Server() {
 		imgpath := "../static/img/character.png"
 		Home(w, r, imgpath)
 	})
-	http.HandleFunc("/profile", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/profile/", func(w http.ResponseWriter, r *http.Request) {
 		imgpath := "../static/img/character.png"
+		username := r.URL.Path[len("/profile/"):]
+		if username == "" {
+			http.NotFound(w, r)
+			return
+		}
 		Profile(w, r, imgpath)
 	})
 
