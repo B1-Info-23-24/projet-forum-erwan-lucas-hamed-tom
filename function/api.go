@@ -52,6 +52,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fmt.Printf("User logged in: %s\n", user.Username)
+	SetCookie(w, user)
 	w.Header().Set("Content-Type", "application/json")
 	w.Write([]byte(fmt.Sprintf(`{"message": "Login successful", "user": "%s"}`, user.Username)))
 }
