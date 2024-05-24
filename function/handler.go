@@ -15,3 +15,13 @@ func RenderLoginPageHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	tmpl.Execute(w, nil)
 }
+
+func RenderSignupPageHandler(w http.ResponseWriter, r *http.Request) {
+	tmplPath := filepath.Join("pages", "signup.html")
+	tmpl, err := template.ParseFiles(tmplPath)
+	if err != nil {
+		http.Error(w, "Unable to load signup page", http.StatusInternalServerError)
+		return
+	}
+	tmpl.Execute(w, nil)
+}
