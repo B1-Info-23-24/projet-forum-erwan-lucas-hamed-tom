@@ -5,45 +5,31 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/gin-contrib/cors"
-	"github.com/gin-gonic/gin"
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 )
 
 func Server() {
-
 	InitDB()
 	AutoMigrate(DB)
 
 	r := mux.NewRouter()
-
-	r.HandleFunc("/login", RenderLoginPageHandler).Methods("GET")
-	r.HandleFunc("/signup", RenderSignupPageHandler).Methods("GET")
+	r.HandleFunc("/login", RenderLoginPage).Methods("GET")
+	r.HandleFunc("/signup", RenderSignupPage).Methods("GET")
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))
 
-	go func() {
-		log.Println("Mux server running at http://localhost:8080/")
-		log.Fatal(http.ListenAndServe(":8080", r))
-	}()
+	RegisterRoutes(r)
 
-	ginRouter := gin.Default()
+	corsMiddleware := handlers.CORS(
+		handlers.AllowedOrigins([]string{"http://localhost:8080"}),
+		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"}),
+		handlers.AllowedHeaders([]string{"Origin", "Content-Type", "Accept"}),
+		handlers.AllowCredentials(),
+		handlers.MaxAge(int(12*time.Hour)),
+	)
 
-	ginRouter.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:8080"},
-		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
-		AllowHeaders:     []string{"Origin", "Content-Type", "Accept"},
-		AllowCredentials: true,
-		MaxAge:           12 * time.Hour,
-	}))
-
-	RegisterRoutes(ginRouter)
-
-	go func() {
-		log.Println("Gin server running at http://localhost:8081/api/")
-		log.Fatal(ginRouter.Run(":8081"))
-	}()
-
-	select {}
+	log.Println("Server running at http://localhost:8080/")
+	log.Fatal(http.ListenAndServe(":8080", corsMiddleware(r)))
 }
 
 func RenderSignupPage(w http.ResponseWriter, r *http.Request) {

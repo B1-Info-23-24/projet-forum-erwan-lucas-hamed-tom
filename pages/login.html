@@ -57,13 +57,17 @@
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             const messageDiv = document.getElementById('message');
-            const response = await fetch('http://localhost:8081/api/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password })
-            });
-            const result = await response.json();
-            messageDiv.textContent = response.ok ? 'Login successful!' : `Error: ${result.error}`;
+            try {
+                const response = await fetch('http://localhost:8080/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const result = await response.json();
+                messageDiv.textContent = response.ok ? 'Login successful!' : `Error: ${result.error}`;
+            } catch (error) {
+                messageDiv.textContent = `Error: ${error.message}`;
+            }
         });
     </script>
 </body>

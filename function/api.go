@@ -1,51 +1,57 @@
 package forum
 
 import (
+	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 
-	"github.com/gin-gonic/gin"
+	"github.com/gorilla/mux"
 )
 
-func RegisterRoutes(r *gin.Engine) {
-	r.POST("/api/register", register)
-	r.POST("/api/login", login)
+func RegisterRoutes(r *mux.Router) {
+	r.HandleFunc("/api/register", register).Methods("POST")
+	r.HandleFunc("/api/login", login).Methods("POST")
 }
 
-func register(c *gin.Context) {
+func register(w http.ResponseWriter, r *http.Request) {
 	var user User
-	if err := c.ShouldBindJSON(&user); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusBadRequest)
 		return
 	}
 
+	// Log user details for debugging (Remove in production)
+	fmt.Printf("Registering user: %+v\n", user)
+
 	if err := DB.Create(&user).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		log.Printf("Failed to create user: %v", err)
+		http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusInternalServerError)
 		return
 	}
 
 	fmt.Printf("New user registered: %s\n", user.Username)
-
-	c.JSON(http.StatusOK, gin.H{"message": "User registered successfully"})
+	w.Header().Set("Content-Type", "application/json")
+	w.Write([]byte(`{"message": "User registered successfully"}`))
 }
 
-func login(c *gin.Context) {
+func login(w http.ResponseWriter, r *http.Request) {
 	var loginInfo struct {
 		Email    string `json:"email"`
 		Password string `json:"password"`
 	}
-	if err := c.ShouldBindJSON(&loginInfo); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if err := json.NewDecoder(r.Body).Decode(&loginInfo); err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusBadRequest)
 		return
 	}
 
 	var user User
 	if err := DB.Where("email = ? AND password = ?", loginInfo.Email, loginInfo.Password).First(&user).Error; err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid email or password"})
+		http.Error(w, `{"error": "Invalid email or password"}`, http.StatusUnauthorized)
 		return
 	}
 
 	fmt.Printf("User logged in: %s\n", user.Username)
-
-	c.JSON(http.StatusOK, gin.H{"message": "Login successful", "user": user.Username})
+	w.Header().Set("Content-Type", "application/json")
+	w.Write([]byte(fmt.Sprintf(`{"message": "Login successful", "user": "%s"}`, user.Username)))
 }

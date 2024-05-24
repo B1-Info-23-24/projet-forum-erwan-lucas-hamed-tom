@@ -89,18 +89,22 @@
                 return;
             }
 
-            const response = await fetch('http://localhost:8081/api/register', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, password, email })
-            });
+            try {
+                const response = await fetch('http://localhost:8080/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password, email })
+                });
 
-            const result = await response.json();
+                const result = await response.json();
 
-            if (response.ok) {
-                messageDiv.textContent = 'User registered successfully!';
-            } else {
-                messageDiv.textContent = `Error: ${result.error}`;
+                if (response.ok) {
+                    messageDiv.textContent = 'User registered successfully!';
+                } else {
+                    messageDiv.textContent = `Error: ${result.error}`;
+                }
+            } catch (error) {
+                messageDiv.textContent = `Error: ${error.message}`;
             }
         });
     </script>
