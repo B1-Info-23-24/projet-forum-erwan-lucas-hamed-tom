@@ -8,7 +8,9 @@
     z-index: 1001;
     display: none;
 }
-
+.no-scroll {
+    overflow: hidden;
+}
 #popup-signup.open{
     display: block !important
 }

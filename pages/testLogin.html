@@ -33,6 +33,8 @@
             function togglePopupLogin(){
                 let popup = document.querySelector("#popup-login")
                 popup.classList.toggle("open")
+                document.body.classList.toggle('no-scroll');
+
             }
             function showOpen() {
                 const closedEye = document.getElementById('closed-eye');

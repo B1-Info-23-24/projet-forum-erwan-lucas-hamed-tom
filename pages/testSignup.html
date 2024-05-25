@@ -40,6 +40,8 @@
             function togglePopupSignup(){
                 let popup = document.querySelector("#popup-signup")
                 popup.classList.toggle("open")
+                document.body.classList.toggle('no-scroll');
+
             }
             function showOpen() {
                 const closedEye = document.getElementById('closed-eye');
