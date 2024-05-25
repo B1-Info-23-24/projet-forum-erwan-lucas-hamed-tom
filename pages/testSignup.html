@@ -20,8 +20,8 @@
                         <div class="input-auth">
                             <input required name="password-sign" id="passwordLogin" type="password" placeholder="Password"/>
                             <span class="password-toggle">
-                                <img src="/static/img/icon/eye_lock.png" class="img-eye1" id="closed-eye" onclick="showOpen()">
-                                <img src="/static/img/icon/eye_open.png" class="img-eye1" id="open-eye" onclick="showClosed()" style="display: none;">
+                                <img src="/static/img/icon/eye_lock.png" class="img-eye1" id="closed-eye1" onclick="showOpen1()">
+                                <img src="/static/img/icon/eye_open.png" class="img-eye1" id="open-eye1" onclick="showClosed1()" style="display: none;">
                             </span>
                             <input required name="verify-password-sign" id="password2Login" type="password" placeholder="Verification Password"/>
                             <span class="password-toggle">
@@ -43,18 +43,18 @@
                 document.body.classList.toggle('no-scroll');
 
             }
-            function showOpen() {
-                const closedEye = document.getElementById('closed-eye');
-                const openEye = document.getElementById('open-eye');
+            function showOpen1() {
+                const closedEye = document.getElementById('closed-eye1');
+                const openEye = document.getElementById('open-eye1');
                 const password = document.getElementById('passwordLogin');
                 openEye.style.display = "block";
                 closedEye.style.display = "none";
                 password.type = "text";
             }
     
-            function showClosed() {
-                const closedEye = document.getElementById('closed-eye');
-                const openEye = document.getElementById('open-eye');
+            function showClosed1() {
+                const closedEye = document.getElementById('closed-eye1');
+                const openEye = document.getElementById('open-eye1');
                 const password = document.getElementById('passwordLogin');
                 openEye.style.display = "none";
                 closedEye.style.display = "block";
