@@ -14,6 +14,8 @@ func Server() {
 	AutoMigrate(DB)
 
 	r := mux.NewRouter()
+	r.HandleFunc("/", Test)
+
 	r.HandleFunc("/login", RenderLoginPage).Methods("GET")
 	r.HandleFunc("/signup", RenderSignupPage).Methods("GET")
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))
