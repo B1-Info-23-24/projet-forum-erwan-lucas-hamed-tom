@@ -53,7 +53,6 @@ func register(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Write([]byte(`{"message": "User registered successfully"}`))
 }
-
 func login(w http.ResponseWriter, r *http.Request) {
 	var loginInfo struct {
 		Email    string `json:"email"`
@@ -74,13 +73,16 @@ func login(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("User logged in: %s\n", user.Username)
 	SetCookie(w, user)
 
-	w.Header().Set("Content-Type", "application/json")
-	w.Write([]byte(fmt.Sprintf(`{"message": "Login successful", "user": "%s"}`, user.Username)))
+	// Log the user details in the terminal
+	log.Printf("User details: %+v\n", user)
 
-	// Log response headers
-	for name, values := range w.Header() {
-		for _, value := range values {
-			log.Printf("Header: %s=%s\n", name, value)
-		}
+	w.Header().Set("Content-Type", "application/json")
+	response := struct {
+		Message string `json:"message"`
+		User    User   `json:"user"`
+	}{
+		Message: "Login successful",
+		User:    user,
 	}
+	json.NewEncoder(w).Encode(response)
 }

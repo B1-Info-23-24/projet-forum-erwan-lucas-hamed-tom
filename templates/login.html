@@ -67,11 +67,19 @@
                         credentials: 'include' // Assurer que les cookies sont envoyés et acceptés
                     });
                     const result = await response.json();
-                    messageDiv.textContent = response.ok ? 'Login successful!' : `Error: ${result.error}`;
+                    if (response.ok) {
+                        messageDiv.textContent = 'Login successful!';
+                        console.log(result.user); // Affiche les informations utilisateur
+                        // Vous pouvez stocker les informations utilisateur dans le localStorage si nécessaire
+                        localStorage.setItem('user', JSON.stringify(result.user));
+                    } else {
+                        messageDiv.textContent = `Error: ${result.error}`;
+                    }
                 } catch (error) {
                     messageDiv.textContent = `Error: ${error.message}`;
                 }
-            });            
+            });
+                   
         </script>
     </div>
 </div>
