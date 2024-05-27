@@ -16,10 +16,17 @@
     
         <div class="right-container">
             <div class="section-account-info">
-                <p class="username"> Username : {{ .Username }}</p>
+                <img src="../static/img/character.png" alt="" class="img--user">
+                <div class="account-information">
+                    <div class="account-details">
+                        <p class="account-username">{{ .Username }}</p>
+                        <a href="/settings"><img src="../static/img/icon/settings.png" alt="" class="icon--settings"></a>
+                    </div>
+                    <p class="account-email">tom.calvo74@gmail.com</p>
+                </div>
             </div>
             <div class="posts-container"></div>
-        </div>
+        </div>        
     </div>
 </body>
 </html>
