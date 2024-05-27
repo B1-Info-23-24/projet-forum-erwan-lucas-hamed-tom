@@ -56,17 +56,3 @@ func RenderSignupPage(w http.ResponseWriter, r *http.Request) {
 func RenderLoginPage(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "pages/login.html")
 }
-func ProfileHandler(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	username := vars["username"]
-	if username == "" {
-		http.NotFound(w, r)
-		return
-	}
-	data := map[string]interface{}{
-		"Title":        "Profile Page",
-		"ProfileImage": "/static/img/character.png",
-		"Username":     username,
-	}
-	templates.ExecuteTemplate(w, "base", data)
-}

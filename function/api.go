@@ -12,6 +12,7 @@ import (
 func RegisterRoutes(r *mux.Router) {
 	r.HandleFunc("/api/register", register).Methods("POST")
 	r.HandleFunc("/api/login", login).Methods("POST")
+	r.HandleFunc("/profile/{username}", ProfileHandler).Methods("GET")
 }
 
 func register(w http.ResponseWriter, r *http.Request) {
@@ -58,6 +59,6 @@ func login(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(fmt.Sprintf(`{"message": "Login successful", "user": "%s"}`, user.Username)))
 }
 
-func userInformation(w http.ResponseWriter, r *http.Request) {
+func UserInformation(w http.ResponseWriter, r *http.Request) {
 
 }
