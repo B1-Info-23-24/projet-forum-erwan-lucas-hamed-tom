@@ -53,6 +53,7 @@ func register(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Write([]byte(`{"message": "User registered successfully"}`))
 }
+
 func login(w http.ResponseWriter, r *http.Request) {
 	var loginInfo struct {
 		Email    string `json:"email"`
