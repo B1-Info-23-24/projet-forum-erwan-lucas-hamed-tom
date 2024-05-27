@@ -30,7 +30,7 @@ func StartAPIServer() {
 func RegisterRoutes(r *mux.Router) {
 	r.HandleFunc("/api/register", register).Methods("POST")
 	r.HandleFunc("/api/login", login).Methods("POST")
-	r.HandleFunc("/profile/{username}", ProfileHandler).Methods("GET")
+	r.HandleFunc("/api/profile/{username}", GetProfile).Methods("GET")
 }
 
 func register(w http.ResponseWriter, r *http.Request) {

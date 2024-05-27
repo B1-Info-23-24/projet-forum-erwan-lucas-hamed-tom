@@ -1,9 +1,13 @@
 package forum
 
 import (
+	"encoding/json"
+	"fmt"
 	"html/template"
 	"log"
 	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
 func Home(w http.ResponseWriter, r *http.Request) {
@@ -35,5 +39,26 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
+	}
+}
+
+func GetProfile(w http.ResponseWriter, r *http.Request) {
+	username := mux.Vars(r)["username"]
+
+	log.Printf("Fetching profile for username: %s", username)
+
+	var user User
+	if err := DB.Where("username = ?", username).First(&user).Error; err != nil {
+		log.Printf("Error retrieving user from database: %v", err)
+		http.Error(w, fmt.Sprintf(`{"error": "User not found: %v"}`, err.Error()), http.StatusNotFound)
+		return
+	}
+
+	log.Printf("User found: %+v", user)
+
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(user); err != nil {
+		log.Printf("Error encoding user data: %v", err)
+		http.Error(w, fmt.Sprintf(`{"error": "Failed to encode user data: %v"}`, err.Error()), http.StatusInternalServerError)
 	}
 }
