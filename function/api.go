@@ -5,9 +5,27 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 )
+
+func StartAPIServer() {
+	r := mux.NewRouter()
+	RegisterRoutes(r)
+
+	corsMiddleware := handlers.CORS(
+		handlers.AllowedOrigins([]string{"http://localhost:8080"}),
+		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"}),
+		handlers.AllowedHeaders([]string{"Origin", "Content-Type", "Accept"}),
+		handlers.AllowCredentials(),
+		handlers.MaxAge(int(12*time.Hour)),
+	)
+
+	log.Println("API server running at http://localhost:8081/")
+	log.Fatal(http.ListenAndServe(":8081", corsMiddleware(r)))
+}
 
 func RegisterRoutes(r *mux.Router) {
 	r.HandleFunc("/api/register", register).Methods("POST")
@@ -57,8 +75,4 @@ func login(w http.ResponseWriter, r *http.Request) {
 	SetCookie(w, user)
 	w.Header().Set("Content-Type", "application/json")
 	w.Write([]byte(fmt.Sprintf(`{"message": "Login successful", "user": "%s"}`, user.Username)))
-}
-
-func UserInformation(w http.ResponseWriter, r *http.Request) {
-
 }

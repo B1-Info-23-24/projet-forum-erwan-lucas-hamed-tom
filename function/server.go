@@ -12,7 +12,7 @@ import (
 
 var templates = template.Must(template.ParseGlob("templates/header.html"))
 
-func Server() {
+func StartWebServer() {
 	InitDB()
 	AutoMigrate(DB)
 
@@ -35,17 +35,15 @@ func Server() {
 	r.HandleFunc("/signup", RenderSignupPage).Methods("GET")
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))
 
-	RegisterRoutes(r)
-
 	corsMiddleware := handlers.CORS(
-		handlers.AllowedOrigins([]string{"http://localhost:8080"}),
+		handlers.AllowedOrigins([]string{"http://localhost:8081"}),
 		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"}),
 		handlers.AllowedHeaders([]string{"Origin", "Content-Type", "Accept"}),
 		handlers.AllowCredentials(),
 		handlers.MaxAge(int(12*time.Hour)),
 	)
 
-	log.Println("Server running at http://localhost:8080/")
+	log.Println("Web server running at http://localhost:8080/")
 	log.Fatal(http.ListenAndServe(":8080", corsMiddleware(r)))
 }
 
