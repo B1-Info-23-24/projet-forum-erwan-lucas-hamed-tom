@@ -102,6 +102,9 @@
     
                     if (response.ok) {
                         messageDiv.textContent = 'User registered successfully!';
+                        if (messageDiv.textContent === 'User registered successfully!'){
+                        togglePopupSignup()
+                        }
                     } else {
                         messageDiv.textContent = `Error: ${result.error}`;
                     }
