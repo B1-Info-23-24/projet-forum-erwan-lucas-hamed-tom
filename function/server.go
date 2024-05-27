@@ -18,7 +18,7 @@ func Server() {
 		imgpath := "../static/img/character.png"
 		Home(w, r, imgpath)
 	}).Methods("GET")
-	r.HandleFunc("/profile", func(w http.ResponseWriter, r *http.Request) {
+	r.HandleFunc("/profile/", func(w http.ResponseWriter, r *http.Request) {
 		imgpath := "../static/img/character.png"
 		username := r.URL.Path[len("/profile/"):]
 		if username == "" {

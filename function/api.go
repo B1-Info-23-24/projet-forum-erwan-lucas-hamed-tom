@@ -57,3 +57,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Write([]byte(fmt.Sprintf(`{"message": "Login successful", "user": "%s"}`, user.Username)))
 }
+
+func userInformation(w http.ResponseWriter, r *http.Request) {
+
+}
