@@ -67,6 +67,9 @@
                     });
                     const result = await response.json();
                     messageDiv.textContent = response.ok ? 'Login successful!' : `Error: ${result.error}`;
+                    if (messageDiv.textContent === 'Login successful!'){
+                    togglePopupLogin()
+                    }
                 } catch (error) {
                     messageDiv.textContent = `Error: ${error.message}`;
                 }
