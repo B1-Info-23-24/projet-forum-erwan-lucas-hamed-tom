@@ -69,6 +69,8 @@ func SetCookie(w http.ResponseWriter, user User) {
 		SameSite: http.SameSiteLaxMode,
 	}
 	http.SetCookie(w, &cookieId)
+	log.Printf("Cookie set: %v", cookieId) // Log the cookie
+
 	cookieUsername := http.Cookie{
 		Name:     "username",
 		Value:    user.Username,
@@ -79,6 +81,7 @@ func SetCookie(w http.ResponseWriter, user User) {
 		SameSite: http.SameSiteLaxMode,
 	}
 	http.SetCookie(w, &cookieUsername)
+	log.Printf("Cookie set: %v", cookieUsername) // Log the cookie
 }
 
 // delete coockie

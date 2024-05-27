@@ -63,14 +63,15 @@
                     const response = await fetch('http://localhost:8081/api/login', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ email, password })
+                        body: JSON.stringify({ email, password }),
+                        credentials: 'include' // Assurer que les cookies sont envoyés et acceptés
                     });
                     const result = await response.json();
                     messageDiv.textContent = response.ok ? 'Login successful!' : `Error: ${result.error}`;
                 } catch (error) {
                     messageDiv.textContent = `Error: ${error.message}`;
                 }
-            });
+            });            
         </script>
     </div>
 </div>

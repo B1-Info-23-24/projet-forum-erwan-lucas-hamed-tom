@@ -3,14 +3,11 @@ package forum
 import (
 	"log"
 	"net/http"
-	"text/template"
 	"time"
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 )
-
-var templates = template.Must(template.ParseGlob("templates/header.html"))
 
 func StartWebServer() {
 	InitDB()
@@ -36,7 +33,7 @@ func StartWebServer() {
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))
 
 	corsMiddleware := handlers.CORS(
-		handlers.AllowedOrigins([]string{"http://localhost:8081"}),
+		handlers.AllowedOrigins([]string{"http://localhost:8080", "http://localhost:8081"}), // Autoriser les deux serveurs
 		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"}),
 		handlers.AllowedHeaders([]string{"Origin", "Content-Type", "Accept"}),
 		handlers.AllowCredentials(),
