@@ -1,4 +1,5 @@
 package forum
+package forum
 
 import (
 	"html/template"
@@ -21,3 +22,4 @@ func Profile(w http.ResponseWriter, r *http.Request, imgpath string) {
 	}
 	template.Execute(w, imgpath)
 }
+

@@ -8,6 +8,16 @@
         </form>
         <button class="button-filter"><img src="../static/img/filter.png" alt="" class="img--filter"></button>
     </div>
-    <a href="/profile"><img src="{{ . }}" alt="" class="img--character"></a>
+    <a href="/#" onclick="redirectToUserProfile()"><img src="{{ . }}" alt="" class="img--character"></a>
 </div>
+
+<script>    
+    function redirectToUserProfile() {
+        const username = "lucasmcn";
+        if (username) {
+            window.location.href = `/profile/${encodeURIComponent(username)}`;
+        } 
+    }
+</script>
+
 {{ end }}
