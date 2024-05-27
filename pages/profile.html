@@ -15,7 +15,9 @@
         {{ template "menu" . }}
     
         <div class="right-container">
-            <div class="section-account-info"></div>
+            <div class="section-account-info">
+                <p class="username"> Username : {{ .Username }}</p>
+            </div>
             <div class="posts-container"></div>
         </div>
     </div>

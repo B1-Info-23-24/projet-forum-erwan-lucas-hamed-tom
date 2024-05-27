@@ -6,6 +6,11 @@ import (
 	"net/http"
 )
 
+type Userinfo struct {
+	Imgpth   string
+	Username string
+}
+
 func Home(w http.ResponseWriter, r *http.Request, imgpath string) {
 	template, err := template.ParseFiles("./index.html", "./templates/header.html", "./templates/menu.html", "./templates/login.html", "./templates/signup.html")
 	if err != nil {
@@ -20,7 +25,10 @@ func Profile(w http.ResponseWriter, r *http.Request, imgpath string) error {
 		log.Println("Error parsing template files:", err)
 		return err
 	}
-	err = tmpl.Execute(w, imgpath)
+	var userinfo Userinfo
+	userinfo.Imgpth = imgpath
+	userinfo.Username = GetUserFromURL(w, r)
+	err = tmpl.Execute(w, userinfo)
 	if err != nil {
 		log.Println("Error executing template:", err)
 		return err

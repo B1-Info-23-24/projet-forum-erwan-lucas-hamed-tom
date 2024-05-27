@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"regexp"
 	"strconv"
+	"strings"
 	"unicode"
 )
 
@@ -68,16 +69,6 @@ func SetCookie(w http.ResponseWriter, user User) {
 		SameSite: http.SameSiteLaxMode,
 	}
 	http.SetCookie(w, &cookieId)
-	cookieUsername := http.Cookie{
-		Name:     "username",
-		Value:    user.Username,
-		Path:     "/",
-		MaxAge:   3600,
-		HttpOnly: false,
-		Secure:   false,
-		SameSite: http.SameSiteLaxMode,
-	}
-	http.SetCookie(w, &cookieUsername)
 }
 
 // delete coockie
@@ -88,4 +79,9 @@ func DeleteCookies(w http.ResponseWriter, r *http.Request) {
 		cookie.Secure = false
 		http.SetCookie(w, cookie)
 	}
+}
+
+func GetUserFromURL(w http.ResponseWriter, r *http.Request) string {
+	username := strings.Split(r.URL.Path, "/")
+	return username[2]
 }
