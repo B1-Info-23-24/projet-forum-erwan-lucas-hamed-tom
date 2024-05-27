@@ -7,7 +7,7 @@ import (
 )
 
 type Userinfo struct {
-	Imgpth   string
+	Imgpath  string
 	Username string
 }
 
@@ -16,7 +16,9 @@ func Home(w http.ResponseWriter, r *http.Request, imgpath string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	template.Execute(w, imgpath)
+	var userinfo Userinfo
+	userinfo.Imgpath = imgpath
+	template.Execute(w, userinfo)
 }
 
 func Profile(w http.ResponseWriter, r *http.Request, imgpath string) error {
@@ -26,7 +28,7 @@ func Profile(w http.ResponseWriter, r *http.Request, imgpath string) error {
 		return err
 	}
 	var userinfo Userinfo
-	userinfo.Imgpth = imgpath
+	userinfo.Imgpath = imgpath
 	userinfo.Username = GetUserFromURL(w, r)
 	err = tmpl.Execute(w, userinfo)
 	if err != nil {

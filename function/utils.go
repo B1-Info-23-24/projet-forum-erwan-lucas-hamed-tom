@@ -69,6 +69,16 @@ func SetCookie(w http.ResponseWriter, user User) {
 		SameSite: http.SameSiteLaxMode,
 	}
 	http.SetCookie(w, &cookieId)
+	cookieUsername := http.Cookie{
+		Name:     "username",
+		Value:    user.Username,
+		Path:     "/",
+		MaxAge:   3600,
+		HttpOnly: false,
+		Secure:   false,
+		SameSite: http.SameSiteLaxMode,
+	}
+	http.SetCookie(w, &cookieUsername)
 }
 
 // delete coockie

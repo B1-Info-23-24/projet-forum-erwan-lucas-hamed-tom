@@ -8,12 +8,12 @@
         </form>
         <button class="button-filter"><img src="../static/img/filter.png" alt="" class="img--filter"></button>
     </div>
-    <a href="/#" onclick="redirectToUserProfile()"><img src="{{ . }}" alt="" class="img--character"></a>
+    <a href="/#" onclick="redirectToUserProfile()"><img src="{{ .Imgpath }}" alt="" class="img--character"></a>
 </div>
 
 <script>    
     function redirectToUserProfile() {
-        let username = getCookie("username");
+        let id = getCookie("username");
         if (username) {
             window.location.href = `/profile/${encodeURIComponent(username)}`;
         } else{
