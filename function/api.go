@@ -43,9 +43,14 @@ func register(w http.ResponseWriter, r *http.Request) {
 	// Log user details for debugging (Remove in production)
 	fmt.Printf("Registering user: %+v\n", user)
 
-	if err := DB.Create(&user).Error; err != nil {
-		log.Printf("Failed to create user: %v", err)
-		http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusInternalServerError)
+	if VerifyPassword(user.Password) || EmailValid(user.Email) {
+		if err := DB.Create(&user).Error; err != nil {
+			log.Printf("Failed to create user: %v", err)
+			http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusInternalServerError)
+			return
+		}
+	} else {
+		log.Printf("Failed to create user")
 		return
 	}
 
