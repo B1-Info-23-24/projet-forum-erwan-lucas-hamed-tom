@@ -8,6 +8,9 @@ body {
     flex-direction: column; 
     margin: 0;
 }
+button{
+    cursor: pointer;
+}
 
 .header {
     background-color: #FFF;
@@ -184,6 +187,7 @@ body {
 }
 
 .img--search{
+    cursor: pointer;
     height: 25px;
     width: 25px;
     margin-top: 25px;

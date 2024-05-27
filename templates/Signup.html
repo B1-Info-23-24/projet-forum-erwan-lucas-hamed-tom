@@ -1,0 +1,117 @@
+{{ define "signup"}}
+<div id="popup-signup" >
+<div id="popup-overlay">
+    <div class="popup-content">
+        <a href="javascipt:void(0)" onclick="togglePopupSignup()" class="popup-exit"><img src="../static/img/icon/x.png" class="img--icon-x"></a>
+        <div class="signup-container">
+            <div class="left-section">
+                <h1 class="title-welcome">DECOUVREZ<br/>DE NOUVEAU<br/>HORIZONS</h1>
+                <img class="img-welcome" src="../static/img/welcome.png">
+            </div>
+            <div class="right-section">
+                <div class="signup-form">
+                    <h2 class="title-second">Welcome To<br/> <span>Forum</span></h2>
+                    <form id="signup-form">
+                        <div class="input-auth">
+                            <input required name="pseudo-sign" id="pseudoLogin" type="text" placeholder="Pseudo"/>
+                            <input required name="email-sign" id="emailLogin" type="email" placeholder="E-mail"/>
+                        </div>
+                        <div class="input-auth">
+                            <input required name="password-sign" id="passwordLogin" type="password" placeholder="Password"/>
+                            <span class="password-toggle">
+                                <img src="/static/img/icon/eye_lock.png" class="img-eye1" id="closed-eye1" onclick="showOpen1()">
+                                <img src="/static/img/icon/eye_open.png" class="img-eye1" id="open-eye1" onclick="showClosed1()" style="display: none;">
+                            </span>
+                            <input required name="verify-password-sign" id="password2Login" type="password" placeholder="Verification Password"/>
+                            <span class="password-toggle">
+                                <img src="/static/img/icon/eye_lock.png" class="img-eye2" id="closed-eye2" onclick="showOpen2()">
+                                <img src="/static/img/icon/eye_open.png" class="img-eye2" id="open-eye2" onclick="showClosed2()" style="display: none;">
+                            </span>
+                        </div>
+                        <button class="button-auth" type="submit">Sign Up</button>
+                    </form>
+                    <p class="message" >Already have an account?<a onclick="togglePopupLogin(), togglePopupSignup()"> Log In</a></p>
+                </div>
+            </div>
+        </div>
+        <div id="message"></div>
+        <script>
+            function togglePopupSignup(){
+                let popup = document.querySelector("#popup-signup")
+                popup.classList.toggle("open")
+                document.body.classList.toggle('no-scroll');
+
+            }
+            function showOpen1() {
+                const closedEye = document.getElementById('closed-eye1');
+                const openEye = document.getElementById('open-eye1');
+                const password = document.getElementById('passwordLogin');
+                openEye.style.display = "block";
+                closedEye.style.display = "none";
+                password.type = "text";
+            }
+    
+            function showClosed1() {
+                const closedEye = document.getElementById('closed-eye1');
+                const openEye = document.getElementById('open-eye1');
+                const password = document.getElementById('passwordLogin');
+                openEye.style.display = "none";
+                closedEye.style.display = "block";
+                password.type = "password";
+            }
+    
+            function showOpen2() {
+                const closedEye = document.getElementById('closed-eye2');
+                const openEye = document.getElementById('open-eye2');
+                const password = document.getElementById('password2Login');
+                openEye.style.display = "block";
+                closedEye.style.display = "none";
+                password.type = "text";
+            }
+    
+            function showClosed2() {
+                const closedEye = document.getElementById('closed-eye2');
+                const openEye = document.getElementById('open-eye2');
+                const password = document.getElementById('password2Login');
+                openEye.style.display = "none";
+                closedEye.style.display = "block";
+                password.type = "password";
+            }
+    
+            document.getElementById('signup-form').addEventListener('submit', async function(event) {
+                event.preventDefault();
+                const username = document.getElementById('pseudoLogin').value;
+                const email = document.getElementById('emailLogin').value;
+                const password = document.getElementById('passwordLogin').value;
+                const password2 = document.getElementById('password2Login').value;
+                const messageDiv = document.getElementById('message');
+    
+                if (password !== password2) {
+                    messageDiv.textContent = 'Passwords do not match';
+                    return;
+                }
+    
+                try {
+                    const response = await fetch('http://localhost:8080/api/register', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ username, password, email })
+                    });
+    
+                    const result = await response.json();
+    
+                    if (response.ok) {
+                        messageDiv.textContent = 'User registered successfully!';
+                    } else {
+                        messageDiv.textContent = `Error: ${result.error}`;
+                    }
+                } catch (error) {
+                    messageDiv.textContent = `Error: ${error.message}`;
+                }
+            });
+        </script>
+    </div>
+</div>
+</div>
+
+{{ end }}

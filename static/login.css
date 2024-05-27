@@ -2,7 +2,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&display=swap');
 
 body {
-    background-color: black;
     font-family: 'Outfit', sans-serif;
 }
 
@@ -10,18 +9,17 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
     position: relative;
 }
 
-.left-section, .right-section {
+.login-left-section, .login-right-section {
     position: relative;
     border-radius: 15px;
     height: 330px;
     width: 330px;
 }
 
-.left-section {
+.login-left-section {
     background-color: #60A9C0;
     z-index: 1;
     display: flex;
@@ -29,7 +27,7 @@ body {
     align-items: center;
 }
 
-.img-welcome {
+.login-img-welcome {
     position: absolute;
     bottom: 0;
     left: 0;
@@ -37,7 +35,7 @@ body {
     height: 220px;
 }
 
-.title-welcome {
+.login-title-welcome {
     position: absolute;
     top: 70px;
     right: -25px;
@@ -48,7 +46,7 @@ body {
     line-height: 40px;
 }
 
-.right-section {
+.login-right-section {
     background-color: #FFF;
     margin-left: -25px;
     z-index: 2;
@@ -65,20 +63,20 @@ body {
     text-align: center;
 }
 
-.title-second {
+.login-title-second {
     margin: 10px 0;
 }
 
-.title-second span {
+.login-title-second span {
     color: #80C2DA;
 }
 
-.input-auth {
+.login-input-auth {
     margin-bottom: 15px;
     position: relative;
 }
 
-.input-auth input {
+.login-input-auth input {
     width: 100%;
     padding: 10px;
     border: 1px solid #ccc;
@@ -86,7 +84,7 @@ body {
     box-sizing: border-box;
 }
 
-.password-toggle {
+.login-password-toggle {
     position: absolute;
     right: 10px;
     top: 50%;
@@ -96,7 +94,7 @@ body {
     align-items: center;
 }
 
-.button-auth {
+.login-button-auth {
     width: 100%;
     padding: 10px;
     background-color: #80C2DA;
@@ -108,25 +106,25 @@ body {
     transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
-.button-auth:hover {
+.login-button-auth:hover {
     background-color: #6eaec0;
     transform: scale(1.05);
 }
 
-p {
+.message {
     margin-top: 15px;
 }
 
-p a {
+.message a {
     color: #80C2DA;
     text-decoration: none;
 }
 
-p a:hover {
+.message a:hover {
     text-decoration: underline;
 }
 
-.img-eye {
+.login-img-eye {
     width: 13px;
     height: 13px;
 }

@@ -1,16 +1,16 @@
 {{ define "menu"}}
 <div class="left-container">
     <div class="redirection-button-container">
-        <button class="button-redirection">home <img src="../static/img/icon/home.png" class="img--icon-redirection"></button>
-        <button class="button-redirection button-redirection--post">Post <img src="../static/img/icon/post.png" class="img--icon-redirection"></button>
+        <button onclick="togglePopupLogin()" class="button-redirection">home <img src="../static/img/icon/home.png" class="img--icon-redirection"></button>
+        <button onclick="togglePopupLogin()" class="button-redirection button-redirection--post">Post <img src="../static/img/icon/post.png" class="img--icon-redirection"></button>
     </div>
     <div class="section">
         <p class="section-title">Section (4)</p>
         <div class="section-button-container">
-            <button class="button-section"><img src="../static/img/icon/alpinisme.png" class="img--icon"> Alpinisme</button>
-            <button class="button-section"><img src="../static/img/icon/bivouac.png" class="img--icon"> Bivouac</button>
-            <button class="button-section"><img src="../static/img/icon/randone.png" class="img--icon"> Randonée</button>
-            <button class="button-section"><img src="../static/img/icon/treck.png" class="img--icon"> Treck</button>
+            <button  onclick="togglePopupLogin()" class="button-section"><img src="../static/img/icon/alpinisme.png" class="img--icon"> Alpinisme</button>
+            <button onclick="togglePopupLogin()" class="button-section"><img src="../static/img/icon/bivouac.png" class="img--icon"> Bivouac</button>
+            <button onclick="togglePopupLogin()" class="button-section"><img src="../static/img/icon/randone.png" class="img--icon"> Randonée</button>
+            <button onclick="togglePopupLogin()" class="button-section"><img src="../static/img/icon/treck.png" class="img--icon"> Treck</button>
         </div>
     </div>
     <div class="map">
@@ -18,4 +18,10 @@
         <img src="../static/img/map.png" class="img--map">
     </div>
 </div>
+{{ template "login" . }}
+{{ template "signup" . }}
+
+
 {{ end }}
+
+
