@@ -13,10 +13,12 @@
 
 <script>    
     function redirectToUserProfile() {
-        const username = "lucasmcn";
+        let id = getCookie("username");
         if (username) {
             window.location.href = `/profile/${encodeURIComponent(username)}`;
-        } 
+        } else{
+            window.location.href = "/"
+        }
     }
 </script>
 

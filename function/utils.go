@@ -58,7 +58,7 @@ func GetCoockie(w http.ResponseWriter, r *http.Request, name string) int {
 
 // Set user id inside a coockie
 func SetCookie(w http.ResponseWriter, user User) {
-	cookie := http.Cookie{
+	cookieId := http.Cookie{
 		Name:     "userId",
 		Value:    strconv.Itoa(int(user.ID)),
 		Path:     "/",
@@ -67,7 +67,17 @@ func SetCookie(w http.ResponseWriter, user User) {
 		Secure:   false,
 		SameSite: http.SameSiteLaxMode,
 	}
-	http.SetCookie(w, &cookie)
+	http.SetCookie(w, &cookieId)
+	cookieUsername := http.Cookie{
+		Name:     "username",
+		Value:    user.Username,
+		Path:     "/",
+		MaxAge:   3600,
+		HttpOnly: false,
+		Secure:   false,
+		SameSite: http.SameSiteLaxMode,
+	}
+	http.SetCookie(w, &cookieUsername)
 }
 
 // delete coockie
