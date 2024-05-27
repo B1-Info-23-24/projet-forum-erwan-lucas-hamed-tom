@@ -3,11 +3,14 @@ package forum
 import (
 	"log"
 	"net/http"
+	"text/template"
 	"time"
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 )
+
+var templates = template.Must(template.ParseGlob("templates/header.html"))
 
 func Server() {
 	InitDB()
@@ -27,6 +30,7 @@ func Server() {
 		}
 		Profile(w, r, imgpath)
 	}).Methods("GET")
+	r.HandleFunc("/profile/{username}", ProfileHandler).Methods("GET")
 	r.HandleFunc("/login", RenderLoginPage).Methods("GET")
 	r.HandleFunc("/signup", RenderSignupPage).Methods("GET")
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))
@@ -51,4 +55,18 @@ func RenderSignupPage(w http.ResponseWriter, r *http.Request) {
 
 func RenderLoginPage(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "pages/login.html")
+}
+func ProfileHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	username := vars["username"]
+	if username == "" {
+		http.NotFound(w, r)
+		return
+	}
+	data := map[string]interface{}{
+		"Title":        "Profile Page",
+		"ProfileImage": "/static/img/character.png",
+		"Username":     username,
+	}
+	templates.ExecuteTemplate(w, "base", data)
 }
