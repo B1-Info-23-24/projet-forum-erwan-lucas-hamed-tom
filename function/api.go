@@ -50,8 +50,22 @@ func register(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fmt.Printf("New user registered: %s\n", user.Username)
+
+	// Automatically log in the user after registration
+	SetCookie(w, user)
+
+	// Log the user details in the terminal
+	log.Printf("User details: %+v\n", user)
+
 	w.Header().Set("Content-Type", "application/json")
-	w.Write([]byte(`{"message": "User registered successfully"}`))
+	response := struct {
+		Message string `json:"message"`
+		User    User   `json:"user"`
+	}{
+		Message: "User registered and logged in successfully",
+		User:    user,
+	}
+	json.NewEncoder(w).Encode(response)
 }
 
 func login(w http.ResponseWriter, r *http.Request) {
