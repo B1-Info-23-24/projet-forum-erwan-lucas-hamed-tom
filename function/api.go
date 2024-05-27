@@ -39,6 +39,7 @@ func register(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusBadRequest)
 		return
 	}
+	user.Password = Encrypt(user.Password)
 
 	// Log user details for debugging (Remove in production)
 	fmt.Printf("Registering user: %+v\n", user)
@@ -84,6 +85,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var user User
+	loginInfo.Password = Encrypt(loginInfo.Password)
 	if err := DB.Where("email = ? AND password = ?", loginInfo.Email, loginInfo.Password).First(&user).Error; err != nil {
 		http.Error(w, `{"error": "Invalid email or password"}`, http.StatusUnauthorized)
 		return
