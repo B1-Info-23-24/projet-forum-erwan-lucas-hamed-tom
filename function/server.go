@@ -15,17 +15,15 @@ func StartWebServer() {
 
 	r := mux.NewRouter()
 	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		imgpath := "../static/img/character.png"
-		Home(w, r, imgpath)
+		Home(w, r)
 	}).Methods("GET")
 	r.HandleFunc("/profile/", func(w http.ResponseWriter, r *http.Request) {
-		imgpath := "../static/img/character.png"
 		username := r.URL.Path[len("/profile/"):]
 		if username == "" {
 			http.NotFound(w, r)
 			return
 		}
-		Profile(w, r, imgpath)
+		Profile(w, r)
 	}).Methods("GET")
 	r.HandleFunc("/profile/{username}", ProfileHandler).Methods("GET")
 	r.HandleFunc("/login", RenderLoginPage).Methods("GET")
