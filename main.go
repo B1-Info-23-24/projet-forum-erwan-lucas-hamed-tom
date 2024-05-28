@@ -1,7 +1,24 @@
 package main
 
-import forum "forum/function"
+import (
+	forum "forum/function"
+	"sync"
+)
 
 func main() {
-	forum.Server()
+	var wg sync.WaitGroup
+
+	wg.Add(2)
+
+	go func() {
+		defer wg.Done()
+		forum.StartWebServer()
+	}()
+
+	go func() {
+		defer wg.Done()
+		forum.StartAPIServer()
+	}()
+
+	wg.Wait()
 }

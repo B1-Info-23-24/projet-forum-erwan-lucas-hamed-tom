@@ -15,9 +15,18 @@
         {{ template "menu" . }}
     
         <div class="right-container">
-            <div class="section-account-info"></div>
+            <div class="section-account-info">
+                <button onclick="redirectToEditPage()">Editer</button>
+
+                <script>
+                    function redirectToEditPage() {
+                        window.location.href = "/edit";
+                    }
+                </script>
+            </div>
             <div class="posts-container"></div>
         </div>
+        
     </div>
 </body>
 </html>

@@ -60,16 +60,14 @@
                 const password = document.getElementById('password-login').value;
                 const messageDiv = document.getElementById('message');
                 try {
-                    const response = await fetch('http://localhost:8080/api/login', {
+                    const response = await fetch('http://localhost:8081/api/login', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ email, password })
+                        body: JSON.stringify({ email, password }),
+                        credentials: 'include' 
                     });
                     const result = await response.json();
                     messageDiv.textContent = response.ok ? 'Login successful!' : `Error: ${result.error}`;
-                    if (messageDiv.textContent === 'Login successful!'){
-                    togglePopupLogin()
-                    }
                 } catch (error) {
                     messageDiv.textContent = `Error: ${error.message}`;
                 }
