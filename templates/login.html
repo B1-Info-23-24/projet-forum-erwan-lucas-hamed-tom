@@ -67,6 +67,8 @@
                         credentials: 'include' // Assurer que les cookies sont envoyés et acceptés
                     });
                     const result = await response.json();
+                    // messageDiv.innerHTML = `Error: ${result.error}`;
+
                     if (response.ok) {
                         messageDiv.textContent = 'Login successful!';
                         console.log(result.user); // Affiche les informations utilisateur

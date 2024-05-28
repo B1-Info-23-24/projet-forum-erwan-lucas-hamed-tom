@@ -40,23 +40,35 @@ func VerifyPassword(s string, M *Messages) bool {
 		}
 	}
 	M.Messages = ""
+	var errorMessages []string
 	if !hasNumber {
-		M.Messages = "un chiffre "
+		errorMessages = append(errorMessages, "un chiffre")
 	}
 	if !hasUpperCase {
-		M.Messages += "une majuscule "
+		errorMessages = append(errorMessages, "une majuscule")
 	}
 	if !hasLowercase {
-		M.Messages += "une minuscule "
+		errorMessages = append(errorMessages, "une minuscule")
 	}
 	if !hasSpecial {
-		M.Messages += "un caractère spécial "
+		errorMessages = append(errorMessages, "un caractère spécial")
 	}
 	if !hasLen {
-		M.Messages += "12 caractère"
+		errorMessages = append(errorMessages, "12 caractères")
 	}
 
-	fmt.Println("Le mot de passe doit contenir au moins", M.Messages)
+	if len(errorMessages) > 0 {
+		M.Messages = "Le mot de passe doit contenir au moins " + strings.Join(errorMessages[:len(errorMessages)-1], ", ")
+		if len(errorMessages) > 1 {
+			M.Messages += " et " + errorMessages[len(errorMessages)-1]
+		} else {
+			M.Messages += errorMessages[len(errorMessages)-1]
+		}
+	} else {
+		M.Messages = ""
+	}
+	fmt.Println(M.Messages)
+
 	return hasNumber && hasUpperCase && hasLowercase && hasSpecial && hasLen
 }
 

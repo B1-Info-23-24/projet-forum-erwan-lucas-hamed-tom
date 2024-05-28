@@ -48,7 +48,9 @@ func register(w http.ResponseWriter, r *http.Request) {
 	// Log user details for debugging (Remove in production)
 	fmt.Printf("Registering user: %+v\n", user)
 	if !VerifyPassword(user.Password, M) {
-		http.Error(w, `{"error": "Invalid password"}`, http.StatusBadRequest)
+		http.Error(w, fmt.Sprintf(`{"error": "%v"}`, M.Messages), http.StatusBadRequest)
+
+		fmt.Println("test message", M.Messages)
 		return
 	}
 	if VerifyPassword(user.Password, M) && EmailValid(user.Email) {
