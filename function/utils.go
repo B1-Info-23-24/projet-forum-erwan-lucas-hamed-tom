@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"regexp"
 	"strconv"
+	"strings"
 	"unicode"
 )
 
@@ -58,7 +59,7 @@ func GetCoockie(w http.ResponseWriter, r *http.Request, name string) int {
 
 // Set user id inside a coockie
 func SetCookie(w http.ResponseWriter, user User) {
-	cookie := http.Cookie{
+	cookieId := http.Cookie{
 		Name:     "userId",
 		Value:    strconv.Itoa(int(user.ID)),
 		Path:     "/",
@@ -67,7 +68,20 @@ func SetCookie(w http.ResponseWriter, user User) {
 		Secure:   false,
 		SameSite: http.SameSiteLaxMode,
 	}
-	http.SetCookie(w, &cookie)
+	http.SetCookie(w, &cookieId)
+	log.Printf("Cookie set: %v", cookieId) // Log the cookie
+
+	cookieUsername := http.Cookie{
+		Name:     "username",
+		Value:    user.Username,
+		Path:     "/",
+		MaxAge:   3600,
+		HttpOnly: false,
+		Secure:   false,
+		SameSite: http.SameSiteLaxMode,
+	}
+	http.SetCookie(w, &cookieUsername)
+	log.Printf("Cookie set: %v", cookieUsername) // Log the cookie
 }
 
 // delete coockie
@@ -78,4 +92,19 @@ func DeleteCookies(w http.ResponseWriter, r *http.Request) {
 		cookie.Secure = false
 		http.SetCookie(w, cookie)
 	}
+}
+
+func GetUserFromURL(w http.ResponseWriter, r *http.Request) string {
+	// Sépare l'URL en segments
+	segments := strings.Split(r.URL.Path, "/")
+
+	// Vérifie s'il y a suffisamment de segments dans l'URL
+	if len(segments) < 2 {
+		return ""
+	}
+
+	// Récupère le dernier segment de l'URL (nom d'utilisateur)
+	username := segments[len(segments)-1]
+
+	return username
 }
