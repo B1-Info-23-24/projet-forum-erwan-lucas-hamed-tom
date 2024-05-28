@@ -32,6 +32,7 @@ func RegisterRoutes(r *mux.Router) {
 	r.HandleFunc("/api/login", login).Methods("POST")
 	r.HandleFunc("/api/profile/{username}", ProfileHandler).Methods("GET")
 	r.HandleFunc("/api/edit", EditHandler).Methods("GET")
+	r.HandleFunc("/api/editing/password/{username}", EditPassword).Methods("GET")
 	r.HandleFunc("/api/editing/{username}", EditProfile).Methods("POST")
 	r.HandleFunc("/api/delete/{username}", DeleteProfile).Methods("DELETE")
 }
@@ -114,10 +115,10 @@ func login(w http.ResponseWriter, r *http.Request) {
 
 func EditProfile(w http.ResponseWriter, r *http.Request) {
 	var editInfo struct {
-		Username string `json:"username"`
-		Email    string `json:"email"`
-		// Oldpassword string `json:"oldpassword"`
-		// Password    string `json:"password"`
+		Username    string `json:"username"`
+		Email       string `json:"email"`
+		Oldpassword string `json:"oldpassword"`
+		Password    string `json:"password"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&editInfo); err != nil {
 		http.Error(w, fmt.Sprintf(`{"error newdecoder": "%v"}`, err.Error()), http.StatusBadRequest)
@@ -125,6 +126,7 @@ func EditProfile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	currentUsername := GetUserFromURL(w, r)
+	editInfo.Oldpassword = Encrypt(editInfo.Oldpassword)
 
 	var user User
 	if err := DB.Where("username = ?", currentUsername).First(&user).Error; err != nil {
@@ -138,6 +140,13 @@ func EditProfile(w http.ResponseWriter, r *http.Request) {
 	if editInfo.Email != "" {
 		user.Email = editInfo.Email
 	}
+
+	if editInfo.Oldpassword != "" && editInfo.Oldpassword == user.Password {
+		if editInfo.Password != "" && VerifyPassword(editInfo.Password) {
+			user.Password = editInfo.Password
+		}
+	}
+
 	if err := DB.Save(&user).Error; err != nil {
 		log.Printf("Failed to update user: %v", err)
 		http.Error(w, fmt.Sprintf(`{"error in saving": "%v"}`, err.Error()), http.StatusInternalServerError)
@@ -149,6 +158,43 @@ func EditProfile(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Printf("User profile updated: %s\n", user.Username)
 
+	w.Header().Set("Content-Type", "application/json")
+	w.Write([]byte(`{"message": "Profile updated successfully"}`))
+}
+
+func EditPassword(w http.ResponseWriter, r *http.Request) {
+	var editPW struct {
+		Oldpassword string `json:"oldpassword"`
+		Password    string `json:"password"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&editPW); err != nil {
+		http.Error(w, fmt.Sprintf(`{"error newdecoder": "%v"}`, err.Error()), http.StatusBadRequest)
+		return
+	}
+
+	currentUsername := GetUserFromURL(w, r)
+	editPW.Oldpassword = Encrypt(editPW.Oldpassword)
+
+	var user User
+	if err := DB.Where("username = ?", currentUsername).First(&user).Error; err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "User not found"}`), http.StatusNotFound)
+		return
+	}
+
+	if editPW.Oldpassword == user.Password {
+		if VerifyPassword(editPW.Password) {
+			user.Password = editPW.Password
+		}
+	}
+
+	if err := DB.Save(&user).Error; err != nil {
+		log.Printf("Failed to update user: %v", err)
+		http.Error(w, fmt.Sprintf(`{"error in saving": "%v"}`, err.Error()), http.StatusInternalServerError)
+		return
+	}
+
+	fmt.Printf("Password updated: %s\n", user.Username)
 	w.Header().Set("Content-Type", "application/json")
 	w.Write([]byte(`{"message": "Profile updated successfully"}`))
 }

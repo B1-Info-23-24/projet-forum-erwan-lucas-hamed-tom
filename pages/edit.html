@@ -27,11 +27,11 @@
                 <h3>Sécurité</h3>
                 <hr>
                 <p>Mot de passe :</p>
-                <!-- <form id="edit-profile-form" method="post">
+                <form id="edit-password-form" method="post">
                     <input type="text" id="oldpasswordEditing" name="oldpassword" placeholder="Old Password">
                     <input type="text" id="passwordEditing" name="password" placeholder="Password">
                     <button name="edit" type="submit" >Edit</button>
-                </form> -->
+                </form>
                 <hr>
                 <button href="/#" onclick="redirectToDelete()">DELETE</button>
             </div>
@@ -40,29 +40,29 @@
     </div>
     <script>
         function redirectToDelete() {
-        let username = getCookie("username");
-        if (username) {
-            fetch(`http://localhost:8081/api/delete/${username}`, {
-                method: 'DELETE',
-            })
-            .then(response => {
-                if (response.ok) {
-                    window.location.href ="/";
-                    var Cookies = document.cookie.split(';');
-                    for (var i = 0; i < Cookies.length; i++) {
-                    document.cookie = Cookies[i] + "=; expires="+ new Date(0).toUTCString();
+            let username = getCookie("username");
+            if (username) {
+                fetch(`http://localhost:8081/api/delete/${username}`, {
+                    method: 'DELETE',
+                })
+                .then(response => {
+                    if (response.ok) {
+                        window.location.href ="/";
+                        var Cookies = document.cookie.split(';');
+                        for (var i = 0; i < Cookies.length; i++) {
+                        document.cookie = Cookies[i] + "=; expires="+ new Date(0).toUTCString();
+                        }
+                    } else {
+                        console.error('Erreur lors de la suppression de l\'utilisateur');
                     }
-                } else {
-                    console.error('Erreur lors de la suppression de l\'utilisateur');
-                }
-            })
-            .catch(error => {
-                console.error('Erreur lors de la suppression de l\'utilisateur:', error);
-            });
-        } else {
-            window.location.href = "/";
+                })
+                .catch(error => {
+                    console.error('Erreur lors de la suppression de l\'utilisateur:', error);
+                });
+            } else {
+                window.location.href = "/";
+            }
         }
-    }
         document.getElementById('edit-profile-form').addEventListener('submit', async function(event) {
             event.preventDefault();
             const username = document.getElementById('usernameEditing').value;
@@ -75,6 +75,26 @@
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username, email }),
+                    credentials: 'include'
+                });
+                const result = await response.json();
+                if (response.ok) {
+                    window.location.href = `/profile/${currentUsername}`;
+                }
+            } catch (error) {
+            }
+        });
+
+        document.getElementById('edit-password-form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const oldpassword = document.getElementById('oldpasswordEditing').value;
+            const password = document.getElementById('passwordEditing').value;
+            const currentUsername = getCookie("username")
+            try {
+                const response = await fetch(`http://localhost:8081/api/editing/password/${currentUsername}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ oldpassword, password }),
                     credentials: 'include'
                 });
                 const result = await response.json();
