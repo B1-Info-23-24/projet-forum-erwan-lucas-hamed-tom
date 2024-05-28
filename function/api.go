@@ -30,7 +30,7 @@ func StartAPIServer() {
 func RegisterRoutes(r *mux.Router) {
 	r.HandleFunc("/api/register", register).Methods("POST")
 	r.HandleFunc("/api/login", login).Methods("POST")
-	r.HandleFunc("/api/profile/{username}", ProfileHandler).Methods("GET")
+	r.HandleFunc("/api/profile/{username}", GetProfile).Methods("GET")
 	r.HandleFunc("/api/edit", EditHandler).Methods("GET")
 	r.HandleFunc("/api/editing/{username}", EditProfile).Methods("POST")
 	r.HandleFunc("/api/delete/{username}", DeleteProfile).Methods("DELETE")
@@ -171,4 +171,25 @@ func DeleteProfile(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("User profile deleted: %s\n", user.Username)
 
 	w.Header().Set("Content-Type", "application/json")
+}
+
+func GetProfile(w http.ResponseWriter, r *http.Request) {
+	username := mux.Vars(r)["username"]
+
+	log.Printf("Fetching profile for username: %s", username)
+
+	var user User
+	if err := DB.Where("username = ?", username).First(&user).Error; err != nil {
+		log.Printf("Error retrieving user from database: %v", err)
+		http.Error(w, fmt.Sprintf(`{"error": "User not found: %v"}`, err.Error()), http.StatusNotFound)
+		return
+	}
+
+	log.Printf("User found: %+v", user)
+
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(user); err != nil {
+		log.Printf("Error encoding user data: %v", err)
+		http.Error(w, fmt.Sprintf(`{"error": "Failed to encode user data: %v"}`, err.Error()), http.StatusInternalServerError)
+	}
 }

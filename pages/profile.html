@@ -37,6 +37,8 @@
                     method: 'GET',
                     credentials: 'include'
                 });
+                console.log('Response status:', response.status);
+                console.log('Response headers:', response.headers);
                 if (!response.ok) {
                     throw new Error(`Error: ${response.statusText}`);
                 }
@@ -48,6 +50,7 @@
                 console.error('Failed to fetch user profile:', error);
             }
         }
+
 
         document.addEventListener('DOMContentLoaded', function() {
             const username = getCookie('username');
