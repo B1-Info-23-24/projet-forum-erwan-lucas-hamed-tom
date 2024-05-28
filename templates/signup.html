@@ -31,10 +31,11 @@
                             <button class="button-auth" type="submit">Sign Up</button>
                         </form>
                         <p class="message">Already have an account?<a onclick="togglePopupLogin(), togglePopupSignup()"> Log In</a></p>
-                    </div>
+                    <div id="message"></div>
+                </div>
                 </div>
             </div>
-            <div id="message"></div>
+            
             <script>
                 function togglePopupSignup() {
                     let popup = document.querySelector("#popup-signup")
@@ -92,6 +93,7 @@
                     }
 
                     try {
+                        console.log('test')
                         const response = await fetch('http://localhost:8081/api/register', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
@@ -100,6 +102,9 @@
                         });
 
                         const result = await response.json();
+                        console.log(result)
+                        console.log('test2')
+
 
                         if (response.ok) {
                             messageDiv.textContent = 'User registered and logged in successfully!';

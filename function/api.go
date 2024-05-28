@@ -37,18 +37,24 @@ func RegisterRoutes(r *mux.Router) {
 }
 
 func register(w http.ResponseWriter, r *http.Request) {
+	var M *Messages
+	M = new(Messages)
 	var user User
 	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
 		http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusBadRequest)
 		return
 	}
-	user.Password = Encrypt(user.Password)
 
 	// Log user details for debugging (Remove in production)
 	fmt.Printf("Registering user: %+v\n", user)
-
-	if VerifyPassword(user.Password) && EmailValid(user.Email) {
+	if !VerifyPassword(user.Password, M) {
+		http.Error(w, `{"error": "Invalid password"}`, http.StatusBadRequest)
+		return
+	}
+	if VerifyPassword(user.Password, M) && EmailValid(user.Email) {
+		user.Password = Encrypt(user.Password)
 		if err := DB.Create(&user).Error; err != nil {
+			fmt.Println("test 2")
 			log.Printf("Failed to create user: %v", err)
 			http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusInternalServerError)
 			return

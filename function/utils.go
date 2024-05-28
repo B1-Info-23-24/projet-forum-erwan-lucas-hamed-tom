@@ -17,7 +17,13 @@ func Encrypt(password string) string {
 	return fmt.Sprintf("%x", hash)
 }
 
-func VerifyPassword(s string) bool {
+func VerifyPassword(s string, M *Messages) bool {
+	fmt.Println(s)
+	var hasLen bool
+	if len(s) >= 12 {
+		hasLen = true
+	}
+
 	var hasNumber, hasUpperCase, hasLowercase, hasSpecial bool
 	for _, c := range s {
 		switch {
@@ -33,7 +39,25 @@ func VerifyPassword(s string) bool {
 			hasSpecial = true
 		}
 	}
-	return hasNumber && hasUpperCase && hasLowercase && hasSpecial
+	M.Messages = ""
+	if !hasNumber {
+		M.Messages = "un chiffre "
+	}
+	if !hasUpperCase {
+		M.Messages += "une majuscule "
+	}
+	if !hasLowercase {
+		M.Messages += "une minuscule "
+	}
+	if !hasSpecial {
+		M.Messages += "un caractère spécial "
+	}
+	if !hasLen {
+		M.Messages += "12 caractère"
+	}
+
+	fmt.Println("Le mot de passe doit contenir au moins", M.Messages)
+	return hasNumber && hasUpperCase && hasLowercase && hasSpecial && hasLen
 }
 
 func EmailValid(e string) bool {

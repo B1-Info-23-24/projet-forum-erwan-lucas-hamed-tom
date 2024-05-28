@@ -9,6 +9,10 @@ import (
 	"github.com/gorilla/mux"
 )
 
+type Messages struct {
+	Messages string
+}
+
 func StartWebServer() {
 	InitDB()
 	AutoMigrate(DB)
