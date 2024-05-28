@@ -138,15 +138,6 @@ func EditProfile(w http.ResponseWriter, r *http.Request) {
 	if editInfo.Email != "" {
 		user.Email = editInfo.Email
 	}
-
-	// if editInfo.Oldpassword != "" {
-	// 	if editInfo.Oldpassword == user.Password {
-	// 		if editInfo.Password != "" {
-	// 			user.Password = editInfo.Password
-	// 		}
-	// 	}
-	// }
-
 	if err := DB.Save(&user).Error; err != nil {
 		log.Printf("Failed to update user: %v", err)
 		http.Error(w, fmt.Sprintf(`{"error in saving": "%v"}`, err.Error()), http.StatusInternalServerError)
@@ -176,8 +167,6 @@ func DeleteProfile(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, fmt.Sprintf(`{"error in deletion": "%v"}`, err.Error()), http.StatusInternalServerError)
 		return
 	}
-
-	DeleteCookies(w, r)
 
 	fmt.Printf("User profile deleted: %s\n", user.Username)
 

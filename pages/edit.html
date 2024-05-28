@@ -43,11 +43,15 @@
         let username = getCookie("username");
         if (username) {
             fetch(`http://localhost:8081/api/delete/${username}`, {
-                method: 'DELETE'
+                method: 'DELETE',
             })
             .then(response => {
                 if (response.ok) {
                     window.location.href ="/";
+                    var Cookies = document.cookie.split(';');
+                    for (var i = 0; i < Cookies.length; i++) {
+                    document.cookie = Cookies[i] + "=; expires="+ new Date(0).toUTCString();
+                    }
                 } else {
                     console.error('Erreur lors de la suppression de l\'utilisateur');
                 }
@@ -70,7 +74,8 @@
                 const response = await fetch(`http://localhost:8081/api/editing/${currentUsername}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, email })
+                    body: JSON.stringify({ username, email }),
+                    credentials: 'include'
                 });
                 const result = await response.json();
                 if (response.ok) {
