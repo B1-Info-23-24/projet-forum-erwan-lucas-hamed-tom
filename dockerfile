@@ -7,4 +7,5 @@ RUN go mod download
 COPY . .
 RUN go build -o /go-api
 EXPOSE 8080
+EXPOSE 8081
 CMD ["/go-api"]

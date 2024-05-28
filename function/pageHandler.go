@@ -62,3 +62,27 @@ func GetProfile(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, fmt.Sprintf(`{"error": "Failed to encode user data: %v"}`, err.Error()), http.StatusInternalServerError)
 	}
 }
+
+func Edit(w http.ResponseWriter, r *http.Request) error {
+	tmpl, err := template.ParseFiles("./pages/edit.html", "./templates/header.html", "./templates/menu.html", "./templates/login.html", "./templates/signup.html")
+	if err != nil {
+		log.Println("Error parsing template files:", err)
+		return err
+	}
+	var user User
+	user.Username = GetUserFromURL(w, r)
+	err = tmpl.Execute(w, user)
+	if err != nil {
+		log.Println("Error executing template:", err)
+		return err
+	}
+	return nil
+}
+
+func EditHandler(w http.ResponseWriter, r *http.Request) {
+	err := Edit(w, r)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}

@@ -25,7 +25,14 @@ func StartWebServer() {
 		}
 		Profile(w, r)
 	}).Methods("GET")
+	r.HandleFunc("/edit", func(w http.ResponseWriter, r *http.Request) {
+		EditHandler(w, r)
+	}).Methods("GET")
+	r.HandleFunc("/delete/{username}", func(w http.ResponseWriter, r *http.Request) {
+		DeleteProfile(w, r)
+	}).Methods("DELETE")
 	r.HandleFunc("/profile/{username}", ProfileHandler).Methods("GET")
+	r.HandleFunc("/editing/{username}", EditProfile).Methods("POST")
 	r.HandleFunc("/login", RenderLoginPage).Methods("GET")
 	r.HandleFunc("/signup", RenderSignupPage).Methods("GET")
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))

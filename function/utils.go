@@ -95,6 +95,16 @@ func DeleteCookies(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetUserFromURL(w http.ResponseWriter, r *http.Request) string {
-	username := strings.Split(r.URL.Path, "/")
-	return username[2]
+	// Sépare l'URL en segments
+	segments := strings.Split(r.URL.Path, "/")
+
+	// Vérifie s'il y a suffisamment de segments dans l'URL
+	if len(segments) < 2 {
+		return ""
+	}
+
+	// Récupère le dernier segment de l'URL (nom d'utilisateur)
+	username := segments[len(segments)-1]
+
+	return username
 }

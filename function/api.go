@@ -30,7 +30,10 @@ func StartAPIServer() {
 func RegisterRoutes(r *mux.Router) {
 	r.HandleFunc("/api/register", register).Methods("POST")
 	r.HandleFunc("/api/login", login).Methods("POST")
-	r.HandleFunc("/api/profile/{username}", GetProfile).Methods("GET")
+	r.HandleFunc("/api/profile/{username}", ProfileHandler).Methods("GET")
+	r.HandleFunc("/api/edit", EditHandler).Methods("GET")
+	r.HandleFunc("/api/editing/{username}", EditProfile).Methods("POST")
+	r.HandleFunc("/api/delete/{username}", DeleteProfile).Methods("DELETE")
 }
 
 func register(w http.ResponseWriter, r *http.Request) {
@@ -107,4 +110,76 @@ func login(w http.ResponseWriter, r *http.Request) {
 		User:    user,
 	}
 	json.NewEncoder(w).Encode(response)
+}
+
+func EditProfile(w http.ResponseWriter, r *http.Request) {
+	var editInfo struct {
+		Username string `json:"username"`
+		Email    string `json:"email"`
+		// Oldpassword string `json:"oldpassword"`
+		// Password    string `json:"password"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&editInfo); err != nil {
+		http.Error(w, fmt.Sprintf(`{"error newdecoder": "%v"}`, err.Error()), http.StatusBadRequest)
+		return
+	}
+
+	currentUsername := GetUserFromURL(w, r)
+
+	var user User
+	if err := DB.Where("username = ?", currentUsername).First(&user).Error; err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "User not found"}`), http.StatusNotFound)
+		return
+	}
+
+	if editInfo.Username != "" {
+		user.Username = editInfo.Username
+	}
+	if editInfo.Email != "" {
+		user.Email = editInfo.Email
+	}
+
+	// if editInfo.Oldpassword != "" {
+	// 	if editInfo.Oldpassword == user.Password {
+	// 		if editInfo.Password != "" {
+	// 			user.Password = editInfo.Password
+	// 		}
+	// 	}
+	// }
+
+	if err := DB.Save(&user).Error; err != nil {
+		log.Printf("Failed to update user: %v", err)
+		http.Error(w, fmt.Sprintf(`{"error in saving": "%v"}`, err.Error()), http.StatusInternalServerError)
+		return
+	}
+
+	DeleteCookies(w, r)
+	SetCookie(w, user)
+
+	fmt.Printf("User profile updated: %s\n", user.Username)
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write([]byte(`{"message": "Profile updated successfully"}`))
+}
+
+func DeleteProfile(w http.ResponseWriter, r *http.Request) {
+	currentUsername := GetUserFromURL(w, r)
+
+	var user User
+	if err := DB.Where("username = ?", currentUsername).First(&user).Error; err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "User not found"}`), http.StatusNotFound)
+		return
+	}
+
+	if err := DB.Delete(&user).Error; err != nil {
+		log.Printf("Failed to delete user: %v", err)
+		http.Error(w, fmt.Sprintf(`{"error in deletion": "%v"}`, err.Error()), http.StatusInternalServerError)
+		return
+	}
+
+	DeleteCookies(w, r)
+
+	fmt.Printf("User profile deleted: %s\n", user.Username)
+
+	w.Header().Set("Content-Type", "application/json")
 }
