@@ -49,3 +49,8 @@
     border-radius: 5px;
     z-index: 3;
 }
+
+.error{
+    z-index: 1002;
+    background-color: orange;
+}

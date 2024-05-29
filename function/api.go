@@ -49,16 +49,21 @@ func register(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("Registering user: %+v\n", user)
 	if !VerifyPassword(user.Password, M) {
 		http.Error(w, fmt.Sprintf(`{"error": "%v"}`, M.Messages), http.StatusBadRequest)
-
-		fmt.Println("test message", M.Messages)
 		return
 	}
 	if VerifyPassword(user.Password, M) && EmailValid(user.Email) {
 		user.Password = Encrypt(user.Password)
 		if err := DB.Create(&user).Error; err != nil {
-			fmt.Println("test 2")
+			M.Messages = ""
+			MessageError := err.Error()
+			if MessageError == "UNIQUE constraint failed: users.email" {
+				M.Messages = "Email deja utiliser"
+			}
+			if MessageError == "UNIQUE constraint failed: users.username" {
+				M.Messages = "Pseudo deja utiliser"
+			}
 			log.Printf("Failed to create user: %v", err)
-			http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusInternalServerError)
+			http.Error(w, fmt.Sprintf(`{"error": "%v"}`, M.Messages), http.StatusInternalServerError)
 			return
 		}
 	} else {
@@ -96,11 +101,25 @@ func login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var user User
-	loginInfo.Password = Encrypt(loginInfo.Password)
-	if err := DB.Where("email = ? AND password = ?", loginInfo.Email, loginInfo.Password).First(&user).Error; err != nil {
-		http.Error(w, `{"error": "Invalid email or password"}`, http.StatusUnauthorized)
+
+	// Vérifiez si l'email existe dans la base de données
+	if err := DB.Where("email = ?", loginInfo.Email).First(&user).Error; err != nil {
+		http.Error(w, `{"error": "Email not found"}`, http.StatusUnauthorized)
 		return
 	}
+
+	// Vérifiez si le mot de passe correspond
+	loginInfo.Password = Encrypt(loginInfo.Password)
+	if user.Password != loginInfo.Password {
+		http.Error(w, `{"error": "Invalid password"}`, http.StatusUnauthorized)
+		return
+	}
+	// loginInfo.Password = Encrypt(loginInfo.Password)
+	// if err := DB.Where("email = ? AND password = ?", loginInfo.Email, loginInfo.Password).First(&user).Error; err != nil {
+	// 	fmt.Println("test", err)
+	// 	http.Error(w, `{"error": "Invalid email or password"}`, http.StatusUnauthorized)
+	// 	return
+	// }
 
 	DeleteCookies(w, r)
 	fmt.Printf("User logged in: %s\n", user.Username)

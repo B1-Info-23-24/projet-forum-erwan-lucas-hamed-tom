@@ -34,7 +34,9 @@
                     </div>
                 </div>
             </div>
-            <div id="message"></div>
+            <div class="error" id="message"></div>
+            <div class="error" id="ErrorUser"></div>
+
 
             
             <script>
@@ -86,7 +88,7 @@
                     const email = document.getElementById('emailLogin').value;
                     const password = document.getElementById('passwordLogin').value;
                     const password2 = document.getElementById('password2Login').value;
-                    const messageDiv = document.getElementById('message');
+                    const errorUserDiv = document.getElementById('ErrorUser');
 
                     if (password !== password2) {
                         messageDiv.textContent = 'Passwords do not match';
@@ -103,9 +105,7 @@
 
                         const result = await response.json();
                         console.log(result.error)
-                        messageDiv.innerHTML = `Error: ${result.error}`;
-                        console.log('test2')
-
+                        errorUserDiv.innerHTML = `Error: ${result.error}`;
 
                         if (response.ok) {
                             messageDiv.textContent = 'User registered and logged in successfully!';

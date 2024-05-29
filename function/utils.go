@@ -67,8 +67,6 @@ func VerifyPassword(s string, M *Messages) bool {
 	} else {
 		M.Messages = ""
 	}
-	fmt.Println(M.Messages)
-
 	return hasNumber && hasUpperCase && hasLowercase && hasSpecial && hasLen
 }
 

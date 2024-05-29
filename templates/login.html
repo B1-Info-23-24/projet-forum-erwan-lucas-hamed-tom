@@ -28,7 +28,7 @@
                 </div>
             </div>
         </div>
-        <div id="message"></div>
+        <div class="error" id="message"></div>
         <script>
             function togglePopupLogin(){
                 let popup = document.querySelector("#popup-login")
@@ -67,7 +67,7 @@
                         credentials: 'include' // Assurer que les cookies sont envoyés et acceptés
                     });
                     const result = await response.json();
-                    // messageDiv.innerHTML = `Error: ${result.error}`;
+                    messageDiv.innerHTML = `Error: ${result.error}`;
 
                     if (response.ok) {
                         messageDiv.textContent = 'Login successful!';
