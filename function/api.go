@@ -193,3 +193,61 @@ func GetProfile(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, fmt.Sprintf(`{"error": "Failed to encode user data: %v"}`, err.Error()), http.StatusInternalServerError)
 	}
 }
+
+func CreatePost(w http.ResponseWriter, r *http.Request) {
+	var post struct {
+		UserID  uint   `json:"user_id"`
+		Theme   string `json:"theme"`
+		Content string `json:"content"`
+		Images  []struct {
+			ImageURL string `json:"image_url"`
+		} `json:"images"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&post); err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusBadRequest)
+		return
+	}
+
+	// Vérifier si l'utilisateur existe
+	var user User
+	if err := DB.Where("id = ?", post.UserID).First(&user).Error; err != nil {
+		http.Error(w, `{"error": "User not found"}`, http.StatusNotFound)
+		return
+	}
+
+	// Créer le post
+	newPost := Post{
+		UserID:    post.UserID,
+		Theme:     post.Theme,
+		Content:   post.Content,
+		CreatedAt: time.Now(),
+	}
+
+	if err := DB.Create(&newPost).Error; err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusInternalServerError)
+		return
+	}
+
+	// Créer les images associées au post
+	for _, image := range post.Images {
+		newImage := Image{
+			PostID: newPost.ID,
+			URL:    image.ImageURL,
+		}
+		if err := DB.Create(&newImage).Error; err != nil {
+			http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusInternalServerError)
+			return
+		}
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	response := struct {
+		Message string `json:"message"`
+		Post    Post   `json:"post"`
+	}{
+		Message: "Post created successfully",
+		Post:    newPost,
+	}
+	json.NewEncoder(w).Encode(response)
+}

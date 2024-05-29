@@ -1,0 +1,104 @@
+{{ define "post" }}
+<div id="post-overlay">
+    <div class="post-content">
+        <div id="theme-button">Bivouac</div>
+        <img src="../static/img/character.png" alt="" class="img--user">
+        <div class="post-input">
+            <form id="create-post-form" method="post" enctype="multipart/form-data">
+                <textarea id="content" name="content" maxlength="280" placeholder="Where did you travel?!"></textarea>
+                <input type="hidden" id="theme" name="theme" value="Bivouac">
+                <div id="image-preview" class="image-preview"></div>
+                <p id="nb-word" class="text"><span>0</span>/280</p>
+                <div class="horizontal-bar"></div>
+                <div class="left-icon">
+                    <label for="images" class="image-input-label">
+                        <img src="../static/img/icon/img.png" alt="Choose image" class="icon--img">
+                    </label>
+                    <input type="file" id="images" name="images" multiple style="display: none;">
+                    <img src="../static/img/icon/ping.png" alt="" class="icon--img">
+                </div>
+                <div class="right-icon">
+                    <button type="submit"><img src="../static/img/icon/send.png" alt="" class="icon--img"></button>
+                    <a href="javascript:void(0)" onclick="togglePopupPost()"><img src="../static/img/icon/delete.png" alt="" class="icon--img"></a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    const themeButton = document.getElementById('theme-button');
+    const themeInput = document.getElementById('theme');
+
+    themeButton.addEventListener('click', () => {
+        if (themeButton.classList.contains('Bivouac')) {
+            themeButton.classList.remove('Bivouac');
+            themeButton.classList.add('Alpinisme');
+            themeButton.textContent = 'Alpinisme';
+            themeInput.value = 'Alpinisme';
+        } else if (themeButton.classList.contains('Alpinisme')) {
+            themeButton.classList.remove('Alpinisme');
+            themeButton.classList.add('Treck');
+            themeButton.textContent = 'Treck';
+            themeInput.value = 'Treck';
+        } else if (themeButton.classList.contains('Treck')) {
+            themeButton.classList.remove('Treck');
+            themeButton.classList.add('Randonné');
+            themeButton.textContent = 'Randonné';
+            themeInput.value = 'Randonné';
+        } else {
+            themeButton.classList.remove('Randonné');
+            themeButton.classList.add('Bivouac');
+            themeButton.textContent = 'Bivouac';
+            themeInput.value = 'Bivouac';
+        }
+    });
+
+    let files = [];
+
+    function togglePopupPost() {
+        let popup = document.querySelector("#post-overlay")
+        popup.classList.toggle("open")
+        document.body.classList.toggle('no-scroll');
+    }
+
+    document.getElementById("content").addEventListener("input", function() {
+        var count = this.value.length;
+        document.getElementById("nb-word").innerHTML = `<span>${count}</span>/280`;
+    });
+
+    const imageInput = document.getElementById('images');
+    const imagePreview = document.getElementById('image-preview');
+    const imageInputLabel = document.querySelector('.image-input-label');
+
+    imageInput.addEventListener('change', function() {
+        const newFiles = Array.prototype.slice.call(imageInput.files);
+        files = files.concat(newFiles);
+        imageInput.value = ''; // reset input value to allow re-selecting same files
+        displayPreview();
+    });
+
+    imagePreview.addEventListener('click', function(event) {
+        if (event.target.classList.contains('image-preview-item')) {
+            event.target.remove();
+            const index = files.findIndex(file => file.name === event.target.alt);
+            if (index > -1) {
+                files.splice(index, 1);
+            }
+        }
+    });
+
+    function displayPreview() {
+        imagePreview.innerHTML = '';
+        files.forEach(file => {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const imageData = event.target.result;
+                const imageHTML = `<img src="${imageData}" alt="${file.name}" class="image-preview-item">`;
+                imagePreview.innerHTML += imageHTML;
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+</script>
+{{ end }}
