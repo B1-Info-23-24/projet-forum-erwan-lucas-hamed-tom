@@ -50,3 +50,6 @@
     z-index: 3;
 }
 
+.messageError{
+    color: red;
+}

@@ -22,13 +22,14 @@
                                 <img src="/static/img/icon/eye_open.png" class="login-img-eye" id="open-eye-login" onclick="showClosed()" style="display: none;">
                             </span>
                         </div>
+                        <div class="messageError" id="message"></div>
                         <button class="login-button-auth" type="submit">Login</button>
                     </form>
                     <p class="message" >Don't have an account? <a onclick="togglePopupSignup(),togglePopupLogin()">Sign Up</a></p>
                 </div>
             </div>
         </div>
-        <div id="message"></div>
+        
         <script>
             function togglePopupLogin(){
                 let popup = document.querySelector("#popup-login")
