@@ -34,8 +34,7 @@
                     </div>
                 </div>
             </div>
-            <div class="error" id="message"></div>
-            <div class="error" id="ErrorUser"></div>
+            <div id="ErrorUser"></div>
 
 
             
@@ -91,7 +90,7 @@
                     const errorUserDiv = document.getElementById('ErrorUser');
 
                     if (password !== password2) {
-                        messageDiv.textContent = 'Passwords do not match';
+                        errorUserDiv.textContent = 'Mot de passe différent';
                         return;
                     }
 
@@ -105,17 +104,15 @@
 
                         const result = await response.json();
                         console.log(result.error)
-                        errorUserDiv.innerHTML = `Error: ${result.error}`;
 
                         if (response.ok) {
-                            messageDiv.textContent = 'User registered and logged in successfully!';
-                            console.log(result.user);
+                            errorUserDiv.textContent = 'User registered and logged in successfully!';
                             window.location.href = `/profile/${result.user.Username}`;
                         } else {
-                            messageDiv.textContent = `Error: ${result.error}`;
+                            errorUserDiv.textContent = `${result.error}`;
                         }
                     } catch (error) {
-                        messageDiv.textContent = `Error: ${error.message}`;
+                        errorUserDiv.textContent = `${error.message}`;
                     }
                 });
             </script>

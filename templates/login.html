@@ -28,7 +28,7 @@
                 </div>
             </div>
         </div>
-        <div class="error" id="message"></div>
+        <div id="message"></div>
         <script>
             function togglePopupLogin(){
                 let popup = document.querySelector("#popup-login")
@@ -67,18 +67,18 @@
                         credentials: 'include' // Assurer que les cookies sont envoyés et acceptés
                     });
                     const result = await response.json();
-                    messageDiv.innerHTML = `Error: ${result.error}`;
+                    // messageDiv.innerHTML = `Error: ${result.error}`;
 
                     if (response.ok) {
-                        messageDiv.textContent = 'Login successful!';
-                        console.log(result.user); // Affiche les informations utilisateur
+                        messageDiv.textContent = 'connection réussi';
                         // Vous pouvez stocker les informations utilisateur dans le localStorage si nécessaire
                         localStorage.setItem('user', JSON.stringify(result.user));
+                        togglePopupLogin()
                     } else {
-                        messageDiv.textContent = `Error: ${result.error}`;
+                        messageDiv.textContent = `${result.error}`;
                     }
                 } catch (error) {
-                    messageDiv.textContent = `Error: ${error.message}`;
+                    messageDiv.textContent = `${error.message}`;
                 }
             });
                    
