@@ -37,6 +37,7 @@ func RegisterRoutes(r *mux.Router) {
 	r.HandleFunc("/api/edit", EditHandler).Methods("GET")
 	r.HandleFunc("/api/editing/{username}", EditProfile).Methods("POST")
 	r.HandleFunc("/api/delete/{username}", DeleteProfile).Methods("DELETE")
+	r.HandleFunc("/api/post/create", CreatePost).Methods("POST")
 }
 
 func register(w http.ResponseWriter, r *http.Request) {
