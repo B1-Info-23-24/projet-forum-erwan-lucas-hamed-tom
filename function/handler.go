@@ -1,4 +1,4 @@
-package forum
+package function
 
 import (
 	"net/http"
