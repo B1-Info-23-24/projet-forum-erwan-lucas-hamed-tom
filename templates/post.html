@@ -1,43 +1,41 @@
-{{ define "createpost" }}
-<div id="popup-createpost">
-    <div id="popup-overlay">
-        <div class="popup-content">
-            <a href="javascript:void(0)" onclick="togglePopupCreatePost()" class="popup-exit">
-                <img src="../static/img/icon/x.png" class="img--icon-x">
-            </a>
-            <div class="createpost-container">
-                <div class="createpost-form">
-                    <h2 class="createpost-title">Create a New Post</h2>
-                    <form id="createpost-form" enctype="multipart/form-data">
-                        <div class="createpost-input">
-                            <input type="hidden" id="user_id" name="user_id" value="1"> <!-- Assuming user_id is 1 for example -->
-                        </div>
-                        <div class="createpost-input">
-                            <input type="text" id="theme" name="theme" placeholder="Theme" required>
-                        </div>
-                        <div class="createpost-input">
-                            <textarea id="content" name="content" placeholder="Content" required></textarea>
-                        </div>
-                        <div class="createpost-input">
-                            <input type="file" id="images" name="images" multiple>
-                        </div>
-                        <button class="createpost-button" type="submit">Create Post</button>
-                    </form>
-                    <div id="message"></div>
+{{ define "post" }}
+<div id="post-overlay">
+    <div class="post-content">
+        <div id="theme-button" class="Bivouac">Bivouac</div>
+        <img src="../static/img/character.png" alt="" class="img--user">
+        <div class="post-input">
+            <form id="create-post-form" action="/create-post" method="post" enctype="multipart/form-data">
+                <textarea id="content" name="content" maxlength="280" placeholder="Where did you travel?!"></textarea>
+                <input type="hidden" id="theme" name="theme" value="Bivouac">
+                <div id="image-preview" class="image-preview"></div>
+                <p id="nb-word" class="text"><span>0</span>/280</p>
+                <div class="horizontal-bar"></div>
+                <div class="left-icon">
+                    <label for="images" class="image-input-label">
+                        <img src="../static/img/icon/img.png" alt="Choose image" class="icon--img">
+                    </label>
+                    <input type="file" id="images" name="images" multiple style="display: none;">
+                    <img src="../static/img/icon/ping.png" alt="" class="icon--img">
                 </div>
-            </div>
+                <div class="right-icon">
+                    <button type="submit"><img src="../static/img/icon/send.png" alt="" class="icon--img"></button>
+                    <a href="javascript:void(0)" onclick="togglePopupPost()"><img src="../static/img/icon/delete.png" alt="" class="icon--img"></a>
+                </div>
+            </form>
+            <div id="message"></div>
         </div>
     </div>
 </div>
+
 <script>
-    document.getElementById('createpost-form').addEventListener('submit', async function(event) {
+    document.getElementById('create-post-form').addEventListener('submit', async function(event) {
         event.preventDefault();
-        
+
         const formData = new FormData();
-        formData.append('user_id', document.getElementById('user_id').value);
+
         formData.append('theme', document.getElementById('theme').value);
         formData.append('content', document.getElementById('content').value);
-        
+
         const files = document.getElementById('images').files;
         for (let i = 0; i < files.length; i++) {
             formData.append('images', files[i]);
@@ -60,7 +58,6 @@
             messageDiv.textContent = `Error: ${error.message}`;
         }
     });
-       
 
     const themeButton = document.getElementById('theme-button');
     const themeInput = document.getElementById('theme');
@@ -92,8 +89,8 @@
     let files = [];
 
     function togglePopupPost() {
-        let popup = document.querySelector("#post-overlay")
-        popup.classList.toggle("open")
+        let popup = document.querySelector("#post-overlay");
+        popup.classList.toggle("open");
         document.body.classList.toggle('no-scroll');
     }
 

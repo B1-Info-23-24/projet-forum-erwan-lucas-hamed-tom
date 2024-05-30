@@ -204,7 +204,7 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userID := r.FormValue("user_id")
+	userID := GetCoockie(w, r, "userId")
 	theme := r.FormValue("theme")
 	content := r.FormValue("content")
 

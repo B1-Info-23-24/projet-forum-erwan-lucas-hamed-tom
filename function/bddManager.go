@@ -43,4 +43,6 @@ func InitDB() {
 
 func AutoMigrate(db *gorm.DB) {
 	db.AutoMigrate(&User{})
+	db.AutoMigrate(&Post{})
+	db.AutoMigrate(&Image{})
 }
