@@ -3,8 +3,11 @@ package forum
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
+	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/gorilla/handlers"
@@ -195,32 +198,25 @@ func GetProfile(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreatePost(w http.ResponseWriter, r *http.Request) {
-	var post struct {
-		UserID  uint   `json:"user_id"`
-		Theme   string `json:"theme"`
-		Content string `json:"content"`
-		Images  []struct {
-			ImageURL string `json:"image_url"`
-		} `json:"images"`
-	}
-
-	if err := json.NewDecoder(r.Body).Decode(&post); err != nil {
+	if err := r.ParseMultipartForm(10 << 20); err != nil {
 		http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusBadRequest)
 		return
 	}
 
-	// Vérifier si l'utilisateur existe
+	userID := r.FormValue("user_id")
+	theme := r.FormValue("theme")
+	content := r.FormValue("content")
+
 	var user User
-	if err := DB.Where("id = ?", post.UserID).First(&user).Error; err != nil {
+	if err := DB.Where("id = ?", userID).First(&user).Error; err != nil {
 		http.Error(w, `{"error": "User not found"}`, http.StatusNotFound)
 		return
 	}
 
-	// Créer le post
 	newPost := Post{
-		UserID:    post.UserID,
-		Theme:     post.Theme,
-		Content:   post.Content,
+		UserID:    user.ID,
+		Theme:     theme,
+		Content:   content,
 		CreatedAt: time.Now(),
 	}
 
@@ -229,11 +225,33 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Créer les images associées au post
-	for _, image := range post.Images {
+	files := r.MultipartForm.File["images"]
+	for _, fileHeader := range files {
+		file, err := fileHeader.Open()
+		if err != nil {
+			http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusInternalServerError)
+			return
+		}
+		defer file.Close()
+
+		filename := fmt.Sprintf("%d_%s", time.Now().UnixNano(), fileHeader.Filename)
+		filePath := filepath.Join("../static/img/post", filename)
+		out, err := os.Create(filePath)
+		if err != nil {
+			http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusInternalServerError)
+			return
+		}
+		defer out.Close()
+
+		if _, err = io.Copy(out, file); err != nil {
+			http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusInternalServerError)
+			return
+		}
+
+		imageURL := fmt.Sprintf("/static/img/post/%s", filename)
 		newImage := Image{
 			PostID: newPost.ID,
-			URL:    image.ImageURL,
+			URL:    imageURL,
 		}
 		if err := DB.Create(&newImage).Error; err != nil {
 			http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusInternalServerError)

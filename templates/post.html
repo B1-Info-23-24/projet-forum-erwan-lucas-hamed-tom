@@ -4,7 +4,7 @@
         <div id="theme-button">Bivouac</div>
         <img src="../static/img/character.png" alt="" class="img--user">
         <div class="post-input">
-            <form id="create-post-form" method="post" enctype="multipart/form-data">
+            <form id="create-post-form" action="/create-post" method="post" enctype="multipart/form-data">
                 <textarea id="content" name="content" maxlength="280" placeholder="Where did you travel?!"></textarea>
                 <input type="hidden" id="theme" name="theme" value="Bivouac">
                 <div id="image-preview" class="image-preview"></div>
@@ -22,6 +22,7 @@
                     <a href="javascript:void(0)" onclick="togglePopupPost()"><img src="../static/img/icon/delete.png" alt="" class="icon--img"></a>
                 </div>
             </form>
+            
         </div>
     </div>
 </div>
