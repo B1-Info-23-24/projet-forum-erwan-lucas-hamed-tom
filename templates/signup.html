@@ -28,13 +28,16 @@
                                     <img src="/static/img/icon/eye_open.png" class="img-eye2" id="open-eye2" onclick="showClosed2()" style="display: none;">
                                 </span>
                             </div>
+                            <div class="messageError" id="ErrorUser"></div>
                             <button class="button-auth" type="submit">Sign Up</button>
                         </form>
                         <p class="message">Already have an account?<a onclick="togglePopupLogin(), togglePopupSignup()"> Log In</a></p>
-                    <div id="message"></div>
-                </div>
+                    </div>
                 </div>
             </div>
+            
+
+
             
             <script>
                 function togglePopupSignup() {
@@ -85,15 +88,14 @@
                     const email = document.getElementById('emailLogin').value;
                     const password = document.getElementById('passwordLogin').value;
                     const password2 = document.getElementById('password2Login').value;
-                    const messageDiv = document.getElementById('message');
+                    const errorUserDiv = document.getElementById('ErrorUser');
 
                     if (password !== password2) {
-                        messageDiv.textContent = 'Passwords do not match';
+                        errorUserDiv.textContent = 'Mot de passe différent';
                         return;
                     }
 
                     try {
-                        console.log('test')
                         const response = await fetch('http://localhost:8081/api/register', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
@@ -102,19 +104,16 @@
                         });
 
                         const result = await response.json();
-                        console.log(result)
-                        console.log('test2')
-
+                        console.log(result.error)
 
                         if (response.ok) {
-                            messageDiv.textContent = 'User registered and logged in successfully!';
-                            console.log(result.user);
+                            errorUserDiv.textContent = 'User registered and logged in successfully!';
                             window.location.href = `/profile/${result.user.Username}`;
                         } else {
-                            messageDiv.textContent = `Error: ${result.error}`;
+                            errorUserDiv.textContent = `${result.error}`;
                         }
                     } catch (error) {
-                        messageDiv.textContent = `Error: ${error.message}`;
+                        errorUserDiv.textContent = `${error.message}`;
                     }
                 });
             </script>

@@ -47,36 +47,34 @@ func register(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fmt.Printf("Registering user: %+v\n", user)
-<<<<<<< HEAD
 	if !VerifyPassword(user.Password, M) {
-		http.Error(w, `{"error": "Invalid password"}`, http.StatusBadRequest)
+		http.Error(w, fmt.Sprintf(`{"error": "%v"}`, M.Messages), http.StatusBadRequest)
 		return
 	}
 	if VerifyPassword(user.Password, M) && EmailValid(user.Email) {
 		user.Password = Encrypt(user.Password)
 		if err := DB.Create(&user).Error; err != nil {
-			fmt.Println("test 2")
+			M.Messages = ""
+			MessageError := err.Error()
+			if MessageError == "UNIQUE constraint failed: users.email" {
+				M.Messages = "Email deja utiliser"
+			}
+			if MessageError == "UNIQUE constraint failed: users.username" {
+				M.Messages = "Pseudo deja utiliser"
+			}
 			log.Printf("Failed to create user: %v", err)
-			http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusInternalServerError)
+			http.Error(w, fmt.Sprintf(`{"error": "%v"}`, M.Messages), http.StatusInternalServerError)
 			return
 		}
 	} else {
 		log.Printf("Failed to create user")
-=======
-
-	if err := DB.Create(&user).Error; err != nil {
-		log.Printf("Failed to create user: %v", err)
-		http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusInternalServerError)
->>>>>>> feat/createPost
 		return
 	}
 
 	fmt.Printf("New user registered: %s\n", user.Username)
 
-	// Automatically log in the user after registration
 	SetCookie(w, user)
 
-	// Log the user details in the terminal
 	log.Printf("User details: %+v\n", user)
 
 	w.Header().Set("Content-Type", "application/json")
