@@ -3,11 +3,8 @@ package forum
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 	"log"
 	"net/http"
-	"os"
-	"path/filepath"
 	"time"
 
 	"github.com/gorilla/handlers"
@@ -48,17 +45,11 @@ func register(w http.ResponseWriter, r *http.Request) {
 	}
 	user.Password = Encrypt(user.Password)
 
-	// Log user details for debugging (Remove in production)
 	fmt.Printf("Registering user: %+v\n", user)
 
-	if VerifyPassword(user.Password) && EmailValid(user.Email) {
-		if err := DB.Create(&user).Error; err != nil {
-			log.Printf("Failed to create user: %v", err)
-			http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusInternalServerError)
-			return
-		}
-	} else {
-		log.Printf("Failed to create user")
+	if err := DB.Create(&user).Error; err != nil {
+		log.Printf("Failed to create user: %v", err)
+		http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusInternalServerError)
 		return
 	}
 
@@ -226,30 +217,14 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	files := r.MultipartForm.File["images"]
-	for _, fileHeader := range files {
-		file, err := fileHeader.Open()
-		if err != nil {
-			http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusInternalServerError)
-			return
-		}
-		defer file.Close()
+	var fileNames []string
+	if err := json.Unmarshal([]byte(r.FormValue("images")), &fileNames); err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "Failed to parse image file names: %v"}`, err), http.StatusBadRequest)
+		return
+	}
 
-		filename := fmt.Sprintf("%d_%s", time.Now().UnixNano(), fileHeader.Filename)
-		filePath := filepath.Join("../static/img/post", filename)
-		out, err := os.Create(filePath)
-		if err != nil {
-			http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusInternalServerError)
-			return
-		}
-		defer out.Close()
-
-		if _, err = io.Copy(out, file); err != nil {
-			http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusInternalServerError)
-			return
-		}
-
-		imageURL := fmt.Sprintf("/static/img/post/%s", filename)
+	for _, fileName := range fileNames {
+		imageURL := fmt.Sprintf("../static/img/post/%s", fileName)
 		newImage := Image{
 			PostID: newPost.ID,
 			URL:    imageURL,

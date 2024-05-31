@@ -36,10 +36,11 @@
         formData.append('theme', document.getElementById('theme').value);
         formData.append('content', document.getElementById('content').value);
 
-        const files = document.getElementById('images').files;
-        for (let i = 0; i < files.length; i++) {
-            formData.append('images', files[i]);
-        }
+        const fileNames = [];
+        files.forEach(file => {
+            fileNames.push(file.name);
+        });
+        formData.append('images', JSON.stringify(fileNames));
 
         const messageDiv = document.getElementById('message');
         try {
@@ -106,7 +107,7 @@
     imageInput.addEventListener('change', function() {
         const newFiles = Array.prototype.slice.call(imageInput.files);
         files = files.concat(newFiles);
-        imageInput.value = ''; // reset input value to allow re-selecting same files
+        imageInput.value = '';
         displayPreview();
     });
 
