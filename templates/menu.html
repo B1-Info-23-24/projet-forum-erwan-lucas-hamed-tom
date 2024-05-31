@@ -2,7 +2,7 @@
 <div class="left-container">
     <div class="redirection-button-container">
         <button onclick="checkAndExecute(togglePopupLogin)" class="button-redirection">home <img src="../static/img/icon/home.png" class="img--icon-redirection"></button>
-        <button onclick="checkAndExecute(togglePopupLogin)" class="button-redirection button-redirection--post">Post <img src="../static/img/icon/post.png" class="img--icon-redirection"></button>
+        <button onclick="togglePopupPost()" class="button-redirection button-redirection--post">Post <img src="../static/img/icon/post.png" class="img--icon-redirection"></button>
     </div>
     <div class="section">
         <p class="section-title">Section (4)</p>
@@ -31,9 +31,9 @@
         return document.cookie.split(';').some((cookie) => cookie.trim().startsWith('userId='));
     }
 </script>
+{{ template "post" . }}
 {{ template "login" . }}
 {{ template "signup" . }}
-
 
 {{ end }}
 

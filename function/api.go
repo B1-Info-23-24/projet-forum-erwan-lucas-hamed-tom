@@ -34,6 +34,7 @@ func RegisterRoutes(r *mux.Router) {
 	r.HandleFunc("/api/edit", EditHandler).Methods("GET")
 	r.HandleFunc("/api/editing/{username}", EditProfile).Methods("POST")
 	r.HandleFunc("/api/delete/{username}", DeleteProfile).Methods("DELETE")
+	r.HandleFunc("/api/post/create", CreatePost).Methods("POST")
 }
 
 func register(w http.ResponseWriter, r *http.Request) {
@@ -45,8 +46,8 @@ func register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Log user details for debugging (Remove in production)
 	fmt.Printf("Registering user: %+v\n", user)
+<<<<<<< HEAD
 	if !VerifyPassword(user.Password, M) {
 		http.Error(w, `{"error": "Invalid password"}`, http.StatusBadRequest)
 		return
@@ -61,6 +62,12 @@ func register(w http.ResponseWriter, r *http.Request) {
 		}
 	} else {
 		log.Printf("Failed to create user")
+=======
+
+	if err := DB.Create(&user).Error; err != nil {
+		log.Printf("Failed to create user: %v", err)
+		http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusInternalServerError)
+>>>>>>> feat/createPost
 		return
 	}
 
@@ -198,4 +205,61 @@ func GetProfile(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Error encoding user data: %v", err)
 		http.Error(w, fmt.Sprintf(`{"error": "Failed to encode user data: %v"}`, err.Error()), http.StatusInternalServerError)
 	}
+}
+
+func CreatePost(w http.ResponseWriter, r *http.Request) {
+	if err := r.ParseMultipartForm(10 << 20); err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusBadRequest)
+		return
+	}
+
+	userID := GetCoockie(w, r, "userId")
+	theme := r.FormValue("theme")
+	content := r.FormValue("content")
+
+	var user User
+	if err := DB.Where("id = ?", userID).First(&user).Error; err != nil {
+		http.Error(w, `{"error": "User not found"}`, http.StatusNotFound)
+		return
+	}
+
+	newPost := Post{
+		UserID:    user.ID,
+		Theme:     theme,
+		Content:   content,
+		CreatedAt: time.Now(),
+	}
+
+	if err := DB.Create(&newPost).Error; err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusInternalServerError)
+		return
+	}
+
+	var fileNames []string
+	if err := json.Unmarshal([]byte(r.FormValue("images")), &fileNames); err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "Failed to parse image file names: %v"}`, err), http.StatusBadRequest)
+		return
+	}
+
+	for _, fileName := range fileNames {
+		imageURL := fmt.Sprintf("../static/img/post/%s", fileName)
+		newImage := Image{
+			PostID: newPost.ID,
+			URL:    imageURL,
+		}
+		if err := DB.Create(&newImage).Error; err != nil {
+			http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusInternalServerError)
+			return
+		}
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	response := struct {
+		Message string `json:"message"`
+		Post    Post   `json:"post"`
+	}{
+		Message: "Post created successfully",
+		Post:    newPost,
+	}
+	json.NewEncoder(w).Encode(response)
 }

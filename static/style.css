@@ -83,7 +83,7 @@ button{
     padding: 10px 30px;
 
     background: #E7EAEC;
-    box-shadow: 8px 8px 16px #C9D9E8, -8px -8px 16px #FFFFFF;
+    box-shadow: 8px 8px 16px #C9D9E8;
     border-radius: 10px;
     margin-left: 60px;
 }
