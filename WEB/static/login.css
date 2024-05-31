@@ -1,0 +1,130 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&display=swap');
+
+body {
+    font-family: 'Outfit', sans-serif;
+}
+
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.login-left-section, .login-right-section {
+    position: relative;
+    border-radius: 15px;
+    height: 330px;
+    width: 330px;
+}
+
+.login-left-section {
+    background-color: #60A9C0;
+    z-index: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-img-welcome {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 270px;
+    height: 220px;
+}
+
+.login-title-welcome {
+    position: absolute;
+    top: 70px;
+    right: -25px;
+    transform: translate(-30%, -50%);
+    text-align: right;
+    color: white;
+    white-space: nowrap;
+    line-height: 40px;
+}
+
+.login-right-section {
+    background-color: #FFF;
+    margin-left: -25px;
+    z-index: 2;
+    padding: 0 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-form {
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+}
+
+.login-title-second {
+    margin: 10px 0;
+}
+
+.login-title-second span {
+    color: #80C2DA;
+}
+
+.login-input-auth {
+    margin-bottom: 15px;
+    position: relative;
+}
+
+.login-input-auth input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+.login-password-toggle {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.login-button-auth {
+    width: 100%;
+    padding: 10px;
+    background-color: #80C2DA;
+    border: none;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.login-button-auth:hover {
+    background-color: #6eaec0;
+    transform: scale(1.05);
+}
+
+.message {
+    margin-top: 15px;
+}
+
+.message a {
+    color: #80C2DA;
+    text-decoration: none;
+}
+
+.message a:hover {
+    text-decoration: underline;
+}
+
+.login-img-eye {
+    width: 13px;
+    height: 13px;
+}
