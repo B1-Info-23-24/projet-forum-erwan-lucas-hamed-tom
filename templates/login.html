@@ -22,7 +22,7 @@
                                 <img src="/static/img/icon/eye_open.png" class="login-img-eye" id="open-eye-login" onclick="showClosed()" style="display: none;">
                             </span>
                         </div>
-                        <div class="messageError" id="message"></div>
+                        <div class="messageError" id="ErrorLogin"></div>
                         <button class="login-button-auth" type="submit">Login</button>
                     </form>
                     <p class="message" >Don't have an account? <a onclick="togglePopupSignup(),togglePopupLogin()">Sign Up</a></p>
@@ -59,7 +59,7 @@
                 event.preventDefault();
                 const email = document.getElementById('email').value;
                 const password = document.getElementById('password-login').value;
-                const messageDiv = document.getElementById('message');
+                const messageDiv = document.getElementById('ErrorLogin');
                 try {
                     const response = await fetch('http://localhost:8081/api/login', {
                         method: 'POST',
