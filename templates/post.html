@@ -52,6 +52,7 @@
             const result = await response.json();
             if (response.ok) {
                 messageDiv.textContent = 'Post created successfully!';
+                togglePopupPost()
             } else {
                 messageDiv.textContent = `Error: ${result.error}`;
             }

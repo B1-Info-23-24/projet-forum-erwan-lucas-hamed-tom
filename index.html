@@ -24,5 +24,39 @@
             </div>
         </div>
     </div>
+    <script>
+        async function displayPosts() {
+            try {
+                const response = await fetch(`http://localhost:8081/api/post/display`, {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.statusText}`);
+                }
+                const posts = await response.json();
+                const postsContainer = document.getElementById('posts-container');
+                postsContainer.innerHTML = '';  // Clear existing content
+                
+                posts.forEach(post => {
+                    const postElement = document.createElement('div');
+                    postElement.className = 'post';
+                    postElement.innerHTML = `
+                        <div class="post-header">
+                            <h2>${post.theme}</h2>
+                            <p>${post.content}</p>
+                            <small>${new Date(post.created_at).toLocaleString()}</small>
+                        </div>
+                        <div class="post-images">
+                            ${post.images.map(image => `<img src="${image.url}" alt="Post Image">`).join('')}
+                        </div>
+                    `;
+                    postsContainer.appendChild(postElement);
+                });
+            } catch (error) {
+                console.error('Failed to fetch posts:', error);
+            }
+        }
+    </script>
 </body>
 </html>

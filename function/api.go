@@ -35,6 +35,8 @@ func RegisterRoutes(r *mux.Router) {
 	r.HandleFunc("/api/editing/{username}", EditProfile).Methods("POST")
 	r.HandleFunc("/api/delete/{username}", DeleteProfile).Methods("DELETE")
 	r.HandleFunc("/api/post/create", CreatePost).Methods("POST")
+	r.HandleFunc("/api/post/display", DisplayPost).Methods("POST")
+
 }
 
 func register(w http.ResponseWriter, r *http.Request) {
@@ -265,4 +267,26 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 		Post:    newPost,
 	}
 	json.NewEncoder(w).Encode(response)
+}
+func DisplayPost(w http.ResponseWriter, r *http.Request) {
+	var posts []Post
+	// Récupérer tous les posts de la base de données
+	if err := DB.Find(&posts).Error; err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusInternalServerError)
+		return
+	}
+	fmt.Println(posts)
+
+	// Pour chaque post, récupérer les images associées
+	for i := range posts {
+		var images []Image
+		if err := DB.Where("post_id = ?", posts[i].ID).Find(&images).Error; err != nil {
+			http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusInternalServerError)
+			return
+		}
+		posts[i].Images = images
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(posts)
 }
