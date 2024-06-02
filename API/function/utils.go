@@ -41,8 +41,7 @@ func EmailValid(e string) bool {
 	return emailRegex.MatchString(e)
 }
 
-// Get a coockie from a specifique coockie name
-func GetCoockie(w http.ResponseWriter, r *http.Request, name string) int {
+func GetCookie(w http.ResponseWriter, r *http.Request, name string) int {
 	cookie, err := r.Cookie(name)
 	if err != nil {
 		switch {
@@ -57,7 +56,6 @@ func GetCoockie(w http.ResponseWriter, r *http.Request, name string) int {
 	return userId
 }
 
-// Set user id inside a coockie
 func SetCookie(w http.ResponseWriter, user User) {
 	cookieId := http.Cookie{
 		Name:     "userId",
@@ -69,7 +67,7 @@ func SetCookie(w http.ResponseWriter, user User) {
 		SameSite: http.SameSiteLaxMode,
 	}
 	http.SetCookie(w, &cookieId)
-	log.Printf("Cookie set: %v", cookieId) // Log the cookie
+	log.Printf("Cookie set: %v", cookieId)
 
 	cookieUsername := http.Cookie{
 		Name:     "username",
@@ -81,10 +79,9 @@ func SetCookie(w http.ResponseWriter, user User) {
 		SameSite: http.SameSiteLaxMode,
 	}
 	http.SetCookie(w, &cookieUsername)
-	log.Printf("Cookie set: %v", cookieUsername) // Log the cookie
+	log.Printf("Cookie set: %v", cookieUsername)
 }
 
-// delete coockie
 func DeleteCookies(w http.ResponseWriter, r *http.Request) {
 	cookies := r.Cookies()
 	for _, cookie := range cookies {
@@ -95,16 +92,10 @@ func DeleteCookies(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetUserFromURL(w http.ResponseWriter, r *http.Request) string {
-	// Sépare l'URL en segments
 	segments := strings.Split(r.URL.Path, "/")
-
-	// Vérifie s'il y a suffisamment de segments dans l'URL
 	if len(segments) < 2 {
 		return ""
 	}
-
-	// Récupère le dernier segment de l'URL (nom d'utilisateur)
 	username := segments[len(segments)-1]
-
 	return username
 }

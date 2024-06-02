@@ -22,8 +22,15 @@ func InitDB() {
 	if err != nil {
 		log.Fatalf("failed to connect database: %v", err)
 	}
+
+	AutoMigrate(DB)
+	log.Println("Database connection and migration completed.")
 }
 
 func AutoMigrate(db *gorm.DB) {
-	db.AutoMigrate(&User{})
+	err := db.AutoMigrate(&User{})
+	if err != nil {
+		log.Fatalf("failed to migrate database: %v", err)
+	}
+	log.Println("Database migration completed.")
 }

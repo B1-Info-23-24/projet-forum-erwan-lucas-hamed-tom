@@ -16,7 +16,7 @@ func StartAPIServer() {
 	RegisterRoutes(r)
 
 	corsMiddleware := handlers.CORS(
-		handlers.AllowedOrigins([]string{"http://localhost:80"}),
+		handlers.AllowedOrigins([]string{"http://localhost:8080"}),
 		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"}),
 		handlers.AllowedHeaders([]string{"Origin", "Content-Type", "Accept"}),
 		handlers.AllowCredentials(),
@@ -38,32 +38,35 @@ func RegisterRoutes(r *mux.Router) {
 func register(w http.ResponseWriter, r *http.Request) {
 	var user User
 	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
+		log.Printf("Error decoding request body: %v", err)
 		http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusBadRequest)
 		return
 	}
+
+	// Log user details for debugging
+	log.Printf("Registering user: %+v\n", user)
+
+	if !VerifyPassword(user.Password) || !EmailValid(user.Email) {
+		log.Printf("Invalid password or email format")
+		http.Error(w, `{"error": "Invalid password or email format"}`, http.StatusBadRequest)
+		return
+	}
 	user.Password = Encrypt(user.Password)
-
-	// Log user details for debugging (Remove in production)
-	fmt.Printf("Registering user: %+v\n", user)
-
-	if VerifyPassword(user.Password) || EmailValid(user.Email) {
-		if err := DB.Create(&user).Error; err != nil {
-			log.Printf("Failed to create user: %v", err)
-			http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusInternalServerError)
-			return
-		}
-	} else {
-		log.Printf("Failed to create user")
+	if DB == nil {
+		log.Fatalf("Database not initialized")
+		http.Error(w, `{"error": "Database not initialized"}`, http.StatusInternalServerError)
 		return
 	}
 
-	fmt.Printf("New user registered: %s\n", user.Username)
+	if err := DB.Create(&user).Error; err != nil {
+		log.Printf("Failed to create user: %v", err)
+		http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusInternalServerError)
+		return
+	}
 
-	// Automatically log in the user after registration
+	log.Printf("New user registered: %s\n", user.Username)
+
 	SetCookie(w, user)
-
-	// Log the user details in the terminal
-	log.Printf("User details: %+v\n", user)
 
 	w.Header().Set("Content-Type", "application/json")
 	response := struct {
@@ -82,23 +85,28 @@ func login(w http.ResponseWriter, r *http.Request) {
 		Password string `json:"password"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&loginInfo); err != nil {
+		log.Printf("Error decoding request body: %v", err)
 		http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusBadRequest)
 		return
 	}
 
-	var user User
 	loginInfo.Password = Encrypt(loginInfo.Password)
+	var user User
+
+	if DB == nil {
+		log.Fatalf("Database not initialized")
+		http.Error(w, `{"error": "Database not initialized"}`, http.StatusInternalServerError)
+		return
+	}
+
 	if err := DB.Where("email = ? AND password = ?", loginInfo.Email, loginInfo.Password).First(&user).Error; err != nil {
+		log.Printf("Invalid email or password")
 		http.Error(w, `{"error": "Invalid email or password"}`, http.StatusUnauthorized)
 		return
 	}
 
 	DeleteCookies(w, r)
-	fmt.Printf("User logged in: %s\n", user.Username)
 	SetCookie(w, user)
-
-	// Log the user details in the terminal
-	log.Printf("User details: %+v\n", user)
 
 	w.Header().Set("Content-Type", "application/json")
 	response := struct {
@@ -117,14 +125,22 @@ func EditProfile(w http.ResponseWriter, r *http.Request) {
 		Email    string `json:"email"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&editInfo); err != nil {
-		http.Error(w, fmt.Sprintf(`{"error newdecoder": "%v"}`, err.Error()), http.StatusBadRequest)
+		log.Printf("Error decoding request body: %v", err)
+		http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusBadRequest)
 		return
 	}
 
-	currentUsername := GetUserFromURL(w, r)
-
+	currentUsername := mux.Vars(r)["username"]
 	var user User
+
+	if DB == nil {
+		log.Fatalf("Database not initialized")
+		http.Error(w, `{"error": "Database not initialized"}`, http.StatusInternalServerError)
+		return
+	}
+
 	if err := DB.Where("username = ?", currentUsername).First(&user).Error; err != nil {
+		log.Printf("User not found: %v", err)
 		http.Error(w, fmt.Sprintf(`{"error": "User not found"}`), http.StatusNotFound)
 		return
 	}
@@ -138,39 +154,43 @@ func EditProfile(w http.ResponseWriter, r *http.Request) {
 
 	if err := DB.Save(&user).Error; err != nil {
 		log.Printf("Failed to update user: %v", err)
-		http.Error(w, fmt.Sprintf(`{"error in saving": "%v"}`, err.Error()), http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusInternalServerError)
 		return
 	}
 
 	DeleteCookies(w, r)
 	SetCookie(w, user)
 
-	fmt.Printf("User profile updated: %s\n", user.Username)
-
 	w.Header().Set("Content-Type", "application/json")
 	w.Write([]byte(`{"message": "Profile updated successfully"}`))
 }
 
 func DeleteProfile(w http.ResponseWriter, r *http.Request) {
-	currentUsername := GetUserFromURL(w, r)
-
+	currentUsername := mux.Vars(r)["username"]
 	var user User
+
+	if DB == nil {
+		log.Fatalf("Database not initialized")
+		http.Error(w, `{"error": "Database not initialized"}`, http.StatusInternalServerError)
+		return
+	}
+
 	if err := DB.Where("username = ?", currentUsername).First(&user).Error; err != nil {
+		log.Printf("User not found: %v", err)
 		http.Error(w, fmt.Sprintf(`{"error": "User not found"}`), http.StatusNotFound)
 		return
 	}
 
 	if err := DB.Delete(&user).Error; err != nil {
 		log.Printf("Failed to delete user: %v", err)
-		http.Error(w, fmt.Sprintf(`{"error in deletion": "%v"}`, err.Error()), http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusInternalServerError)
 		return
 	}
 
 	DeleteCookies(w, r)
 
-	fmt.Printf("User profile deleted: %s\n", user.Username)
-
 	w.Header().Set("Content-Type", "application/json")
+	w.Write([]byte(`{"message": "Profile deleted successfully"}`))
 }
 
 func GetProfile(w http.ResponseWriter, r *http.Request) {
@@ -179,17 +199,22 @@ func GetProfile(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Fetching profile for username: %s", username)
 
 	var user User
-	if err := DB.Where("username = ?", username).First(&user).Error; err != nil {
-		log.Printf("Error retrieving user from database: %v", err)
-		http.Error(w, fmt.Sprintf(`{"error": "User not found: %v"}`, err.Error()), http.StatusNotFound)
+
+	if DB == nil {
+		log.Fatalf("Database not initialized")
+		http.Error(w, `{"error": "Database not initialized"}`, http.StatusInternalServerError)
 		return
 	}
 
-	log.Printf("User found: %+v", user)
+	if err := DB.Where("username = ?", username).First(&user).Error; err != nil {
+		log.Printf("Error retrieving user from database: %v", err)
+		http.Error(w, fmt.Sprintf(`{"error": "User not found"}`), http.StatusNotFound)
+		return
+	}
 
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(user); err != nil {
 		log.Printf("Error encoding user data: %v", err)
-		http.Error(w, fmt.Sprintf(`{"error": "Failed to encode user data: %v"}`, err.Error()), http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf(`{"error": "Failed to encode user data"}`), http.StatusInternalServerError)
 	}
 }
