@@ -27,10 +27,16 @@ type Post struct {
 }
 
 type Image struct {
-	ID        uint      `gorm:"primary_key"`
-	PostID    uint      `gorm:"index"`
-	URL       string    `gorm:"type:varchar(255)"`
-	CreatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP"`
+	ID     uint   `gorm:"primary_key"`
+	PostID uint   `gorm:"index"`
+	URL    string `gorm:"type:varchar(255)"`
+}
+
+type Ping struct {
+	ID     uint   `gorm:"primary_key" json:"id"`
+	PostID uint   `gorm:"index" json:"post_id"`
+	Lat    string `gorm:"type:varchar(255)" json:"lat"`
+	Lng    string `gorm:"type:varchar(255)" json:"lng"`
 }
 
 func InitDB() {
@@ -44,5 +50,6 @@ func InitDB() {
 func AutoMigrate(db *gorm.DB) {
 	db.AutoMigrate(&User{})
 	db.AutoMigrate(&Post{})
+	db.AutoMigrate(&Ping{})
 	db.AutoMigrate(&Image{})
 }
