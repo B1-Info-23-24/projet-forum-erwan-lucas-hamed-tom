@@ -99,9 +99,15 @@ func login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var user User
+
+	if err := DB.Where("email = ?", loginInfo.Email).First(&user).Error; err != nil {
+		http.Error(w, `{"error": "Email not found"}`, http.StatusUnauthorized)
+		return
+	}
+
 	loginInfo.Password = Encrypt(loginInfo.Password)
-	if err := DB.Where("email = ? AND password = ?", loginInfo.Email, loginInfo.Password).First(&user).Error; err != nil {
-		http.Error(w, `{"error": "Invalid email or password"}`, http.StatusUnauthorized)
+	if user.Password != loginInfo.Password {
+		http.Error(w, `{"error": "Invalid password"}`, http.StatusUnauthorized)
 		return
 	}
 
@@ -122,7 +128,6 @@ func login(w http.ResponseWriter, r *http.Request) {
 	}
 	json.NewEncoder(w).Encode(response)
 }
-
 func EditProfile(w http.ResponseWriter, r *http.Request) {
 	var editInfo struct {
 		Username string `json:"username"`
