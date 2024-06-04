@@ -21,15 +21,15 @@ func StartWebServer() {
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))
 
 	corsMiddleware := handlers.CORS(
-		handlers.AllowedOrigins([]string{"http://localhost:8081"}),
+		handlers.AllowedOrigins([]string{"*"}),
 		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"}),
 		handlers.AllowedHeaders([]string{"Origin", "Content-Type", "Accept"}),
 		handlers.AllowCredentials(),
 		handlers.MaxAge(int(12*time.Hour)),
 	)
 
-	log.Println("Web server running at http://localhost:80/")
-	log.Fatal(http.ListenAndServe(":80", corsMiddleware(r)))
+	log.Println("Web server running at http://localhost:8080/")
+	log.Fatal(http.ListenAndServe(":8080", corsMiddleware(r)))
 }
 
 func RenderSignupPage(w http.ResponseWriter, r *http.Request) {

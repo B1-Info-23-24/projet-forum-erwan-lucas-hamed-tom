@@ -42,7 +42,7 @@
         function redirectToDelete() {
         let username = getCookie("username");
         if (username) {
-            fetch(`http://localhost:8081/api/delete/${username}`, {
+            fetch(`http://51.138.196.86:8081/api/delete/${username}`, {
                 method: 'DELETE'
             })
             .then(response => {
@@ -67,7 +67,7 @@
             // const password = document.getElementById('passwordEditing').value;
             const currentUsername = getCookie("username")
             try {
-                const response = await fetch(`http://localhost:8081/api/editing/${currentUsername}`, {
+                const response = await fetch(`http://51.138.196.86:8081/api/editing/${currentUsername}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username, email })

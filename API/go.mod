@@ -1,6 +1,6 @@
 module forumApi
 
-go 1.21.0
+go 1.20
 
 require (
 	github.com/gorilla/handlers v1.5.2

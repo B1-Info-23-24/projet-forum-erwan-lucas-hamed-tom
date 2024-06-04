@@ -1,10 +1,27 @@
-FROM golang:1.22.3-alpine
-RUN apk update && apk add --no-cache gcc musl-dev
+FROM golang:1.20-buster
+
+# Mise à jour des référentiels et installation des dépendances nécessaires
+RUN apt-get update && \
+    apt-get install -y gcc libc6-dev
+
+# Définition du répertoire de travail
 WORKDIR /app
+
+# Copie des fichiers de configuration Go
 COPY go.mod ./
 COPY go.sum ./
+
+# Téléchargement des dépendances Go
 RUN go mod download
+
+# Copie du code source
 COPY . .
+
+# Construction de l'application Go
 RUN go build -o /go-api
+
+# Exposition du port 8081
 EXPOSE 8081
+
+# Commande par défaut pour exécuter l'application
 CMD ["/go-api"]
