@@ -25,7 +25,7 @@
         </div>
     </div>
     <script>
-        async function displayPosts() {
+    async function displayPosts() {
             console.log("test")
 
             try {
@@ -49,10 +49,12 @@
                     postElement.innerHTML = `
                     <div class="post-header">
                             <h2>${post.Theme}</h2>
+                            <h5>${post.Username}</h5>
                             <p>${post.Content}</p>
                             <small>${new Date(post.CreatedAt).toLocaleString()}</small>
                         </div>
                         <div class="post-images">
+
                         </div>
                     `;
                     //${(post.Images || []).map(image => `<img src="${image.url}" alt="Post Image">`).join('')}

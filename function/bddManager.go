@@ -24,6 +24,7 @@ type Post struct {
 	Content   string    `gorm:"type:text"`
 	CreatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP"`
 	Images    []Image   `gorm:"foreignkey:PostID"`
+	Username  string    `gorm:"type:text"`
 }
 
 type Image struct {

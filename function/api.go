@@ -233,6 +233,7 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 		Theme:     theme,
 		Content:   content,
 		CreatedAt: time.Now(),
+		Username:  user.Username,
 	}
 
 	if err := DB.Create(&newPost).Error; err != nil {
@@ -268,6 +269,7 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 	}
 	json.NewEncoder(w).Encode(response)
 }
+
 func DisplayPost(w http.ResponseWriter, r *http.Request) {
 	var posts []Post
 	// Récupérer tous les posts de la base de données
@@ -286,6 +288,7 @@ func DisplayPost(w http.ResponseWriter, r *http.Request) {
 		}
 		posts[i].Images = images
 	}
+	fmt.Println(posts)
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(posts)

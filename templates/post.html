@@ -18,7 +18,7 @@
                     <img src="../static/img/icon/ping.png" alt="" class="icon--img">
                 </div>
                 <div class="right-icon">
-                    <button type="submit"><img src="../static/img/icon/send.png" alt="" class="icon--img"></button>
+                    <button type="submit" onclick="displayPosts()" ><img src="../static/img/icon/send.png" alt="" class="icon--img"></button>
                     <a href="javascript:void(0)" onclick="togglePopupPost()"><img src="../static/img/icon/delete.png" alt="" class="icon--img"></a>
                 </div>
             </form>
@@ -134,5 +134,43 @@
             reader.readAsDataURL(file);
         });
     }
+    async function displayPosts() {
+            console.log("test")
+
+            try {
+                const response = await fetch(`http://localhost:8081/api/post/display`, {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                console.log("ca marche")
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.statusText}`);
+                }
+                const posts = await response.json();
+                console.log(posts)
+                const postsContainer = document.getElementById('posts-container');
+                postsContainer.innerHTML = '';  // Clear existing content
+                
+                posts.forEach(post => {
+                    console.log(post.theme)
+                    const postElement = document.createElement('div');
+                    postElement.className = 'post';
+                    postElement.innerHTML = `
+                    <div class="post-header">
+                            <h2>${post.Theme}</h2>
+                            <p>${post.Content}</p>
+                            <small>${new Date(post.CreatedAt).toLocaleString()}</small>
+                        </div>
+                        <div class="post-images">
+                            
+                        </div>
+                    `;
+                    //${(post.Images || []).map(image => `<img src="${image.url}" alt="Post Image">`).join('')}
+                    postsContainer.appendChild(postElement);
+                });
+            } catch (error) {
+                console.error('Failed to fetch posts:', error);
+            }
+        }
 </script>
 {{ end }}
