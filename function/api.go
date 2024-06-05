@@ -32,7 +32,7 @@ func RegisterRoutes(r *mux.Router) {
 	r.HandleFunc("/api/login", login).Methods("POST")
 	r.HandleFunc("/api/profile/{username}", ProfileHandler).Methods("GET")
 	r.HandleFunc("/api/edit", EditHandler).Methods("GET")
-	r.HandleFunc("/api/editing/password/{username}", EditPassword).Methods("GET")
+	r.HandleFunc("/api/editing/password/{username}", EditPassword).Methods("POST")
 	r.HandleFunc("/api/editing/{username}", EditProfile).Methods("POST")
 	r.HandleFunc("/api/delete/{username}", DeleteProfile).Methods("DELETE")
 }
@@ -184,7 +184,7 @@ func EditPassword(w http.ResponseWriter, r *http.Request) {
 
 	if editPW.Oldpassword == user.Password {
 		if VerifyPassword(editPW.Password) {
-			user.Password = editPW.Password
+			user.Password = Encrypt(editPW.Password)
 		}
 	}
 
