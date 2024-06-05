@@ -38,22 +38,24 @@
                     throw new Error(`Error: ${response.statusText}`);
                 }
                 const posts = await response.json();
+                console.log(posts)
                 const postsContainer = document.getElementById('posts-container');
                 postsContainer.innerHTML = '';  // Clear existing content
                 
                 posts.forEach(post => {
+                    console.log(post.theme)
                     const postElement = document.createElement('div');
                     postElement.className = 'post';
                     postElement.innerHTML = `
-                        <div class="post-header">
-                            <h2>${post.theme}</h2>
-                            <p>${post.content}</p>
-                            <small>${new Date(post.created_at).toLocaleString()}</small>
+                    <div class="post-header">
+                            <h2>${post.Theme}</h2>
+                            <p>${post.Content}</p>
+                            <small>${new Date(post.CreatedAt).toLocaleString()}</small>
                         </div>
                         <div class="post-images">
-                            ${post.images.map(image => `<img src="${image.url}" alt="Post Image">`).join('')}
                         </div>
                     `;
+                    //${(post.Images || []).map(image => `<img src="${image.url}" alt="Post Image">`).join('')}
                     postsContainer.appendChild(postElement);
                 });
             } catch (error) {
