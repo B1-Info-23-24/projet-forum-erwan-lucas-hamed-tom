@@ -48,14 +48,33 @@
                     postElement.className = 'post';
                     postElement.innerHTML = `
                     <div class="post-header">
-                            <h2>${post.Theme}</h2>
-                            <h5>${post.Username}</h5>
-                            <p>${post.Content}</p>
-                            <small>${new Date(post.CreatedAt).toLocaleString()}</small>
+                        <button class="post-modif"><img src="../static/img/icon/3points.png" class="icon-post-3points"></button> 
+                        <div class="post-pointMap-theme">
+                            <button class="post-theme" >${post.Theme}</button> 
+                            <button class="post-pointMap">View on map<img src="../static/img/icon/ping.png" class="icon-post-pointMap"></button>
+                        </div>   
+                        <div class="post-user-date-picture">
+                            <img src="../static/img/character.png" class="post-picture">
+                            <div classe="post-user-date">
+                                <p class="post-username">${post.Username}</p>
+                                <small class="post-date">${new Date(post.CreatedAt).toLocaleString()}</small>
+                            </div>
                         </div>
+                        
+
+                        <p class="post-print-content">${post.Content}</p>
+                    
                         <div class="post-images">
 
                         </div>
+
+                        <div class="post-interaction">
+                            <button class="post-button-like"><img src="../static/img/icon/like.png" class="icon-post-like"></button>
+                            <button class="post-button-dislike"><img src="../static/img/icon/dislike.png" class="icon-post-dislike"></button>
+                            <button class="post-button-comment"><img src="../static/img/icon/comment.png" class="icon-post-comment"></button>
+                            <button class="post-button-favorite"><img src="../static/img/icon/favorite.png" class="icon-post-favorite"></button>
+                        </div>
+                    </div>
                     `;
                     //${(post.Images || []).map(image => `<img src="${image.url}" alt="Post Image">`).join('')}
                     postsContainer.appendChild(postElement);

@@ -166,3 +166,58 @@ button {
     background-color: #57B846;
     color: #fff;
 }
+
+.post-header{
+    background-color: #fff;
+    margin: 25px;
+    padding: 15px;
+    box-shadow: -1px -1px 0px #FFFFFF, -2px -2px 2px #B8CCE0, inset -1px -1px 0px #FFFFFF, inset -2px -2px 2px #B8CCE0;
+    border-radius: 10px;
+    border: none;
+}
+.icon-post-pointMap{
+    height: 20px;
+    width: 20px;
+    margin-left: 10px;
+}
+
+.post-pointMap-theme{
+    float: right;
+}
+.post-modif{
+    float: right;
+    /* clear: both; */
+}
+
+.post-pointMap{
+    background-color: #F0A898;
+    border-radius: 30px;
+    /* padding: 8px 12px 8px 12px; */
+}
+.post-interaction{
+    margin: 10px;
+}
+
+.post-theme{
+    background-color: #98e3f0;
+    border-radius: 30px;
+    margin: 0px 10px 0px 0px;
+    padding: 8px 12px 8px 12px;
+    /* bottom: 50px; */
+}
+
+
+.post-print-content{
+    margin: 0px 0px 30px 20px;
+}
+
+.post-picture {
+    width: 80px;
+    height: 80px;
+    border: 2px solid black;
+    border-radius: 50%;
+}
+
+.post-user-date-picture{
+    margin: 20px 20px 30px 20px;
+}
