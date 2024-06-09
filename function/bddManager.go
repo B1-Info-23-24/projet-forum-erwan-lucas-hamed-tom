@@ -25,6 +25,8 @@ type Post struct {
 	CreatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP"`
 	Images    []Image   `gorm:"foreignkey:PostID"`
 	Username  string    `gorm:"type:text"`
+	Likes     int       `gorm:"default:0"`
+	Dislikes  int       `gorm:"default:0"`
 }
 
 type Image struct {
@@ -40,6 +42,13 @@ type Ping struct {
 	Lng    string `gorm:"type:varchar(255)" json:"lng"`
 }
 
+type LikeDislike struct {
+	ID     uint `gorm:"primary_key"`
+	PostID uint `gorm:"index"`
+	UserID uint `gorm:"index"`
+	IsLike bool
+}
+
 func InitDB() {
 	var err error
 	DB, err = gorm.Open(sqlite.Open("users.db"), &gorm.Config{})
@@ -53,4 +62,5 @@ func AutoMigrate(db *gorm.DB) {
 	db.AutoMigrate(&Post{})
 	db.AutoMigrate(&Ping{})
 	db.AutoMigrate(&Image{})
+	db.AutoMigrate(&LikeDislike{})
 }

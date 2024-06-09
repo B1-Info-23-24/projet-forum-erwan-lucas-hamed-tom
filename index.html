@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="../static/login.css">
     <link rel="stylesheet" href="../static/signup.css">
     <link rel="stylesheet" href="../static/post.css">
-
     <title>Forun</title>
 </head>
 <body>
@@ -26,64 +25,111 @@
     </div>
     <script>
     async function displayPosts() {
-            console.log("test")
-
-            try {
-                const response = await fetch(`http://localhost:8081/api/post/display`, {
-                    method: 'POST',
-                    credentials: 'include'
-                });
-                console.log("ca marche")
-                if (!response.ok) {
-                    throw new Error(`Error: ${response.statusText}`);
-                }
-                const posts = await response.json();
-                console.log(posts)
-                const postsContainer = document.getElementById('posts-container');
-                postsContainer.innerHTML = '';  // Clear existing content
-                
-                posts.forEach(post => {
-                    console.log(post.theme)
-                    const postElement = document.createElement('div');
-                    postElement.className = 'post';
-                    postElement.innerHTML = `
-                    <div class="post-header">
-                        <button class="post-modif"><img src="../static/img/icon/3points.png" class="icon-post-3points"></button> 
-                        <div class="post-pointMap-theme">
-                            <button class="post-theme" >${post.Theme}</button> 
-                            <button class="post-pointMap">View on map<img src="../static/img/icon/ping.png" class="icon-post-pointMap"></button>
-                        </div>   
-                        <div class="post-user-date-picture">
-                            <img src="../static/img/character.png" class="post-picture">
-                            <div classe="post-user-date">
-                                <p class="post-username">${post.Username}</p>
-                                <small class="post-date">${new Date(post.CreatedAt).toLocaleString()}</small>
-                            </div>
-                        </div>
-                        
-
-                        <p class="post-print-content">${post.Content}</p>
-                    
-                        <div class="post-images">
-
-                        </div>
-
-                        <div class="post-interaction">
-                            <button class="post-button-like"><img src="../static/img/icon/like.png" class="icon-post-like"></button>
-                            <button class="post-button-dislike"><img src="../static/img/icon/dislike.png" class="icon-post-dislike"></button>
-                            <button class="post-button-comment"><img src="../static/img/icon/comment.png" class="icon-post-comment"></button>
-                            <button class="post-button-favorite"><img src="../static/img/icon/favorite.png" class="icon-post-favorite"></button>
+        try {
+            const response = await fetch(`http://localhost:8081/api/post/display`, {
+                method: 'POST',
+                credentials: 'include'
+            });
+            if (!response.ok) {
+                throw new Error(`Error: ${response.statusText}`);
+            }
+            const posts = await response.json();
+            const postsContainer = document.getElementById('posts-container');
+            postsContainer.innerHTML = '';  // Clear existing content
+            
+            posts.forEach(post => {
+                const postElement = document.createElement('div');
+                postElement.className = 'post';
+                postElement.innerHTML = `
+                <div class="post-header">
+                    <button class="post-modif"><img src="../static/img/icon/3points.png" class="icon-post-3points"></button> 
+                    <div class="post-pointMap-theme">
+                        <button class="post-theme" >${post.Theme}</button> 
+                        <button class="post-pointMap">View on map<img src="../static/img/icon/ping.png" class="icon-post-pointMap"></button>
+                    </div>   
+                    <div class="post-user-date-picture">
+                        <img src="../static/img/character.png" class="post-picture">
+                        <div class="post-user-date">
+                            <p class="post-username">${post.Username}</p>
+                            <small class="post-date">${new Date(post.CreatedAt).toLocaleString()}</small>
                         </div>
                     </div>
-                    `;
-                    //${(post.Images || []).map(image => `<img src="${image.url}" alt="Post Image">`).join('')}
-                    postsContainer.appendChild(postElement);
-                });
-            } catch (error) {
-                console.error('Failed to fetch posts:', error);
-            }
+                    <p class="post-print-content">${post.Content}</p>
+                    <div class="post-images">
+                        ${(post.Images || []).map(image => `<img src="${image.url}" alt="Post Image">`).join('')}
+                    </div>
+                    <div class="post-interaction">
+                        <button class="post-button-like" onclick="likePost(${post.ID}, this)"><img src="../static/img/icon/like.png" class="icon-post-like"></button>
+                        <button class="post-button-dislike" onclick="dislikePost(${post.ID}, this)"><img src="../static/img/icon/dislike.png" class="icon-post-dislike"></button>
+                        <span id="likes-${post.ID}">${post.Likes || 0} Likes</span>
+                        <span id="dislikes-${post.ID}">${post.Dislikes || 0} Dislikes</span>
+                    </div>
+                </div>
+                `;
+                postsContainer.appendChild(postElement);
+            });
+        } catch (error) {
+            console.error('Failed to fetch posts:', error);
         }
-        displayPosts()
+    }
+
+    async function likePost(postID, button) {
+        try {
+            const response = await fetch(`http://localhost:8081/api/post/like`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ postID, isLike: true })
+            });
+            if (response.ok) {
+                updateLikeDislikeCount(postID);
+                button.disabled = true;
+                button.nextElementSibling.disabled = true;  // Disable dislike button
+            } else {
+                const error = await response.json();
+                console.error('Error liking post:', error);
+            }
+        } catch (error) {
+            console.error('Error liking post:', error);
+        }
+    }
+
+    async function dislikePost(postID, button) {
+        try {
+            const response = await fetch(`http://localhost:8081/api/post/like`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ postID, isLike: false })
+            });
+            if (response.ok) {
+                updateLikeDislikeCount(postID);
+                button.disabled = true;
+                button.previousElementSibling.disabled = true;  // Disable like button
+            } else {
+                const error = await response.json();
+                console.error('Error disliking post:', error);
+            }
+        } catch (error) {
+            console.error('Error disliking post:', error);
+        }
+    }
+
+    async function updateLikeDislikeCount(postID) {
+        try {
+            const response = await fetch(`http://localhost:8081/api/post/${postID}/likes-dislikes`);
+            if (response.ok) {
+                const counts = await response.json();
+                document.getElementById(`likes-${postID}`).textContent = `${counts.likes} Likes`;
+                document.getElementById(`dislikes-${postID}`).textContent = `${counts.dislikes} Dislikes`;
+            } else {
+                const error = await response.json();
+                console.error('Error fetching like/dislike counts:', error);
+            }
+        } catch (error) {
+            console.error('Error fetching like/dislike counts:', error);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', displayPosts);
     </script>
 </body>
 </html>

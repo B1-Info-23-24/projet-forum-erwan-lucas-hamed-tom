@@ -37,6 +37,96 @@ func RegisterRoutes(r *mux.Router) {
 	r.HandleFunc("/api/post/create", CreatePost).Methods("POST")
 	r.HandleFunc("/api/pings", GetPings).Methods("GET")
 	r.HandleFunc("/api/post/display", DisplayPost).Methods("POST")
+	r.HandleFunc("/api/post/like", LikePost).Methods("POST")                          // Nouvelle route
+	r.HandleFunc("/api/post/{id}/likes-dislikes", GetLikeDislikeCount).Methods("GET") // Nouvelle route
+}
+func LikePost(w http.ResponseWriter, r *http.Request) {
+	var input struct {
+		PostID uint `json:"postID"`
+		IsLike bool `json:"isLike"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusBadRequest)
+		return
+	}
+
+	userID := getUserIDFromSession(r) // Obtenez l'ID utilisateur depuis la session
+
+	var likeDislike LikeDislike
+	var post Post
+
+	if err := DB.Where("id = ?", input.PostID).First(&post).Error; err != nil {
+		http.Error(w, `{"error": "Post not found"}`, http.StatusNotFound)
+		return
+	}
+
+	if err := DB.Where("post_id = ? AND user_id = ?", input.PostID, userID).First(&likeDislike).Error; err != nil {
+		// Si pas trouvé, créer un nouveau
+		likeDislike = LikeDislike{
+			PostID: input.PostID,
+			UserID: userID,
+			IsLike: input.IsLike,
+		}
+		if input.IsLike {
+			post.Likes++
+		} else {
+			post.Dislikes++
+		}
+		if err := DB.Create(&likeDislike).Error; err != nil {
+			http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusInternalServerError)
+			return
+		}
+	} else {
+		// Si trouvé, mettre à jour le like/dislike et ajuster les compteurs en conséquence
+		if likeDislike.IsLike != input.IsLike {
+			if input.IsLike {
+				post.Likes++
+				post.Dislikes--
+			} else {
+				post.Likes--
+				post.Dislikes++
+			}
+			likeDislike.IsLike = input.IsLike
+			if err := DB.Save(&likeDislike).Error; err != nil {
+				http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusInternalServerError)
+				return
+			}
+		}
+	}
+
+	if err := DB.Save(&post).Error; err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(`{"message": "Success"}`))
+}
+
+// Fonction utilitaire pour obtenir l'ID utilisateur depuis la session
+func getUserIDFromSession(r *http.Request) uint {
+	// Simulation de l'obtention de l'ID utilisateur
+	// À remplacer par une vraie gestion de session ou d'authentification
+	return 1 // Exemple d'ID utilisateur
+}
+
+func GetLikeDislikeCount(w http.ResponseWriter, r *http.Request) {
+	postID := mux.Vars(r)["id"]
+
+	var likeCount, dislikeCount int64
+	DB.Model(&LikeDislike{}).Where("post_id = ? AND is_like = ?", postID, true).Count(&likeCount)
+	DB.Model(&LikeDislike{}).Where("post_id = ? AND is_like = ?", postID, false).Count(&dislikeCount)
+
+	response := struct {
+		Likes    int64 `json:"likes"`
+		Dislikes int64 `json:"dislikes"`
+	}{
+		Likes:    likeCount,
+		Dislikes: dislikeCount,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
 }
 
 func register(w http.ResponseWriter, r *http.Request) {
