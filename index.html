@@ -26,31 +26,26 @@
     </div>
     <script>
         async function displayPosts() {
-            console.log("test")
-
             try {
                 const response = await fetch(`http://localhost:8081/api/post/display`, {
                     method: 'POST',
                     credentials: 'include'
                 });
-                console.log("ca marche")
                 if (!response.ok) {
                     throw new Error(`Error: ${response.statusText}`);
                 }
                 const posts = await response.json();
-                console.log(posts)
                 const postsContainer = document.getElementById('posts-container');
                 postsContainer.innerHTML = '';
                 
                 posts.forEach(post => {
-                    console.log(post.theme)
                     const postElement = document.createElement('div');
                     postElement.className = 'post';
                     postElement.innerHTML = `
                     <div class="post-header">
                         <button class="post-modif"><img src="../static/img/icon/3points.png" class="icon-post-3points"></button> 
                         <div class="post-pointMap-theme">
-                            <button class="post-theme" >${post.Theme}</button> 
+                            <button class="post-theme">${post.Theme}</button> 
                             <button class="post-pointMap">View on map<img src="../static/img/icon/ping.png" class="icon-post-pointMap"></button>
                         </div>   
                         <div class="post-user-date-picture">
@@ -66,7 +61,7 @@
                         <div class="post-interaction">
                             <button class="post-button-like"><img src="../static/img/icon/like.png" class="icon-post-like"></button>
                             <button class="post-button-dislike"><img src="../static/img/icon/dislike.png" class="icon-post-dislike"></button>
-                            <button class="post-button-comment" onclick="displayComments(${post.ID})" id="${post.ID}"><img src="../static/img/icon/comment.png" class="icon-post-comment"></button>
+                            <button class="post-button-comment" onclick="toggleComments(${post.ID})"><img src="../static/img/icon/comment.png" class="icon-post-comment"></button>
                             <button class="post-button-favorite"><img src="../static/img/icon/favorite.png" class="icon-post-favorite"></button>
                         </div>
                         <div class="comments-container" id="comments-${post.ID}">
@@ -80,13 +75,7 @@
             }
         }
 
-        async function displayComments(postId) {
-            const commentsContainer = document.getElementById(`comments-${postId}`);
-            if (commentsContainer.innerHTML !== '') {
-                commentsContainer.innerHTML = '';
-                return;
-            }
-
+        async function displayComments(postId, commentsContainer) {
             try {
                 const response = await fetch(`http://localhost:8081/api/comment/${postId}`, {
                     method: 'GET',
@@ -97,6 +86,8 @@
                 }
                 const comments = await response.json();
 
+                commentsContainer.innerHTML = ''; // Clear existing comments
+
                 const commentForm = document.createElement('div');
                 commentForm.className = 'comment-form';
                 commentForm.innerHTML = `
@@ -104,7 +95,6 @@
                     <button type="submit" onclick="submitComment(${postId})" ><img src="../static/img/icon/send.png" class="icon--img"></button>
                 `;
                 commentsContainer.appendChild(commentForm);
-
 
                 comments.forEach(comment => {
                     const commentElement = document.createElement('div');
@@ -130,6 +120,20 @@
             }
         }
 
+        async function toggleComments(postId) {
+            const commentsContainer = document.getElementById(`comments-${postId}`);
+            if (commentsContainer.innerHTML === '') {
+                // Close other comment sections
+                document.querySelectorAll('.comments-container').forEach(container => {
+                    if (container.id !== `comments-${postId}`) {
+                        container.innerHTML = '';
+                    }
+                });
+                await displayComments(postId, commentsContainer);
+            } else {
+                commentsContainer.innerHTML = ''; // Close comment section
+            }
+        }
 
         async function submitComment(postId) {
             const commentInput = document.getElementById(`comment-input-${postId}`);
@@ -158,14 +162,11 @@
 
                 commentInput.value = '';
                 const commentsContainer = document.getElementById(`comments-${postId}`);
-                commentsContainer.innerHTML = '';
-                await displayComments(postId)
+                await displayComments(postId, commentsContainer);
             } catch (error) {
                 console.error('Failed to submit comment:', error);
             }
         }
-
-
 
         displayPosts();
     </script>
