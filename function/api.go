@@ -37,7 +37,6 @@ func RegisterRoutes(r *mux.Router) {
 	r.HandleFunc("/api/post/create", CreatePost).Methods("POST")
 	r.HandleFunc("/api/pings", GetPings).Methods("GET")
 	r.HandleFunc("/api/post/display", DisplayPost).Methods("POST")
-
 }
 
 func register(w http.ResponseWriter, r *http.Request) {
@@ -76,7 +75,7 @@ func register(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Printf("New user registered: %s\n", user.Username)
 
-	SetCookie(w, user)
+	// SetCookie(w, user) // Pas nécessaire, gérer via localStorage
 
 	log.Printf("User details: %+v\n", user)
 
@@ -114,9 +113,9 @@ func login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	DeleteCookies(w, r)
+	// DeleteCookies(w, r) // Pas nécessaire, gérer via localStorage
 	fmt.Printf("User logged in: %s\n", user.Username)
-	SetCookie(w, user)
+	// SetCookie(w, user) // Pas nécessaire, gérer via localStorage
 
 	// Log the user details in the terminal
 	log.Printf("User details: %+v\n", user)
@@ -131,12 +130,11 @@ func login(w http.ResponseWriter, r *http.Request) {
 	}
 	json.NewEncoder(w).Encode(response)
 }
+
 func EditProfile(w http.ResponseWriter, r *http.Request) {
 	var editInfo struct {
 		Username string `json:"username"`
 		Email    string `json:"email"`
-		// Oldpassword string `json:"oldpassword"`
-		// Password    string `json:"password"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&editInfo); err != nil {
 		http.Error(w, fmt.Sprintf(`{"error newdecoder": "%v"}`, err.Error()), http.StatusBadRequest)
@@ -163,8 +161,8 @@ func EditProfile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	DeleteCookies(w, r)
-	SetCookie(w, user)
+	// DeleteCookies(w, r) // Pas nécessaire, gérer via localStorage
+	// SetCookie(w, user) // Pas nécessaire, gérer via localStorage
 
 	fmt.Printf("User profile updated: %s\n", user.Username)
 
@@ -219,7 +217,7 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userID := GetCoockie(w, r, "userId")
+	userID := r.FormValue("userId") // Obtenu depuis localStorage côté client
 	theme := r.FormValue("theme")
 	content := r.FormValue("content")
 	lat := r.FormValue("lat")
@@ -297,14 +295,11 @@ func GetPings(w http.ResponseWriter, r *http.Request) {
 
 func DisplayPost(w http.ResponseWriter, r *http.Request) {
 	var posts []Post
-	// Récupérer tous les posts de la base de données
 	if err := DB.Find(&posts).Error; err != nil {
 		http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusInternalServerError)
 		return
 	}
-	fmt.Println(posts)
 
-	// Pour chaque post, récupérer les images associées
 	for i := range posts {
 		var images []Image
 		if err := DB.Where("post_id = ?", posts[i].ID).Find(&images).Error; err != nil {
@@ -313,7 +308,6 @@ func DisplayPost(w http.ResponseWriter, r *http.Request) {
 		}
 		posts[i].Images = images
 	}
-	fmt.Println(posts)
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(posts)

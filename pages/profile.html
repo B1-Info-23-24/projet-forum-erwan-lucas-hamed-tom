@@ -38,33 +38,23 @@
                     method: 'GET',
                     credentials: 'include'
                 });
-                console.log('Response status:', response.status);
-                console.log('Response headers:', response.headers);
                 if (!response.ok) {
                     throw new Error(`Error: ${response.statusText}`);
                 }
                 const user = await response.json();
-                console.log('User data:', user);
                 document.getElementById('username').textContent = user.username;
                 document.getElementById('email').textContent = user.email;
             } catch (error) {
                 console.error('Failed to fetch user profile:', error);
             }
         }
-
-
+    
         document.addEventListener('DOMContentLoaded', function() {
-            const username = getCookie('username');
+            const username = localStorage.getItem('username');
             if (username) {
                 fetchUserProfile(username);
             }
         });
-
-        function getCookie(name) {
-            const value = `; ${document.cookie}`;
-            const parts = value.split(`; ${name}=`);
-            if (parts.length === 2) return parts.pop().split(';').shift();
-        }
     </script>
 </body>
 </html>

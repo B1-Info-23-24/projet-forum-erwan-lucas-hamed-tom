@@ -28,7 +28,7 @@
     }
 
     function checkUserLoggedIn() {
-        return document.cookie.split(';').some((cookie) => cookie.trim().startsWith('userId='));
+        return localStorage.getItem('userId') !== null;
     }
 </script>
 {{ template "post" . }}
