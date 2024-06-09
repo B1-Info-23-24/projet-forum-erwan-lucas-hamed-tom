@@ -32,6 +32,9 @@ func StartWebServer() {
 	r.HandleFunc("/edit", func(w http.ResponseWriter, r *http.Request) {
 		EditHandler(w, r)
 	}).Methods("GET")
+	r.HandleFunc("/maps", func(w http.ResponseWriter, r *http.Request) {
+		Maps(w, r)
+	}).Methods("GET")
 	r.HandleFunc("/delete/{username}", func(w http.ResponseWriter, r *http.Request) {
 		DeleteProfile(w, r)
 	}).Methods("DELETE")
@@ -40,6 +43,7 @@ func StartWebServer() {
 	r.HandleFunc("/post/create", CreatePost).Methods("POST")
 	r.HandleFunc("/login", RenderLoginPage).Methods("GET")
 	r.HandleFunc("/signup", RenderSignupPage).Methods("GET")
+	r.HandleFunc("/api/pings", GetPings).Methods("GET")
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))
 
 	corsMiddleware := handlers.CORS(

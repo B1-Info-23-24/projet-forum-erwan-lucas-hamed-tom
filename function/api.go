@@ -35,6 +35,7 @@ func RegisterRoutes(r *mux.Router) {
 	r.HandleFunc("/api/editing/{username}", EditProfile).Methods("POST")
 	r.HandleFunc("/api/delete/{username}", DeleteProfile).Methods("DELETE")
 	r.HandleFunc("/api/post/create", CreatePost).Methods("POST")
+	r.HandleFunc("/api/pings", GetPings).Methods("GET")
 	r.HandleFunc("/api/post/display", DisplayPost).Methods("POST")
 
 }
@@ -221,6 +222,8 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 	userID := GetCoockie(w, r, "userId")
 	theme := r.FormValue("theme")
 	content := r.FormValue("content")
+	lat := r.FormValue("lat")
+	lng := r.FormValue("lng")
 
 	var user User
 	if err := DB.Where("id = ?", userID).First(&user).Error; err != nil {
@@ -237,6 +240,17 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := DB.Create(&newPost).Error; err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusInternalServerError)
+		return
+	}
+
+	newPing := Ping{
+		PostID: newPost.ID,
+		Lat:    lat,
+		Lng:    lng,
+	}
+
+	if err := DB.Create(&newPing).Error; err != nil {
 		http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusInternalServerError)
 		return
 	}
@@ -268,6 +282,17 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 		Post:    newPost,
 	}
 	json.NewEncoder(w).Encode(response)
+}
+
+func GetPings(w http.ResponseWriter, r *http.Request) {
+	var pings []Ping
+	if err := DB.Find(&pings).Error; err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(pings)
 }
 
 func DisplayPost(w http.ResponseWriter, r *http.Request) {
