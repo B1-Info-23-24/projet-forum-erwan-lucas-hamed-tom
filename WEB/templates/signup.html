@@ -92,24 +92,33 @@
                     }
 
                     try {
+                        const userData = { username, password, email };
+                        console.log('Sending user data:', userData); // Debug: Afficher les données envoyées
                         const response = await fetch('http://51.138.196.86:8081/api/register', {
                             method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ username, password, email }),
-                            credentials: 'include' // Include credentials to handle cookies
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json'
+                            },
+                            body: JSON.stringify(userData)
                         });
 
                         const result = await response.json();
 
+                        console.log('Server response:', result); // Debug: Afficher la réponse du serveur
+
                         if (response.ok) {
                             messageDiv.textContent = 'User registered and logged in successfully!';
                             console.log(result.user);
-                            // Redirection to profile page or any other page
+                            // Stocker le nom d'utilisateur dans le Local Storage
+                            localStorage.setItem('username', result.user.Username);
+                            // Redirection vers la page de profil ou une autre page
                             window.location.href = `/profile/${result.user.Username}`;
                         } else {
                             messageDiv.textContent = `Error: ${result.error}`;
                         }
                     } catch (error) {
+                        console.error('Error during registration:', error); // Debug: Afficher les erreurs
                         messageDiv.textContent = `Error: ${error.message}`;
                     }
                 });

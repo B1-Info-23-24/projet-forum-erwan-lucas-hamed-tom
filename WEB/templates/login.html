@@ -1,88 +1,98 @@
-{{ define "login"}}
-<div id="popup-login" >
-<div id="popup-overlay">
-    <div class="popup-content">
-        <a href="javascipt:void(0)" onclick="togglePopupLogin()" class="popup-exit"><img src="../static/img/icon/x.png" class="img--icon-x"></a>
-        <div class="login-container">
-            <div class="login-left-section">
-                <h1 class="login-title-welcome">DECOUVREZ<br/>DE NOUVEAU<br/>HORIZONS</h1>
-                <img class="login-img-welcome" src="../static/img/welcome.png">
-            </div>
-            <div class="login-right-section">
-                <div class="login-form">
-                    <h2 class="login-title-second">Welcome Back<br/>To <span>Forun</span></h2>
-                    <form id="login-form">
-                        <div class="login-input-auth">
-                            <input type="email" id="email" name="email" placeholder="Email" required>
-                        </div>
-                        <div class="login-input-auth">
-                            <input type="password" id="password-login" name="password" placeholder="Password" required>
-                            <span class="login-password-toggle">
-                                <img src="/static/img/icon/eye_lock.png" class="login-img-eye" id="closed-eye-login" onclick="showOpen()">
-                                <img src="/static/img/icon/eye_open.png" class="login-img-eye" id="open-eye-login" onclick="showClosed()" style="display: none;">
-                            </span>
-                        </div>
-                        <button class="login-button-auth" type="submit">Login</button>
-                    </form>
-                    <p class="message" >Don't have an account? <a onclick="togglePopupSignup(),togglePopupLogin()">Sign Up</a></p>
+{{ define "login" }}
+<div id="popup-login">
+    <div id="popup-overlay">
+        <div class="popup-content">
+            <a href="javascript:void(0)" onclick="togglePopupLogin()" class="popup-exit"><img src="../static/img/icon/x.png" class="img--icon-x"></a>
+            <div class="login-container">
+                <div class="login-left-section">
+                    <h1 class="login-title-welcome">DECOUVREZ<br/>DE NOUVEAU<br/>HORIZONS</h1>
+                    <img class="login-img-welcome" src="../static/img/welcome.png">
+                </div>
+                <div class="login-right-section">
+                    <div class="login-form">
+                        <h2 class="login-title-second">Welcome Back<br/>To <span>Forum</span></h2>
+                        <form id="login-form">
+                            <div class="login-input-auth">
+                                <input type="email" id="email" name="email" placeholder="Email" required>
+                            </div>
+                            <div class="login-input-auth">
+                                <input type="password" id="password-login" name="password" placeholder="Password" required>
+                                <span class="login-password-toggle">
+                                    <img src="/static/img/icon/eye_lock.png" class="login-img-eye" id="closed-eye-login" onclick="showOpen()">
+                                    <img src="/static/img/icon/eye_open.png" class="login-img-eye" id="open-eye-login" onclick="showClosed()" style="display: none;">
+                                </span>
+                            </div>
+                            <button class="login-button-auth" type="submit">Login</button>
+                        </form>
+                        <p class="message">Don't have an account? <a onclick="togglePopupSignup(),togglePopupLogin()">Sign Up</a></p>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div id="message"></div>
-        <script>
-            function togglePopupLogin(){
-                let popup = document.querySelector("#popup-login")
-                popup.classList.toggle("open")
-                document.body.classList.toggle('no-scroll');
-
-            }
-            function showOpen() {
-                const closedEye = document.getElementById('closed-eye-login');
-                const openEye = document.getElementById('open-eye-login');
-                const password = document.getElementById('password-login');
-                openEye.style.display = "block";
-                closedEye.style.display = "none";
-                password.type = "text";
-            }
-    
-            function showClosed() {
-                const closedEye = document.getElementById('closed-eye-login');
-                const openEye = document.getElementById('open-eye-login');
-                const password = document.getElementById('password-login');
-                openEye.style.display = "none";
-                closedEye.style.display = "block";
-                password.type = "password";
-            }
-    
-            document.getElementById('login-form').addEventListener('submit', async function(event) {
-                event.preventDefault();
-                const email = document.getElementById('email').value;
-                const password = document.getElementById('password-login').value;
-                const messageDiv = document.getElementById('message');
-                try {
-                    const response = await fetch('http://51.138.196.86:8081/api/login', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ email, password }),
-                        credentials: 'include' // Assurer que les cookies sont envoyés et acceptés
-                    });
-                    const result = await response.json();
-                    if (response.ok) {
-                        messageDiv.textContent = 'Login successful!';
-                        console.log(result.user); // Affiche les informations utilisateur
-                        // Vous pouvez stocker les informations utilisateur dans le localStorage si nécessaire
-                        localStorage.setItem('user', JSON.stringify(result.user));
-                    } else {
-                        messageDiv.textContent = `Error: ${result.error}`;
-                    }
-                } catch (error) {
-                    messageDiv.textContent = `Error: ${error.message}`;
+            <div id="message"></div>
+            <script>
+                function togglePopupLogin(){
+                    let popup = document.querySelector("#popup-login")
+                    popup.classList.toggle("open")
+                    document.body.classList.toggle('no-scroll');
                 }
-            });
-                   
-        </script>
+
+                function showOpen() {
+                    const closedEye = document.getElementById('closed-eye-login');
+                    const openEye = document.getElementById('open-eye-login');
+                    const password = document.getElementById('password-login');
+                    openEye.style.display = "block";
+                    closedEye.style.display = "none";
+                    password.type = "text";
+                }
+
+                function showClosed() {
+                    const closedEye = document.getElementById('closed-eye-login');
+                    const openEye = document.getElementById('open-eye-login');
+                    const password = document.getElementById('password-login');
+                    openEye.style.display = "none";
+                    closedEye.style.display = "block";
+                    password.type = "password";
+                }
+
+                document.getElementById('login-form').addEventListener('submit', async function(event) {
+                    event.preventDefault();
+                    const email = document.getElementById('email').value;
+                    const password = document.getElementById('password-login').value;
+                    const messageDiv = document.getElementById('message');
+                    
+                    try {
+                        const userData = { email, password };
+                        console.log('Sending user data:', userData); // Debug: Afficher les données envoyées
+                        const response = await fetch('http://localhost:8081/api/login', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json'
+                            },
+                            body: JSON.stringify(userData)
+                        });
+
+                        const result = await response.json();
+
+                        console.log('Server response:', result); // Debug: Afficher la réponse du serveur
+
+                        if (response.ok) {
+                            messageDiv.textContent = 'Login successful!';
+                            console.log(result.user); // Affiche les informations utilisateur
+                            // Vous pouvez stocker les informations utilisateur dans le localStorage si nécessaire
+                            localStorage.setItem('user', JSON.stringify(result.user));
+                            // Redirection vers la page de profil ou une autre page
+                            window.location.href = `/profile/${result.user.Username}`;
+                        } else {
+                            messageDiv.textContent = `Error: ${result.error}`;
+                        }
+                    } catch (error) {
+                        console.error('Error during login:', error); // Debug: Afficher les erreurs
+                        messageDiv.textContent = `Error: ${error.message}`;
+                    }
+                });
+            </script>
+        </div>
     </div>
 </div>
-</div>
-
 {{ end }}

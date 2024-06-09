@@ -27,11 +27,6 @@
                 <h3>Sécurité</h3>
                 <hr>
                 <p>Mot de passe :</p>
-                <!-- <form id="edit-profile-form" method="post">
-                    <input type="text" id="oldpasswordEditing" name="oldpassword" placeholder="Old Password">
-                    <input type="text" id="passwordEditing" name="password" placeholder="Password">
-                    <button name="edit" type="submit" >Edit</button>
-                </form> -->
                 <hr>
                 <button href="/#" onclick="redirectToDelete()">DELETE</button>
             </div>
@@ -63,8 +58,6 @@
             event.preventDefault();
             const username = document.getElementById('usernameEditing').value;
             const email = document.getElementById('emailEditing').value;
-            // const oldpassword = document.getElementById('oldpasswordEditing').value;
-            // const password = document.getElementById('passwordEditing').value;
             const currentUsername = getCookie("username")
             try {
                 const response = await fetch(`http://51.138.196.86:8081/api/editing/${currentUsername}`, {

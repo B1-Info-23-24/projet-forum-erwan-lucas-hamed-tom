@@ -34,8 +34,7 @@
         async function fetchUserProfile(username) {
             try {
                 const response = await fetch(`http://51.138.196.86:8081/api/profile/${username}`, {
-                    method: 'GET',
-                    credentials: 'include'
+                    method: 'GET'
                 });
                 if (!response.ok) {
                     throw new Error(`Error: ${response.statusText}`);
@@ -50,17 +49,11 @@
         }
 
         document.addEventListener('DOMContentLoaded', function() {
-            const username = getCookie('username');
+            const username = localStorage.getItem('username');
             if (username) {
                 fetchUserProfile(username);
             }
         });
-
-        function getCookie(name) {
-            const value = `; ${document.cookie}`;
-            const parts = value.split(`; ${name}=`);
-            if (parts.length === 2) return parts.pop().split(';').shift();
-        }
     </script>
 </body>
 </html>
