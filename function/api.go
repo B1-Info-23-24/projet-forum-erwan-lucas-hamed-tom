@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gorilla/handlers"
@@ -37,6 +38,8 @@ func RegisterRoutes(r *mux.Router) {
 	r.HandleFunc("/api/post/create", CreatePost).Methods("POST")
 	r.HandleFunc("/api/pings", GetPings).Methods("GET")
 	r.HandleFunc("/api/post/display", DisplayPost).Methods("POST")
+	r.HandleFunc("/api/comment/create/{postId}", CreateComment).Methods("POST")
+	r.HandleFunc("/api/comment/{postId}", GetComments).Methods("GET")
 
 }
 
@@ -317,4 +320,49 @@ func DisplayPost(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(posts)
+}
+
+func CreateComment(w http.ResponseWriter, r *http.Request) {
+	postId, err := strconv.ParseUint(mux.Vars(r)["postId"], 10, 64)
+	if err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusBadRequest)
+		return
+	}
+
+	var comment Comment
+	if err := json.NewDecoder(r.Body).Decode(&comment); err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusBadRequest)
+		return
+	}
+
+	comment.CreatedAt = time.Now()
+	comment.PostID = uint(postId)
+
+	if err := DB.Create(&comment).Error; err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	response := struct {
+		Message string  `json:"message"`
+		Comment Comment `json:"comment"`
+	}{
+		Message: "Comment created successfully",
+		Comment: comment,
+	}
+	json.NewEncoder(w).Encode(response)
+}
+
+func GetComments(w http.ResponseWriter, r *http.Request) {
+	postID := mux.Vars(r)["postId"]
+
+	var comments []Comment
+	if err := DB.Where("post_id = ?", postID).Find(&comments).Error; err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(comments)
 }

@@ -40,12 +40,23 @@ type Ping struct {
 	Lng    string `gorm:"type:varchar(255)" json:"lng"`
 }
 
+type Comment struct {
+	ID        uint      `gorm:"primary_key"`
+	PostID    uint      `gorm:"index"`
+	UserID    uint      `gorm:"index"`
+	Username  string    `gorm:"type:text"`
+	Content   string    `gorm:"type:text"`
+	CreatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP"`
+}
+
 func InitDB() {
 	var err error
 	DB, err = gorm.Open(sqlite.Open("users.db"), &gorm.Config{})
 	if err != nil {
 		log.Fatalf("failed to connect database: %v", err)
 	}
+
+	AutoMigrate(DB)
 }
 
 func AutoMigrate(db *gorm.DB) {
@@ -53,4 +64,5 @@ func AutoMigrate(db *gorm.DB) {
 	db.AutoMigrate(&Post{})
 	db.AutoMigrate(&Ping{})
 	db.AutoMigrate(&Image{})
+	db.AutoMigrate(&Comment{})
 }
