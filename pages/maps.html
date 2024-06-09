@@ -24,19 +24,6 @@
                 mapTypeControl: false, // Désactive le contrôle de type de carte
                 disableDefaultUI: true // Désactive les éléments de l'interface utilisateur par défaut
             });
-
-            // Ajout d'un événement de clic à la carte
-            google.maps.event.addListener(map, 'click', function(event) {
-                // Récupération des coordonnées du clic
-                let lat = event.latLng.lat();
-                let lng = event.latLng.lng();
-
-                // Affichage d'un marqueur à l'emplacement du clic
-                let marker = new google.maps.Marker({
-                position: { lat: lat, lng: lng },
-                map: map,
-                });
-            });
         }
 
         fetch('/api/pings')
