@@ -8,6 +8,7 @@ body {
     flex-direction: column; 
     margin: 0;
 }
+
 button{
     cursor: pointer;
 }
@@ -161,8 +162,7 @@ button{
     background: #E9EAF0;
     box-shadow: inset -10px -10px 20px rgba(255, 255, 255, 0.7), inset 10px 10px 10px rgba(189, 200, 223, 0.7);
     border-radius: 15px;
-
-
+    overflow: scroll;
 }
 
 .posts{
