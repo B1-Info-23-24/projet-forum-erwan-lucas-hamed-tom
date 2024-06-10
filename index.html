@@ -40,7 +40,9 @@
                 const postsContainer = document.getElementById('posts-container');
                 postsContainer.innerHTML = '';
                 
-                posts.forEach(post => {
+                for (const post of posts) {
+                    const status = await IsLiked(post.ID)
+                    console.log(status)
                     const postElement = document.createElement('div');
                     postElement.className = 'post';
                     postElement.innerHTML = `
@@ -61,8 +63,8 @@
                         <div class="post-images">
                         </div>
                         <div class="post-interaction">
-                            <button class="icon--left"><img src="../static/img/icon/like.png"  class="icon--img"></button>
-                            <button class="icon--left"><img src="../static/img/icon/dislike.png"  class="icon--img"></button>
+                            <button class="icon--left" onclick="likePost(${post.ID})"><img src="../static/img/icon/like_${status}.png" class="icon--img"></button>
+                            <button class="icon--left" onclick="dislikePost(${post.ID})"><img src="../static/img/icon/dislike_${status}.png" class="icon--img"></button>                            
                             <button class="icon--right" onclick="toggleComments(${post.ID})"><img src="../static/img/icon/comment.png"  class="icon--img"></button>
                             <button class="icon--right"><img src="../static/img/icon/favorite.png"  class="icon--img"></button>
                         </div>
@@ -71,7 +73,7 @@
                     </div>
                     `;
                     postsContainer.appendChild(postElement);
-                });
+                }
             } catch (error) {
                 console.error('Failed to fetch posts:', error);
             }
@@ -81,6 +83,58 @@
             window.location.href = `http://localhost:8080/maps/${postId}`;
         }
 
+        async function likePost(postId) {
+            try {
+                const response = await fetch(`http://localhost:8081/api/post/like/${postId}`, {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    alert(errorData.error);
+                    throw new Error(`Error: ${response.statusText}`);
+                }
+                const result = await response.json();
+                console.log(result.message);
+                displayPosts();
+            } catch (error) {
+                console.error('Failed to like post:', error);
+            }
+        }
+        
+        async function dislikePost(postId) {
+            try {
+                const response = await fetch(`http://localhost:8081/api/post/dislike/${postId}`, {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    alert(errorData.error); // Show the error message to the user
+                    throw new Error(`Error: ${response.statusText}`);
+                }
+                const result = await response.json();
+                console.log(result.message);
+                displayPosts(); // Refresh posts to reflect the new dislike count
+            } catch (error) {
+                console.error('Failed to dislike post:', error);
+            }
+        }
+
+        async function IsLiked(postId){
+            try{
+                const response = await fetch(`http://localhost:8081/api/post/isLiked/${postId}`, {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                const userInteraction = await response.json();
+                return userInteraction
+            } catch (error) {
+                console.error('Failed check interaction:', error);
+            }
+        }
+        
+        
         async function displayComments(postId, commentsContainer) {
             try {
                 const response = await fetch(`http://localhost:8081/api/comment/${postId}`, {

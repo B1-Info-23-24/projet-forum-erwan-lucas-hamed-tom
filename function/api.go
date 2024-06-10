@@ -47,7 +47,146 @@ func RegisterRoutes(r *mux.Router) {
 	r.HandleFunc("/api/post/display/{postId}", GetCurrentPostFromId).Methods("POST")
 	r.HandleFunc("/api/comment/create/{postId}", CreateComment).Methods("POST")
 	r.HandleFunc("/api/comment/{postId}", GetComments).Methods("GET")
+	r.HandleFunc("/api/post/like/{postId}", LikePost).Methods("POST")
+	r.HandleFunc("/api/post/dislike/{postId}", DislikePost).Methods("POST")
+	r.HandleFunc("/api/post/isLiked/{postId}", IsLiked).Methods("POST")
+}
+func LikePost(w http.ResponseWriter, r *http.Request) {
+	postId, err := strconv.ParseUint(mux.Vars(r)["postId"], 10, 64)
+	if err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusBadRequest)
+		return
+	}
 
+	userID := GetCoockie(w, r, "userId")
+
+	var interaction UserPostInteraction
+	if err := DB.Where("user_id = ? AND post_id = ?", userID, postId).First(&interaction).Error; err == nil {
+		if interaction.Liked {
+			http.Error(w, `{"error": "Post already liked"}`, http.StatusBadRequest)
+			return
+		}
+		interaction.Liked = true
+		interaction.Disliked = false
+		if err := DB.Save(&interaction).Error; err != nil {
+			http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusInternalServerError)
+			return
+		}
+	} else {
+		interaction = UserPostInteraction{
+			UserID:   uint(userID),
+			PostID:   uint(postId),
+			Liked:    true,
+			Disliked: false,
+		}
+		if err := DB.Create(&interaction).Error; err != nil {
+			http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusInternalServerError)
+			return
+		}
+	}
+
+	var post Post
+	if err := DB.First(&post, postId).Error; err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "Post not found: %v"}`, err.Error()), http.StatusNotFound)
+		return
+	}
+
+	post.Likes++
+	if err := DB.Save(&post).Error; err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	response := struct {
+		Message string `json:"message"`
+		Post    Post   `json:"post"`
+	}{
+		Message: "Post liked successfully",
+		Post:    post,
+	}
+	json.NewEncoder(w).Encode(response)
+}
+
+func DislikePost(w http.ResponseWriter, r *http.Request) {
+	postId, err := strconv.ParseUint(mux.Vars(r)["postId"], 10, 64)
+	if err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusBadRequest)
+		return
+	}
+
+	userID := GetCoockie(w, r, "userId")
+
+	var interaction UserPostInteraction
+	if err := DB.Where("user_id = ? AND post_id = ?", userID, postId).First(&interaction).Error; err == nil {
+		if interaction.Disliked {
+			http.Error(w, `{"error": "Post already disliked"}`, http.StatusBadRequest)
+			return
+		}
+		interaction.Liked = false
+		interaction.Disliked = true
+		if err := DB.Save(&interaction).Error; err != nil {
+			http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusInternalServerError)
+			return
+		}
+	} else {
+		interaction = UserPostInteraction{
+			UserID:   uint(userID),
+			PostID:   uint(postId),
+			Liked:    false,
+			Disliked: true,
+		}
+		if err := DB.Create(&interaction).Error; err != nil {
+			http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusInternalServerError)
+			return
+		}
+	}
+
+	var post Post
+	if err := DB.First(&post, postId).Error; err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "Post not found: %v"}`, err.Error()), http.StatusNotFound)
+		return
+	}
+
+	post.Dislikes++
+	if err := DB.Save(&post).Error; err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	response := struct {
+		Message string `json:"message"`
+		Post    Post   `json:"post"`
+	}{
+		Message: "Post disliked successfully",
+		Post:    post,
+	}
+	json.NewEncoder(w).Encode(response)
+}
+
+func IsLiked(w http.ResponseWriter, r *http.Request) {
+	postId, err := strconv.ParseUint(mux.Vars(r)["postId"], 10, 64)
+	if err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusBadRequest)
+		return
+	}
+
+	userID := GetCoockie(w, r, "userId")
+	var userInteraction string
+
+	var interaction UserPostInteraction
+	if err := DB.Where("user_id = ? AND post_id = ?", userID, postId).First(&interaction).Error; err == nil {
+		if interaction.Disliked {
+			userInteraction = "disliked"
+		} else {
+			userInteraction = "liked"
+		}
+	} else {
+		userInteraction = "none"
+	}
+
+	json.NewEncoder(w).Encode(userInteraction)
 }
 
 func register(w http.ResponseWriter, r *http.Request) {
