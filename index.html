@@ -43,11 +43,11 @@
                     postElement.className = 'post';
                     postElement.innerHTML = `
                     <div class="post-header">
-                        <button class="post-modif"><img src="../static/img/icon/3points.png" class="icon-post-3points"></button> 
-                        <div class="post-pointMap-theme">
-                            <button class="post-theme">${post.Theme}</button> 
-                            <button class="post-pointMap">View on map<img src="../static/img/icon/ping.png" class="icon-post-pointMap"></button>
-                        </div>   
+                        <button class="post-modif"><img src="../static/img/icon/3points.png" class="icon--3points"></button> 
+                        <div class="container--button-post">
+                            <button class="${post.Theme}">${post.Theme}<img src="../static/img/icon/${post.Theme}.png" class="icon--theme"></button> 
+                            <button class="button--map"><img src="../static/img/icon/ping.png" id="icon-ping" class="icon--img"></button>
+                        </div> 
                         <div class="post-user-date-picture">
                             <img src="../static/img/character.png" class="post-picture">
                             <div class="post-user-date">
@@ -59,10 +59,10 @@
                         <div class="post-images">
                         </div>
                         <div class="post-interaction">
-                            <button class="post-button-like"><img src="../static/img/icon/like.png" class="icon-post-like"></button>
-                            <button class="post-button-dislike"><img src="../static/img/icon/dislike.png" class="icon-post-dislike"></button>
-                            <button class="post-button-comment" onclick="toggleComments(${post.ID})"><img src="../static/img/icon/comment.png" class="icon-post-comment"></button>
-                            <button class="post-button-favorite"><img src="../static/img/icon/favorite.png" class="icon-post-favorite"></button>
+                            <button class="icon--left"><img src="../static/img/icon/like.png"  class="icon--img"></button>
+                            <button class="icon--left"><img src="../static/img/icon/dislike.png"  class="icon--img"></button>
+                            <button class="icon--right" onclick="toggleComments(${post.ID})"><img src="../static/img/icon/comment.png"  class="icon--img"></button>
+                            <button class="icon--right"><img src="../static/img/icon/favorite.png"  class="icon--img"></button>
                         </div>
                         <div class="comments-container" id="comments-${post.ID}">
                         </div>

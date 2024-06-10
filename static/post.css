@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap');
 
 #post-overlay {
     display: none;
@@ -206,6 +207,7 @@ button {
     border-radius: 50%;
 }
 .post-header{
+    position: relative;
     background-color: #fff;
     margin: 25px;
     padding: 15px;
@@ -224,14 +226,8 @@ button {
 }
 .post-modif{
     float: right;
-    /* clear: both; */
 }
 
-.post-pointMap{
-    background-color: #F0A898;
-    border-radius: 30px;
-    /* padding: 8px 12px 8px 12px; */
-}
 .post-interaction{
     margin: 10px;
 }
@@ -241,9 +237,7 @@ button {
     border-radius: 30px;
     margin: 0px 10px 0px 0px;
     padding: 8px 12px 8px 12px;
-    /* bottom: 50px; */
 }
-
 
 .post-print-content{
     margin: 0px 0px 30px 20px;
@@ -254,8 +248,110 @@ button {
     height: 80px;
     border: 2px solid black;
     border-radius: 50%;
+    margin-right: 20px;
+    margin-bottom: 20px;
 }
 
 .post-user-date-picture{
-    margin: 20px 20px 30px 20px;
+    display: flex;
+}
+
+.post-username{
+    font-weight: bold; 
+}
+
+.icon--left{
+    background: none;
+}
+
+.button--map{
+    display: flex;
+
+    background-color: #ff2f00;
+    border-radius: 30px;
+    font-weight: bold;
+    font-family: 'Quicksand', sans-serif;
+    padding: 2px;
+    align-items: center;
+    justify-content: center;
+    margin-left: 5px;
+}
+
+.icon--3points{
+    width: 14px;
+    height: 100%;
+}
+
+.Bivouac{
+    display: flex;
+    width: fit-content;
+    height: fit-content;
+    border-radius: 30px;
+    font-weight: 600;
+    font-family: 'Quicksand', sans-serif;
+    padding: 2px 5px 2px 5px;
+    border: 1px solid #ccc;
+    background-color: #f2f2f2;
+    cursor: pointer;
+    user-select: none;
+}
+
+.Alpinisme {
+    display: flex;
+    width: fit-content;
+    height: fit-content;
+    border-radius: 30px;
+    font-weight: 600;
+    font-family: 'Quicksand', sans-serif;
+    padding: 2px 5px 2px 5px;
+    border: 1px solid #ccc;
+    background-color: #f2f2f2;
+    cursor: pointer;
+    user-select: none;
+    background-color: #008CBA;
+}
+
+.Treck {
+    display: flex;
+    width: fit-content;
+    height: fit-content;
+    border-radius: 30px;
+    font-weight: 600;
+    font-family: 'Quicksand', sans-serif;
+    padding: 2px 5px 2px 5px;
+    border: 1px solid #ccc;
+    background-color: #f2f2f2;
+    cursor: pointer;
+    user-select: none;
+    background-color: #D35400;
+}
+
+.Randonné {
+    display: flex;
+    width: fit-content;
+    height: fit-content;
+    border-radius: 30px;
+    font-weight: 600;
+    font-family: 'Quicksand', sans-serif;
+    padding: 2px 5px 2px 5px;
+    border: 1px solid #ccc;
+    background-color: #f2f2f2;
+    cursor: pointer;
+    user-select: none;
+    background-color: #57B846;
+}
+
+.icon--theme{
+    margin-left: 5px;
+    width: 15px;
+    height: 100%;
+}
+
+.container--button-post{
+    position: absolute;
+    right: 2%;
+    margin-top: 25px;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
 }
