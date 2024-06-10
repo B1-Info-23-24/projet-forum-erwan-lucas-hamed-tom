@@ -8,7 +8,8 @@
     <link rel="stylesheet" href="../static/login.css">
     <link rel="stylesheet" href="../static/signup.css">
     <link rel="stylesheet" href="../static/post.css">
-    <title>Profile</title>
+    <link rel="stylesheet" href="../static/comment.css">
+    <title>Forum</title>
 </head>
 <body>
     {{ template "header" . }}
@@ -16,63 +17,19 @@
         {{ template "menu" . }}
     
         <div class="right-container">
-            <div class="section-account-info">
-                <img src="../static/img/character.png" alt="" class="img--users">
-                <div class="account-information">
-                    <div class="account-details">
-                        <p class="account-username" id="username"></p>
-                        <a href="/edit"><img src="../static/img/icon/settings.png" alt="" class="icon--settings"></a>
-                    </div>
-                    <p class="account-email" id="email"></p>
-                    <p class="account-password" id="password"></p>
-                </div>
+            <div class="section-img">
+                <img src="../static/img/bivouac.png" class="img--section">
             </div>
             <div class="container--bottom">
                 <div id="posts-container" class="posts-container">
                 </div>
             </div>
-        </div>        
+        </div>
     </div>
-
     <script>
-        async function fetchUserProfile(username) {
-            try {
-                const response = await fetch(`http://localhost:8081/api/profile/${username}`, {
-                    method: 'GET',
-                    credentials: 'include'
-                });
-                console.log('Response status:', response.status);
-                console.log('Response headers:', response.headers);
-                if (!response.ok) {
-                    throw new Error(`Error: ${response.statusText}`);
-                }
-                const user = await response.json();
-                console.log('User data:', user);
-                document.getElementById('username').textContent = user.username;
-                document.getElementById('email').textContent = user.email;
-            } catch (error) {
-                console.error('Failed to fetch user profile:', error);
-            }
-        }
-
-
-        document.addEventListener('DOMContentLoaded', function() {
-            const username = getCookie('username');
-            if (username) {
-                fetchUserProfile(username);
-            }
-        });
-
-        function getCookie(name) {
-            const value = `; ${document.cookie}`;
-            const parts = value.split(`; ${name}=`);
-            if (parts.length === 2) return parts.pop().split(';').shift();
-        }
-
         async function displayPosts() {
             try {
-                const userId = getCookie('userId');
-                const response = await fetch(`http://localhost:8081/api/profile/post/${userId}`, {
+                const response = await fetch(`http://localhost:8081/api/post/section/Bivouac`, {
                     method: 'POST',
                     credentials: 'include'
                 });

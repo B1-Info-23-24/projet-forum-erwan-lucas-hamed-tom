@@ -37,6 +37,7 @@ func RegisterRoutes(r *mux.Router) {
 	r.HandleFunc("/api/register", register).Methods("POST")
 	r.HandleFunc("/api/login", login).Methods("POST")
 	r.HandleFunc("/api/profile/{username}", GetProfile).Methods("GET")
+	r.HandleFunc("/api/profile/post/{userId}", GetCurrentPostFromProfile).Methods("POST")
 	r.HandleFunc("/api/edit", EditHandler).Methods("GET")
 	r.HandleFunc("/api/editing/{username}", EditProfile).Methods("POST")
 	r.HandleFunc("/api/delete/{username}", DeleteProfile).Methods("DELETE")
@@ -45,6 +46,7 @@ func RegisterRoutes(r *mux.Router) {
 	r.HandleFunc("/api/post/display", DisplayPost).Methods("POST")
 	r.HandleFunc("/api/post/display/{lat}/{lng}", GetCurrentPost).Methods("POST")
 	r.HandleFunc("/api/post/display/{postId}", GetCurrentPostFromId).Methods("POST")
+	r.HandleFunc("/api/post/section/{section}", GetCurrentPostFromSection).Methods("POST")
 	r.HandleFunc("/api/comment/create/{postId}", CreateComment).Methods("POST")
 	r.HandleFunc("/api/comment/{postId}", GetComments).Methods("GET")
 	r.HandleFunc("/api/post/like/{postId}", LikePost).Methods("POST")
@@ -555,4 +557,31 @@ func GetCurrentPostFromId(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
+}
+
+func GetCurrentPostFromSection(w http.ResponseWriter, r *http.Request) {
+	section := mux.Vars(r)["section"]
+	fmt.Println(section)
+
+	var post []Post
+	if err := DB.Where("theme = ?", section).Find(&post).Error; err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "Post not found: %v"}`, err.Error()), http.StatusNotFound)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(post)
+}
+
+func GetCurrentPostFromProfile(w http.ResponseWriter, r *http.Request) {
+	userID := mux.Vars(r)["userId"]
+
+	var post []Post
+	if err := DB.Where("user_id = ?", userID).Find(&post).Error; err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "Post not found: %v"}`, err.Error()), http.StatusNotFound)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(post)
 }

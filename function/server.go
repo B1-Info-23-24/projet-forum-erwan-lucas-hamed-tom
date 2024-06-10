@@ -32,6 +32,18 @@ func StartWebServer() {
 	r.HandleFunc("/edit", func(w http.ResponseWriter, r *http.Request) {
 		EditHandler(w, r)
 	}).Methods("GET")
+	r.HandleFunc("/alpinisme", func(w http.ResponseWriter, r *http.Request) {
+		AlpinismeHandler(w, r)
+	}).Methods("GET")
+	r.HandleFunc("/randonne", func(w http.ResponseWriter, r *http.Request) {
+		RandonneHandler(w, r)
+	}).Methods("GET")
+	r.HandleFunc("/treck", func(w http.ResponseWriter, r *http.Request) {
+		TreckHandler(w, r)
+	}).Methods("GET")
+	r.HandleFunc("/bivouac", func(w http.ResponseWriter, r *http.Request) {
+		BivouacHandler(w, r)
+	}).Methods("GET")
 	r.HandleFunc("/maps/{postId}", MapsHandler).Methods("GET")
 	r.HandleFunc("/delete/{username}", func(w http.ResponseWriter, r *http.Request) {
 		DeleteProfile(w, r)

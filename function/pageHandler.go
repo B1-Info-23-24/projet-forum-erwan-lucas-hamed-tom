@@ -79,3 +79,40 @@ func MapsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+func RandonneHandler(w http.ResponseWriter, r *http.Request) error {
+	template, err := template.ParseFiles("./pages/randonné.html", "./templates/header.html", "./templates/menu.html", "./templates/login.html", "./templates/signup.html", "./templates/post.html")
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+	template.Execute(w, nil)
+	return nil
+}
+func BivouacHandler(w http.ResponseWriter, r *http.Request) error {
+	template, err := template.ParseFiles("./pages/bivouac.html", "./templates/header.html", "./templates/menu.html", "./templates/login.html", "./templates/signup.html", "./templates/post.html")
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+	template.Execute(w, nil)
+	return nil
+}
+func AlpinismeHandler(w http.ResponseWriter, r *http.Request) error {
+	template, err := template.ParseFiles("./pages/alpinisme.html", "./templates/header.html", "./templates/menu.html", "./templates/login.html", "./templates/signup.html", "./templates/post.html")
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+	template.Execute(w, nil)
+	return nil
+}
+func TreckHandler(w http.ResponseWriter, r *http.Request) error {
+	template, err := template.ParseFiles("./pages/treck.html", "./templates/header.html", "./templates/menu.html", "./templates/login.html", "./templates/signup.html", "./templates/post.html")
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+	template.Execute(w, nil)
+	return nil
+}

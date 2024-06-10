@@ -117,6 +117,9 @@ button{
 
     border: none;
     background-color: #E9E9E9;
+    color: #000000;
+    user-select: none;
+    text-decoration:none;
 }
 
 .img--icon{
