@@ -337,6 +337,8 @@ func CreateComment(w http.ResponseWriter, r *http.Request) {
 
 	comment.CreatedAt = time.Now()
 	comment.PostID = uint(postId)
+	comment.UserID = uint(GetCoockie(w, r, "userId"))
+	comment.Username = GetCoockieAsString(w, r, "username")
 
 	if err := DB.Create(&comment).Error; err != nil {
 		http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusInternalServerError)

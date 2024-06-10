@@ -144,8 +144,6 @@
                 return;
             }
 
-            const userId = parseInt(localStorage.getItem("userId"));
-            const username = localStorage.getItem("username");
             try {
                 const response = await fetch(`http://localhost:8081/api/comment/create/${postId}`, {
                     method: 'POST',
@@ -153,7 +151,7 @@
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ userId, username, content })
+                    body: JSON.stringify({ content })
                 });
 
                 if (!response.ok) {
