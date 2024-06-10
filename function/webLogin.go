@@ -197,10 +197,9 @@ func getGoogleData(accessToken string) string {
 	respbody, _ := ioutil.ReadAll(resp.Body)
 	return string(respbody)
 }
-
 func loggedinHandler(w http.ResponseWriter, r *http.Request, data string) {
 	if data == "" {
-		fmt.Fprintf(w, "UNAUTHORIZED!")
+		http.Error(w, "UNAUTHORIZED!", http.StatusUnauthorized)
 		return
 	}
 
@@ -213,6 +212,7 @@ func loggedinHandler(w http.ResponseWriter, r *http.Request, data string) {
 
 	// Extract the necessary fields
 	login := parsedData["login"].(string)
+	id := fmt.Sprintf("%v", parsedData["node_id"])
 	email := ""
 	if parsedData["email"] != nil {
 		email = parsedData["email"].(string)
@@ -220,28 +220,51 @@ func loggedinHandler(w http.ResponseWriter, r *http.Request, data string) {
 
 	// Print the data for debugging purposes
 	fmt.Printf("Login: %s, Email: %s\n", login, email)
-
-	// Create a new user record
 	user := User{
 		Username: login,
 		Email:    email,
+		Password: id,
 	}
+	if !checkExistingUser(w, r, id) {
+		// Create a new user record
 
-	// Save the user to the database
-	result := DB.Create(&user)
-	if result.Error != nil {
-		fmt.Fprintf(w, "Error saving user to database: %v", result.Error)
-		return
+		// Save the user to the database
+		result := DB.Create(&user)
+		if result.Error != nil {
+			http.Error(w, fmt.Sprintf("Error saving user to database: %v", result.Error), http.StatusInternalServerError)
+			return
+		}
 	}
+	fmt.Printf("New user registered: %s\n", user.Username)
 
-	// Return the JSON response
-	w.Header().Set("Content-type", "application/json")
-	var prettyJSON bytes.Buffer
-	err = json.Indent(&prettyJSON, []byte(data), "", "\t")
-	if err != nil {
-		log.Panic("JSON parse error")
-	}
-	// fmt.Fprintf(w, string(prettyJSON.Bytes()))
+	// Automatically log in the user after registration
+	SetCookie(w, user)
+
+	// Log the user details in the terminal
+	log.Printf("User details: %+v\n", user)
+
+	w.Header().Set("Content-Type", "application/json")
+	// response := struct {
+	// 	Message string `json:"message"`
+	// 	User    User   `json:"user"`
+	// }{
+	// 	Message: "User registered and logged in successfully",
+	// 	User:    user,
+	// }
+	// json.NewEncoder(w).Encode(response)
+	// Redirect to home page after login
 	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
 
+func checkExistingUser(w http.ResponseWriter, r *http.Request, password string) bool {
+	var user User
+	// Check if user with the same password exists
+	result := DB.Where("password = ?", password).First(&user)
+	if result.Error == nil {
+		// fmt.Fprintf(w, "User with the same password already exists")
+
+		return true
+	}
+
+	return false
 }

@@ -114,12 +114,6 @@ func login(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, `{"error": "Invalid password"}`, http.StatusUnauthorized)
 		return
 	}
-	// loginInfo.Password = Encrypt(loginInfo.Password)
-	// if err := DB.Where("email = ? AND password = ?", loginInfo.Email, loginInfo.Password).First(&user).Error; err != nil {
-	// 	fmt.Println("test", err)
-	// 	http.Error(w, `{"error": "Invalid email or password"}`, http.StatusUnauthorized)
-	// 	return
-	// }
 
 	DeleteCookies(w, r)
 	fmt.Printf("User logged in: %s\n", user.Username)
