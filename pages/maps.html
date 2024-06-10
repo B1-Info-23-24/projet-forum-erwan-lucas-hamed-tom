@@ -54,11 +54,65 @@
                     position: { lat, lng },
                     map: map,
                     });
+
+                    marker.addListener('click', () => {
+                      displayCurrentPost(lat, lng)
+                    });
                 } else {
                     console.error(`Coordonnées invalides : ${lat}, ${lng}`);
                 }
             }
         });
+
+        async function displayCurrentPost(lat, lng) {
+          try {
+                const response = await fetch(`http://localhost:8081/api/post/display/${lat}/${lng}`, {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.statusText}`);
+                }
+                const post = await response.json();
+                const postsContainer = document.getElementById('posts-container');
+                postsContainer.innerHTML = '';
+                
+                    const postElement = document.createElement('div');
+                    postElement.className = 'post';
+                    postElement.innerHTML = `
+                    <div class="post-header">
+                        <button class="post-modif"><img src="../static/img/icon/3points.png" class="icon--3points"></button> 
+                        <div class="container--button-post">
+                            <button class="${post.Theme}">${post.Theme}<img src="../static/img/icon/${post.Theme}.png" class="icon--theme"></button> 
+                            <button class="button--map"><img src="../static/img/icon/ping.png" id="icon-ping" class="icon--img"></button>
+                        </div> 
+                        <div class="post-user-date-picture">
+                            <img src="../static/img/character.png" class="post-picture">
+                            <div class="post-user-date">
+                                <p class="post-username">${post.Username}</p>
+                                <small class="post-date">${new Date(post.CreatedAt).toLocaleString()}</small>
+                            </div>
+                        </div>
+                        <p class="post-print-content">${post.Content}</p>
+                        <div class="post-images">
+                        </div>
+                        <div class="post-interaction">
+                            <button class="icon--left"><img src="../static/img/icon/like.png"  class="icon--img"></button>
+                            <button class="icon--left"><img src="../static/img/icon/dislike.png"  class="icon--img"></button>
+                            <button class="icon--right" onclick="toggleComments(${post.ID})"><img src="../static/img/icon/comment.png"  class="icon--img"></button>
+                            <button class="icon--right"><img src="../static/img/icon/favorite.png"  class="icon--img"></button>
+                        </div>
+                        <div class="comments-container" id="comments-${post.ID}">
+                        </div>
+                    </div>
+                    `;
+                    postsContainer.appendChild(postElement);
+                    const commentsContainer = document.getElementById(`comments-${post.ID}`);
+                    displayComments(post.ID, commentsContainer)
+            } catch (error) {
+                console.error('Failed to fetch posts:', error);
+            }
+        }
 
         async function displayPosts() {
             try {
@@ -121,7 +175,7 @@
                 }
                 const comments = await response.json();
 
-                commentsContainer.innerHTML = ''; // Clear existing comments
+                commentsContainer.innerHTML = '';
 
                 const commentForm = document.createElement('div');
                 commentForm.className = 'comment-form';

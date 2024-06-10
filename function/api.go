@@ -38,6 +38,7 @@ func RegisterRoutes(r *mux.Router) {
 	r.HandleFunc("/api/post/create", CreatePost).Methods("POST")
 	r.HandleFunc("/api/pings", GetPings).Methods("GET")
 	r.HandleFunc("/api/post/display", DisplayPost).Methods("POST")
+	r.HandleFunc("/api/post/display/{lat}/{lng}", GetCurrentPost).Methods("POST")
 	r.HandleFunc("/api/comment/create/{postId}", CreateComment).Methods("POST")
 	r.HandleFunc("/api/comment/{postId}", GetComments).Methods("GET")
 
@@ -305,7 +306,6 @@ func DisplayPost(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusInternalServerError)
 		return
 	}
-	fmt.Println(posts)
 
 	// Pour chaque post, récupérer les images associées
 	for i := range posts {
@@ -316,7 +316,6 @@ func DisplayPost(w http.ResponseWriter, r *http.Request) {
 		}
 		posts[i].Images = images
 	}
-	fmt.Println(posts)
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(posts)
@@ -367,4 +366,25 @@ func GetComments(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(comments)
+}
+
+func GetCurrentPost(w http.ResponseWriter, r *http.Request) {
+	lat := mux.Vars(r)["lat"]
+	lng := mux.Vars(r)["lng"]
+	log.Printf("Received lat: %s, lng: %s", lat, lng)
+	var ping Ping
+
+	if err := DB.Where("lat = ? AND lng = ?", lat, lng).First(&ping).Error; err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "Ping not found: %v"}`, err.Error()), http.StatusNotFound)
+		return
+	}
+
+	var post Post
+	if err := DB.Where("id = ?", ping.ID).First(&post).Error; err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "Post not found: %v"}`, err.Error()), http.StatusNotFound)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(post)
 }
