@@ -41,9 +41,14 @@ func StartWebServer() {
 	r.HandleFunc("/signup", RenderSignupPage).Methods("GET")
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))
 
-	r.HandleFunc("/loginweb", rootHandler)
 	r.HandleFunc("/login/github", githubLoginHandler)
 	r.HandleFunc("/callback/github", githubCallbackHandler)
+
+	r.HandleFunc("/login/facebook", facebookLoginHandler)
+	r.HandleFunc("/callback/facebook", facebookCallbackHandler)
+
+	r.HandleFunc("/login/google", googleLoginHandler)
+	r.HandleFunc("/callback/google", googleCallbackHandler)
 
 	corsMiddleware := handlers.CORS(
 		handlers.AllowedOrigins([]string{"http://localhost:8080", "http://localhost:8081"}), // Autoriser les deux serveurs
