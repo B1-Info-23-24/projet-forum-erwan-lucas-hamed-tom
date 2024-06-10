@@ -42,11 +42,16 @@ type Ping struct {
 	Lng    string `gorm:"type:varchar(255)" json:"lng"`
 }
 
-type LikeDislike struct {
+type Like struct {
 	ID     uint `gorm:"primary_key"`
 	PostID uint `gorm:"index"`
 	UserID uint `gorm:"index"`
-	IsLike bool
+}
+
+type Dislike struct {
+	ID     uint `gorm:"primary_key"`
+	PostID uint `gorm:"index"`
+	UserID uint `gorm:"index"`
 }
 
 func InitDB() {
@@ -62,5 +67,6 @@ func AutoMigrate(db *gorm.DB) {
 	db.AutoMigrate(&Post{})
 	db.AutoMigrate(&Ping{})
 	db.AutoMigrate(&Image{})
-	db.AutoMigrate(&LikeDislike{})
+	db.AutoMigrate(&Like{})
+	db.AutoMigrate(&Dislike{})
 }

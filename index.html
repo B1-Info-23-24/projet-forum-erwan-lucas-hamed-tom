@@ -78,7 +78,7 @@
             const response = await fetch(`http://localhost:8081/api/post/like`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ postID, isLike: true })
+                body: JSON.stringify({ postID })
             });
             if (response.ok) {
                 updateLikeDislikeCount(postID);
@@ -95,10 +95,10 @@
 
     async function dislikePost(postID, button) {
         try {
-            const response = await fetch(`http://localhost:8081/api/post/like`, {
+            const response = await fetch(`http://localhost:8081/api/post/dislike`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ postID, isLike: false })
+                body: JSON.stringify({ postID })
             });
             if (response.ok) {
                 updateLikeDislikeCount(postID);
