@@ -10,6 +10,8 @@ require (
 require (
 	github.com/felixge/httpsnoop v1.0.3 // indirect
 	github.com/gin-contrib/cors v1.7.2 // indirect
+	github.com/joho/godotenv v1.3.0 // indirect
+	github.com/sharmarajdaksh/github-oauth-go v0.0.0-20200623050408-063c8f38a4ae // indirect
 )
 
 require (
