@@ -25,8 +25,9 @@ type Post struct {
 	CreatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP"`
 	Images    []Image   `gorm:"foreignkey:PostID"`
 	Username  string    `gorm:"type:text"`
+	Likes     int       `gorm:"default:0"`
+	Dislikes  int       `gorm:"default:0"`
 }
-
 type Image struct {
 	ID     uint   `gorm:"primary_key"`
 	PostID uint   `gorm:"index"`

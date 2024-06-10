@@ -47,7 +47,68 @@ func RegisterRoutes(r *mux.Router) {
 	r.HandleFunc("/api/post/display/{postId}", GetCurrentPostFromId).Methods("POST")
 	r.HandleFunc("/api/comment/create/{postId}", CreateComment).Methods("POST")
 	r.HandleFunc("/api/comment/{postId}", GetComments).Methods("GET")
+	r.HandleFunc("/api/post/like/{postId}", LikePost).Methods("POST")       // New Route
+	r.HandleFunc("/api/post/dislike/{postId}", DislikePost).Methods("POST") // New Route
+}
+func LikePost(w http.ResponseWriter, r *http.Request) {
+	postId, err := strconv.ParseUint(mux.Vars(r)["postId"], 10, 64)
+	if err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusBadRequest)
+		return
+	}
 
+	var post Post
+	if err := DB.First(&post, postId).Error; err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "Post not found: %v"}`, err.Error()), http.StatusNotFound)
+		return
+	}
+
+	// Assuming there is a Likes field in the Post model
+	post.Likes++
+	if err := DB.Save(&post).Error; err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	response := struct {
+		Message string `json:"message"`
+		Post    Post   `json:"post"`
+	}{
+		Message: "Post liked successfully",
+		Post:    post,
+	}
+	json.NewEncoder(w).Encode(response)
+}
+
+func DislikePost(w http.ResponseWriter, r *http.Request) {
+	postId, err := strconv.ParseUint(mux.Vars(r)["postId"], 10, 64)
+	if err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusBadRequest)
+		return
+	}
+
+	var post Post
+	if err := DB.First(&post, postId).Error; err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "Post not found: %v"}`, err.Error()), http.StatusNotFound)
+		return
+	}
+
+	post.Dislikes++
+	if err := DB.Save(&post).Error; err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	response := struct {
+		Message string `json:"message"`
+		Post    Post   `json:"post"`
+	}{
+		Message: "Post disliked successfully",
+		Post:    post,
+	}
+	json.NewEncoder(w).Encode(response)
 }
 
 func register(w http.ResponseWriter, r *http.Request) {

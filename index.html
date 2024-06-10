@@ -61,8 +61,8 @@
                         <div class="post-images">
                         </div>
                         <div class="post-interaction">
-                            <button class="icon--left"><img src="../static/img/icon/like.png"  class="icon--img"></button>
-                            <button class="icon--left"><img src="../static/img/icon/dislike.png"  class="icon--img"></button>
+                            <button class="icon--left" onclick="likePost(${post.ID})"><img src="../static/img/icon/like.png" class="icon--img"></button>
+                            <button class="icon--left" onclick="dislikePost(${post.ID})"><img src="../static/img/icon/dislike.png" class="icon--img"></button>                            
                             <button class="icon--right" onclick="toggleComments(${post.ID})"><img src="../static/img/icon/comment.png"  class="icon--img"></button>
                             <button class="icon--right"><img src="../static/img/icon/favorite.png"  class="icon--img"></button>
                         </div>
@@ -80,7 +80,40 @@
         function openMap(postId) {
             window.location.href = `http://localhost:8080/maps/${postId}`;
         }
-
+        async function likePost(postId) {
+            try {
+                const response = await fetch(`http://localhost:8081/api/post/like/${postId}`, {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.statusText}`);
+                }
+                const result = await response.json();
+                console.log(result.message);
+                displayPosts(); // Refresh posts to reflect the new like count
+            } catch (error) {
+                console.error('Failed to like post:', error);
+            }
+        }
+        
+        async function dislikePost(postId) {
+            try {
+                const response = await fetch(`http://localhost:8081/api/post/dislike/${postId}`, {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.statusText}`);
+                }
+                const result = await response.json();
+                console.log(result.message);
+                displayPosts(); // Refresh posts to reflect the new dislike count
+            } catch (error) {
+                console.error('Failed to dislike post:', error);
+            }
+        }
+        
         async function displayComments(postId, commentsContainer) {
             try {
                 const response = await fetch(`http://localhost:8081/api/comment/${postId}`, {
