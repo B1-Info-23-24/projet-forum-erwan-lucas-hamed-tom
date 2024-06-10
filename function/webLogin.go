@@ -31,6 +31,7 @@ func githubCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	code := r.URL.Query().Get("code")
 	accessToken := getGithubAccessToken(code)
 	data := getGithubData(accessToken)
+
 	loggedinHandler(w, r, data)
 }
 
@@ -203,12 +204,44 @@ func loggedinHandler(w http.ResponseWriter, r *http.Request, data string) {
 		return
 	}
 
-	w.Header().Set("Content-type", "application/json")
-	var prettyJSON bytes.Buffer
-	err := json.Indent(&prettyJSON, []byte(data), "", "\t")
+	var parsedData map[string]interface{}
+	err := json.Unmarshal([]byte(data), &parsedData)
 	if err != nil {
 		log.Panic("JSON parse error")
 	}
-	fmt.Println(string(prettyJSON.Bytes())) //print in terminal all api
-	fmt.Fprintf(w, string(prettyJSON.Bytes()))
+	fmt.Println("test data", parsedData)
+
+	// Extract the necessary fields
+	login := parsedData["login"].(string)
+	email := ""
+	if parsedData["email"] != nil {
+		email = parsedData["email"].(string)
+	}
+
+	// Print the data for debugging purposes
+	fmt.Printf("Login: %s, Email: %s\n", login, email)
+
+	// Create a new user record
+	user := User{
+		Username: login,
+		Email:    email,
+	}
+
+	// Save the user to the database
+	result := DB.Create(&user)
+	if result.Error != nil {
+		fmt.Fprintf(w, "Error saving user to database: %v", result.Error)
+		return
+	}
+
+	// Return the JSON response
+	w.Header().Set("Content-type", "application/json")
+	var prettyJSON bytes.Buffer
+	err = json.Indent(&prettyJSON, []byte(data), "", "\t")
+	if err != nil {
+		log.Panic("JSON parse error")
+	}
+	// fmt.Fprintf(w, string(prettyJSON.Bytes()))
+	http.Redirect(w, r, "/", http.StatusSeeOther)
+
 }
