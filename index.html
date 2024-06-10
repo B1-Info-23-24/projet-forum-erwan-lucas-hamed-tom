@@ -48,7 +48,7 @@
                         <button class="post-modif"><img src="../static/img/icon/3points.png" class="icon--3points"></button> 
                         <div class="container--button-post">
                             <button class="${post.Theme}">${post.Theme}<img src="../static/img/icon/${post.Theme}.png" class="icon--theme"></button> 
-                            <button class="button--map"><img src="../static/img/icon/ping.png" id="icon-ping" class="icon--img"></button>
+                            <button class="button--map" onclick="openMap(${post.ID})"><img src="../static/img/icon/ping.png" id="icon-ping" class="icon--img"></button>
                         </div> 
                         <div class="post-user-date-picture">
                             <img src="../static/img/character.png" class="post-picture">
@@ -75,6 +75,10 @@
             } catch (error) {
                 console.error('Failed to fetch posts:', error);
             }
+        }
+
+        function openMap(postId) {
+            window.location.href = `http://localhost:8080/maps/${postId}`;
         }
 
         async function displayComments(postId, commentsContainer) {

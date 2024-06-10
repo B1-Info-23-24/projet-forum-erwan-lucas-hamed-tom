@@ -32,9 +32,7 @@ func StartWebServer() {
 	r.HandleFunc("/edit", func(w http.ResponseWriter, r *http.Request) {
 		EditHandler(w, r)
 	}).Methods("GET")
-	r.HandleFunc("/maps", func(w http.ResponseWriter, r *http.Request) {
-		Maps(w, r)
-	}).Methods("GET")
+	r.HandleFunc("/maps/{postId}", MapsHandler).Methods("GET")
 	r.HandleFunc("/delete/{username}", func(w http.ResponseWriter, r *http.Request) {
 		DeleteProfile(w, r)
 	}).Methods("DELETE")

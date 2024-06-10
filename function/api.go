@@ -12,6 +12,11 @@ import (
 	"github.com/gorilla/mux"
 )
 
+type PostPingResponse struct {
+	Post Post `json:"post"`
+	Ping Ping `json:"ping"`
+}
+
 func StartAPIServer() {
 	r := mux.NewRouter()
 	RegisterRoutes(r)
@@ -39,6 +44,7 @@ func RegisterRoutes(r *mux.Router) {
 	r.HandleFunc("/api/pings", GetPings).Methods("GET")
 	r.HandleFunc("/api/post/display", DisplayPost).Methods("POST")
 	r.HandleFunc("/api/post/display/{lat}/{lng}", GetCurrentPost).Methods("POST")
+	r.HandleFunc("/api/post/display/{postId}", GetCurrentPostFromId).Methods("POST")
 	r.HandleFunc("/api/comment/create/{postId}", CreateComment).Methods("POST")
 	r.HandleFunc("/api/comment/{postId}", GetComments).Methods("GET")
 
@@ -371,7 +377,6 @@ func GetComments(w http.ResponseWriter, r *http.Request) {
 func GetCurrentPost(w http.ResponseWriter, r *http.Request) {
 	lat := mux.Vars(r)["lat"]
 	lng := mux.Vars(r)["lng"]
-	log.Printf("Received lat: %s, lng: %s", lat, lng)
 	var ping Ping
 
 	if err := DB.Where("lat = ? AND lng = ?", lat, lng).First(&ping).Error; err != nil {
@@ -387,4 +392,28 @@ func GetCurrentPost(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(post)
+}
+
+func GetCurrentPostFromId(w http.ResponseWriter, r *http.Request) {
+	postId := mux.Vars(r)["postId"]
+
+	var post Post
+	if err := DB.Where("id = ?", postId).First(&post).Error; err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "Post not found: %v"}`, err.Error()), http.StatusNotFound)
+		return
+	}
+
+	var ping Ping
+	if err := DB.Where("post_id = ?", postId).First(&ping).Error; err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "Ping not found: %v"}`, err.Error()), http.StatusNotFound)
+		return
+	}
+
+	response := PostPingResponse{
+		Post: post,
+		Ping: ping,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
 }

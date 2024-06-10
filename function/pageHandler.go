@@ -62,10 +62,20 @@ func EditHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func Maps(w http.ResponseWriter, r *http.Request) {
+func Maps(w http.ResponseWriter, r *http.Request) error {
 	template, err := template.ParseFiles("./pages/maps.html", "./templates/header.html", "./templates/menu.html", "./templates/login.html", "./templates/signup.html", "./templates/post.html")
 	if err != nil {
 		log.Fatal(err)
+		return err
 	}
 	template.Execute(w, nil)
+	return nil
+}
+
+func MapsHandler(w http.ResponseWriter, r *http.Request) {
+	err := Maps(w, r)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 }

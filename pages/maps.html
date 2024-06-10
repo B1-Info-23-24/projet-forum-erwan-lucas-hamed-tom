@@ -31,13 +31,13 @@
         let map;
         function initMap() {
             map = new google.maps.Map(document.getElementById("map"), {
-                center: { lat: 46.227638, lng: 2.213749 }, // Centre de la France
+                center: { lat: 46.227638, lng: 2.213749 }, 
                 zoom: 6,
-                mapTypeId: 'terrain', // Mode plan avec relief
-                streetViewControl: false, // Désactive la vue de rue
-                zoomControl: false, // Désactive le contrôle de zoom
-                mapTypeControl: false, // Désactive le contrôle de type de carte
-                disableDefaultUI: true // Désactive les éléments de l'interface utilisateur par défaut
+                mapTypeId: 'terrain', 
+                streetViewControl: false, 
+                zoomControl: false,
+                mapTypeControl: false, 
+                disableDefaultUI: true
             });
         }
 
@@ -63,6 +63,70 @@
                 }
             }
         });
+
+        function getPostIdFromURL() {
+            const url = window.location.href;
+            return parseInt(url.split("/")[4])
+        }
+
+        async function displayCurrentPostFromUrl() {
+          try {
+                const postId = getPostIdFromURL();
+                const response = await fetch(`http://localhost:8081/api/post/display/${postId}`, {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.statusText}`);
+                }
+                const respons = await response.json();
+                console.log(respons)
+                const postsContainer = document.getElementById('posts-container');
+                postsContainer.innerHTML = '';
+                
+                    const postElement = document.createElement('div');
+                    postElement.className = 'post';
+                    postElement.innerHTML = `
+                    <div class="post-header">
+                        <button class="post-modif"><img src="../static/img/icon/3points.png" class="icon--3points"></button> 
+                        <div class="container--button-post">
+                            <button class="${respons.post.Theme}">${respons.post.Theme}<img src="../static/img/icon/${respons.post.Theme}.png" class="icon--theme"></button> 
+                            <button class="button--map"><img src="../static/img/icon/ping.png" id="icon-ping" class="icon--img"></button>
+                        </div> 
+                        <div class="post-user-date-picture">
+                            <img src="../static/img/character.png" class="post-picture">
+                            <div class="post-user-date">
+                                <p class="post-username">${respons.post.Username}</p>
+                                <small class="post-date">${new Date(respons.post.CreatedAt).toLocaleString()}</small>
+                            </div>
+                        </div>
+                        <p class="post-print-content">${respons.post.Content}</p>
+                        <div class="post-images">
+                        </div>
+                        <div class="post-interaction">
+                            <button class="icon--left"><img src="../static/img/icon/like.png"  class="icon--img"></button>
+                            <button class="icon--left"><img src="../static/img/icon/dislike.png"  class="icon--img"></button>
+                            <button class="icon--right"><img src="../static/img/icon/favorite.png"  class="icon--img"></button>
+                        </div>
+                        <div class="comments-container" id="comments-${respons.post.ID}">
+                        </div>
+                    </div>
+                    `;
+                    postsContainer.appendChild(postElement);
+                    const commentsContainer = document.getElementById(`comments-${respons.post.ID}`);
+                    displayComments(respons.post.ID, commentsContainer)
+
+                    // Recentrer la carte sur les coordonnées du ping après un petit délai
+                    const lat = parseFloat(respons.ping.lat.replace(',', '.'));
+                    const lng = parseFloat(respons.ping.lng.replace(',', '.'));
+                    if (!isNaN(lat) && !isNaN(lng)) {
+                      map.setCenter({ lat, lng });
+                      map.setZoom(8);
+                    }
+            } catch (error) {
+                console.error('Failed to fetch posts:', error);
+            }
+        }
 
         async function displayCurrentPost(lat, lng) {
           try {
@@ -99,7 +163,6 @@
                         <div class="post-interaction">
                             <button class="icon--left"><img src="../static/img/icon/like.png"  class="icon--img"></button>
                             <button class="icon--left"><img src="../static/img/icon/dislike.png"  class="icon--img"></button>
-                            <button class="icon--right" onclick="toggleComments(${post.ID})"><img src="../static/img/icon/comment.png"  class="icon--img"></button>
                             <button class="icon--right"><img src="../static/img/icon/favorite.png"  class="icon--img"></button>
                         </div>
                         <div class="comments-container" id="comments-${post.ID}">
@@ -255,7 +318,12 @@
             }
         }
 
-        displayPosts();
+        const postId = getPostIdFromURL();
+        if (postId == 0){
+          displayPosts();
+        } else {
+          displayCurrentPostFromUrl();
+        }
     </script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDPeDO6qN2NYGOmV-LSQ3Tc7oSlCrJG1-I&callback=initMap"></script>
   </body>
