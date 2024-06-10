@@ -41,18 +41,9 @@ func StartWebServer() {
 	r.HandleFunc("/signup", RenderSignupPage).Methods("GET")
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))
 
-	r.HandleFunc("/loginweb/", rootHandler)
-
-	// Login route
-	r.HandleFunc("/login/github/", githubLoginHandler)
-
-	// Github callback
-	r.HandleFunc("/login/github/callback", githubCallbackHandler)
-
-	// Route where the authenticated user is redirected to
-	r.HandleFunc("/loggedin", func(w http.ResponseWriter, r *http.Request) {
-		loggedinHandler(w, r, "")
-	})
+	r.HandleFunc("/loginweb", rootHandler)
+	r.HandleFunc("/login/github", githubLoginHandler)
+	r.HandleFunc("/callback/github", githubCallbackHandler)
 
 	corsMiddleware := handlers.CORS(
 		handlers.AllowedOrigins([]string{"http://localhost:8080", "http://localhost:8081"}), // Autoriser les deux serveurs
