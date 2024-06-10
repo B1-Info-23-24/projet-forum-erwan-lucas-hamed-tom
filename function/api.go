@@ -57,13 +57,39 @@ func LikePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	userID := GetCoockie(w, r, "userId")
+
+	var interaction UserPostInteraction
+	if err := DB.Where("user_id = ? AND post_id = ?", userID, postId).First(&interaction).Error; err == nil {
+		if interaction.Liked {
+			http.Error(w, `{"error": "Post already liked"}`, http.StatusBadRequest)
+			return
+		}
+		interaction.Liked = true
+		interaction.Disliked = false
+		if err := DB.Save(&interaction).Error; err != nil {
+			http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusInternalServerError)
+			return
+		}
+	} else {
+		interaction = UserPostInteraction{
+			UserID:   uint(userID),
+			PostID:   uint(postId),
+			Liked:    true,
+			Disliked: false,
+		}
+		if err := DB.Create(&interaction).Error; err != nil {
+			http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusInternalServerError)
+			return
+		}
+	}
+
 	var post Post
 	if err := DB.First(&post, postId).Error; err != nil {
 		http.Error(w, fmt.Sprintf(`{"error": "Post not found: %v"}`, err.Error()), http.StatusNotFound)
 		return
 	}
 
-	// Assuming there is a Likes field in the Post model
 	post.Likes++
 	if err := DB.Save(&post).Error; err != nil {
 		http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusInternalServerError)
@@ -86,6 +112,33 @@ func DislikePost(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusBadRequest)
 		return
+	}
+
+	userID := GetCoockie(w, r, "userId")
+
+	var interaction UserPostInteraction
+	if err := DB.Where("user_id = ? AND post_id = ?", userID, postId).First(&interaction).Error; err == nil {
+		if interaction.Disliked {
+			http.Error(w, `{"error": "Post already disliked"}`, http.StatusBadRequest)
+			return
+		}
+		interaction.Liked = false
+		interaction.Disliked = true
+		if err := DB.Save(&interaction).Error; err != nil {
+			http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusInternalServerError)
+			return
+		}
+	} else {
+		interaction = UserPostInteraction{
+			UserID:   uint(userID),
+			PostID:   uint(postId),
+			Liked:    false,
+			Disliked: true,
+		}
+		if err := DB.Create(&interaction).Error; err != nil {
+			http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusInternalServerError)
+			return
+		}
 	}
 
 	var post Post

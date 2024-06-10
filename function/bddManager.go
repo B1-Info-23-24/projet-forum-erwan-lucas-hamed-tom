@@ -41,6 +41,14 @@ type Ping struct {
 	Lng    string `gorm:"type:varchar(255)" json:"lng"`
 }
 
+type UserPostInteraction struct {
+	ID       uint `gorm:"primaryKey"`
+	UserID   uint `gorm:"index"`
+	PostID   uint `gorm:"index"`
+	Liked    bool
+	Disliked bool
+}
+
 type Comment struct {
 	ID        uint      `gorm:"primary_key"`
 	PostID    uint      `gorm:"index"`
@@ -66,4 +74,5 @@ func AutoMigrate(db *gorm.DB) {
 	db.AutoMigrate(&Ping{})
 	db.AutoMigrate(&Image{})
 	db.AutoMigrate(&Comment{})
+	db.AutoMigrate(&UserPostInteraction{})
 }
