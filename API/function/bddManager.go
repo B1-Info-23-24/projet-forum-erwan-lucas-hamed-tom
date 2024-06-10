@@ -25,8 +25,9 @@ type Post struct {
 	CreatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP"`
 	Images    []Image   `gorm:"foreignkey:PostID"`
 	Username  string    `gorm:"type:text"`
+	Likes     int       `gorm:"default:0"`
+	Dislikes  int       `gorm:"default:0"`
 }
-
 type Image struct {
 	ID     uint   `gorm:"primary_key"`
 	PostID uint   `gorm:"index"`
@@ -38,6 +39,14 @@ type Ping struct {
 	PostID uint   `gorm:"index" json:"post_id"`
 	Lat    string `gorm:"type:varchar(255)" json:"lat"`
 	Lng    string `gorm:"type:varchar(255)" json:"lng"`
+}
+
+type UserPostInteraction struct {
+	ID       uint `gorm:"primaryKey"`
+	UserID   uint `gorm:"index"`
+	PostID   uint `gorm:"index"`
+	Liked    bool
+	Disliked bool
 }
 
 type Comment struct {
@@ -65,4 +74,5 @@ func AutoMigrate(db *gorm.DB) {
 	db.AutoMigrate(&Ping{})
 	db.AutoMigrate(&Image{})
 	db.AutoMigrate(&Comment{})
+	db.AutoMigrate(&UserPostInteraction{})
 }

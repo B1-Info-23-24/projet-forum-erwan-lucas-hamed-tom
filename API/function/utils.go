@@ -91,6 +91,21 @@ func GetCoockie(w http.ResponseWriter, r *http.Request, name string) int {
 	return userId
 }
 
+// Get a coockie from a specifique coockie name
+func GetCoockieAsString(w http.ResponseWriter, r *http.Request, name string) string {
+	cookie, err := r.Cookie(name)
+	if err != nil {
+		switch {
+		case errors.Is(err, http.ErrNoCookie):
+			http.Error(w, "cookie not found", http.StatusBadRequest)
+		default:
+			log.Println(err)
+			http.Error(w, "server error", http.StatusInternalServerError)
+		}
+	}
+	return cookie.Value
+}
+
 // Set user id inside a coockie
 func SetCookie(w http.ResponseWriter, user User) {
 	cookieId := http.Cookie{

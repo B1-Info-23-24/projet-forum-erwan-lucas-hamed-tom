@@ -343,3 +343,22 @@ button{
     margin-left: 30px;
     margin-top: 10px;
 }
+
+#button-settings-deconnexion {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 50;
+    font-size: 15px;
+    line-height: 24px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px 10 px;   
+
+    background: #ecbebe;
+    box-shadow: -1px -1px 0px #ffdfdf, -2px -2px 2px #cfc9c9, inset -1px -1px 0px #FFFFFF, inset -2px -2px 2px #B8CCE0;
+    border-radius: 10px;
+    border: none;
+    margin-bottom: 10px;
+}

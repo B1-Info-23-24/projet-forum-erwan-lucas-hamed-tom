@@ -48,8 +48,6 @@ func RenderHomePage(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 	template.Execute(w, nil)
-
-	http.ServeFile(w, r, "./index.html")
 }
 
 func RenderProfilePage(w http.ResponseWriter, r *http.Request) {
@@ -66,7 +64,6 @@ func RenderProfilePage(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
-	http.ServeFile(w, r, "pages/profile.html")
 }
 
 func RenderEditPage(w http.ResponseWriter, r *http.Request) {
@@ -75,8 +72,6 @@ func RenderEditPage(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 	template.Execute(w, nil)
-
-	http.ServeFile(w, r, "pages/edit.html")
 }
 
 func RenderMaps(w http.ResponseWriter, r *http.Request) {
@@ -85,6 +80,4 @@ func RenderMaps(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 	template.Execute(w, nil)
-
-	http.ServeFile(w, r, "pages/maps.html")
 }

@@ -25,6 +25,7 @@
                     </div>
                     <p class="account-email" id="email"></p>
                     <p class="account-password" id="password"></p>
+                    <button href="/#" onclick="redirectToDeconnexion()" id="button-settings-deconnexion">DECONNEXION</button>
                 </div>
             </div>
             <div class="posts-container"></div>
@@ -32,6 +33,28 @@
     </div>
 
     <script>
+        function redirectToDeconnexion() {
+            if (confirm("Êtes-vous sûr de vouloir vous déconnecter ? Cela sera définitif.")) {
+                fetch('http://localhost:8081/api/deconnexion', {
+                    method: 'POST',
+                    credentials: 'include' // Inclure les cookies dans la requête
+                    })
+                .then(response => {
+                    if (response.ok) {
+                        // Les cookies sont supprimés, rediriger vers la page d'accueil
+                        window.location.href = "/";
+                    } else {
+                        console.error('Erreur lors de la suppression de l\'utilisateur');
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur lors de la suppression de l\'utilisateur:', error);
+                });
+            }
+        }
+
+
+
         async function fetchUserProfile(username) {
             try {
                 const response = await fetch(`http://localhost:8081/api/profile/${username}`, {
