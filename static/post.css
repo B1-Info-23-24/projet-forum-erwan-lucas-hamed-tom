@@ -355,3 +355,15 @@ button {
     align-items: center;
     justify-content: center;
 }
+
+.liked {
+    background-color: #ffcccc;
+}
+
+.disliked {
+    background-color: #ccccff;
+}
+
+.none{
+    
+}

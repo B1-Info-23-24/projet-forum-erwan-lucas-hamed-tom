@@ -47,8 +47,9 @@ func RegisterRoutes(r *mux.Router) {
 	r.HandleFunc("/api/post/display/{postId}", GetCurrentPostFromId).Methods("POST")
 	r.HandleFunc("/api/comment/create/{postId}", CreateComment).Methods("POST")
 	r.HandleFunc("/api/comment/{postId}", GetComments).Methods("GET")
-	r.HandleFunc("/api/post/like/{postId}", LikePost).Methods("POST")       // New Route
-	r.HandleFunc("/api/post/dislike/{postId}", DislikePost).Methods("POST") // New Route
+	r.HandleFunc("/api/post/like/{postId}", LikePost).Methods("POST")
+	r.HandleFunc("/api/post/dislike/{postId}", DislikePost).Methods("POST")
+	r.HandleFunc("/api/post/isLiked/{postId}", IsLiked).Methods("POST")
 }
 func LikePost(w http.ResponseWriter, r *http.Request) {
 	postId, err := strconv.ParseUint(mux.Vars(r)["postId"], 10, 64)
@@ -162,6 +163,30 @@ func DislikePost(w http.ResponseWriter, r *http.Request) {
 		Post:    post,
 	}
 	json.NewEncoder(w).Encode(response)
+}
+
+func IsLiked(w http.ResponseWriter, r *http.Request) {
+	postId, err := strconv.ParseUint(mux.Vars(r)["postId"], 10, 64)
+	if err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusBadRequest)
+		return
+	}
+
+	userID := GetCoockie(w, r, "userId")
+	var userInteraction string
+
+	var interaction UserPostInteraction
+	if err := DB.Where("user_id = ? AND post_id = ?", userID, postId).First(&interaction).Error; err == nil {
+		if interaction.Disliked {
+			userInteraction = "disliked"
+		} else {
+			userInteraction = "liked"
+		}
+	} else {
+		userInteraction = "none"
+	}
+
+	json.NewEncoder(w).Encode(userInteraction)
 }
 
 func register(w http.ResponseWriter, r *http.Request) {
