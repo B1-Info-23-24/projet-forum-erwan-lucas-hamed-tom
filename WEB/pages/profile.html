@@ -7,16 +7,17 @@
     <link rel="stylesheet" href="../static/popup.css">
     <link rel="stylesheet" href="../static/login.css">
     <link rel="stylesheet" href="../static/signup.css">
+    <link rel="stylesheet" href="../static/post.css">
     <title>Profile</title>
 </head>
 <body>
     {{ template "header" . }}
     <div class="container">
         {{ template "menu" . }}
-    
+        
         <div class="right-container">
             <div class="section-account-info">
-                <img src="../static/img/character.png" alt="" class="img--user">
+                <img src="../static/img/character.png" alt="" class="img--users">
                 <div class="account-information">
                     <div class="account-details">
                         <p class="account-username" id="username"></p>
@@ -33,9 +34,12 @@
     <script>
         async function fetchUserProfile(username) {
             try {
-                const response = await fetch(`http://51.138.196.86:8081/api/profile/${username}`, {
-                    method: 'GET'
+                const response = await fetch(`http://localhost:8081/api/profile/${username}`, {
+                    method: 'GET',
+                    credentials: 'include'
                 });
+                console.log('Response status:', response.status);
+                console.log('Response headers:', response.headers);
                 if (!response.ok) {
                     throw new Error(`Error: ${response.statusText}`);
                 }
@@ -48,12 +52,19 @@
             }
         }
 
+
         document.addEventListener('DOMContentLoaded', function() {
-            const username = localStorage.getItem('username');
+            const username = getCookie('username');
             if (username) {
                 fetchUserProfile(username);
             }
         });
+
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
     </script>
 </body>
 </html>

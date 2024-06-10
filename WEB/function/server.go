@@ -18,6 +18,8 @@ func StartWebServer() {
 	r.HandleFunc("/signup", RenderSignupPage).Methods("GET")
 	r.HandleFunc("/profile/{username}", RenderProfilePage).Methods("GET")
 	r.HandleFunc("/edit", RenderEditPage).Methods("GET")
+	r.HandleFunc("/maps", RenderMaps).Methods("GET")
+
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))
 
 	corsMiddleware := handlers.CORS(
@@ -33,15 +35,15 @@ func StartWebServer() {
 }
 
 func RenderSignupPage(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, "../templates/signup.html")
+	http.ServeFile(w, r, "./templates/signup.html")
 }
 
 func RenderLoginPage(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, "../templates/login.html")
+	http.ServeFile(w, r, "./templates/login.html")
 }
 
 func RenderHomePage(w http.ResponseWriter, r *http.Request) {
-	template, err := template.ParseFiles("./index.html", "./templates/header.html", "./templates/menu.html", "./templates/login.html", "./templates/signup.html")
+	template, err := template.ParseFiles("./index.html", "./templates/header.html", "./templates/menu.html", "./templates/login.html", "./templates/signup.html", "./templates/post.html")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -51,7 +53,7 @@ func RenderHomePage(w http.ResponseWriter, r *http.Request) {
 }
 
 func RenderProfilePage(w http.ResponseWriter, r *http.Request) {
-	template, err := template.ParseFiles("./pages/profile.html", "./templates/header.html", "./templates/menu.html", "./templates/login.html", "./templates/signup.html")
+	template, err := template.ParseFiles("./pages/profile.html", "./templates/header.html", "./templates/menu.html", "./templates/login.html", "./templates/signup.html", "./templates/post.html")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -68,11 +70,21 @@ func RenderProfilePage(w http.ResponseWriter, r *http.Request) {
 }
 
 func RenderEditPage(w http.ResponseWriter, r *http.Request) {
-	template, err := template.ParseFiles("./pages/edit.html", "./templates/header.html", "./templates/menu.html", "./templates/login.html", "./templates/signup.html")
+	template, err := template.ParseFiles("./pages/edit.html", "./templates/header.html", "./templates/menu.html", "./templates/login.html", "./templates/signup.html", "./templates/post.html")
 	if err != nil {
 		log.Fatal(err)
 	}
 	template.Execute(w, nil)
 
 	http.ServeFile(w, r, "pages/edit.html")
+}
+
+func RenderMaps(w http.ResponseWriter, r *http.Request) {
+	template, err := template.ParseFiles("./pages/maps.html", "./templates/header.html", "./templates/menu.html", "./templates/login.html", "./templates/signup.html", "./templates/post.html")
+	if err != nil {
+		log.Fatal(err)
+	}
+	template.Execute(w, nil)
+
+	http.ServeFile(w, r, "pages/maps.html")
 }

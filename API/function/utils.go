@@ -17,7 +17,13 @@ func Encrypt(password string) string {
 	return fmt.Sprintf("%x", hash)
 }
 
-func VerifyPassword(s string) bool {
+func VerifyPassword(s string, M *Messages) bool {
+	fmt.Println(s)
+	var hasLen bool
+	if len(s) >= 12 {
+		hasLen = true
+	}
+
 	var hasNumber, hasUpperCase, hasLowercase, hasSpecial bool
 	for _, c := range s {
 		switch {
@@ -33,7 +39,35 @@ func VerifyPassword(s string) bool {
 			hasSpecial = true
 		}
 	}
-	return hasNumber && hasUpperCase && hasLowercase && hasSpecial
+	M.Messages = ""
+	var errorMessages []string
+	if !hasNumber {
+		errorMessages = append(errorMessages, "un chiffre")
+	}
+	if !hasUpperCase {
+		errorMessages = append(errorMessages, "une majuscule")
+	}
+	if !hasLowercase {
+		errorMessages = append(errorMessages, "une minuscule")
+	}
+	if !hasSpecial {
+		errorMessages = append(errorMessages, "un caractère spécial")
+	}
+	if !hasLen {
+		errorMessages = append(errorMessages, "12 caractères")
+	}
+
+	if len(errorMessages) > 0 {
+		M.Messages = "Le mot de passe doit contenir au moins " + strings.Join(errorMessages[:len(errorMessages)-1], ", ")
+		if len(errorMessages) > 1 {
+			M.Messages += " et " + errorMessages[len(errorMessages)-1]
+		} else {
+			M.Messages += errorMessages[len(errorMessages)-1]
+		}
+	} else {
+		M.Messages = ""
+	}
+	return hasNumber && hasUpperCase && hasLowercase && hasSpecial && hasLen
 }
 
 func EmailValid(e string) bool {
@@ -41,7 +75,8 @@ func EmailValid(e string) bool {
 	return emailRegex.MatchString(e)
 }
 
-func GetCookie(w http.ResponseWriter, r *http.Request, name string) int {
+// Get a coockie from a specifique coockie name
+func GetCoockie(w http.ResponseWriter, r *http.Request, name string) int {
 	cookie, err := r.Cookie(name)
 	if err != nil {
 		switch {
@@ -56,6 +91,7 @@ func GetCookie(w http.ResponseWriter, r *http.Request, name string) int {
 	return userId
 }
 
+// Set user id inside a coockie
 func SetCookie(w http.ResponseWriter, user User) {
 	cookieId := http.Cookie{
 		Name:     "userId",
@@ -67,7 +103,7 @@ func SetCookie(w http.ResponseWriter, user User) {
 		SameSite: http.SameSiteLaxMode,
 	}
 	http.SetCookie(w, &cookieId)
-	log.Printf("Cookie set: %v", cookieId)
+	log.Printf("Cookie set: %v", cookieId) // Log the cookie
 
 	cookieUsername := http.Cookie{
 		Name:     "username",
@@ -79,9 +115,10 @@ func SetCookie(w http.ResponseWriter, user User) {
 		SameSite: http.SameSiteLaxMode,
 	}
 	http.SetCookie(w, &cookieUsername)
-	log.Printf("Cookie set: %v", cookieUsername)
+	log.Printf("Cookie set: %v", cookieUsername) // Log the cookie
 }
 
+// delete coockie
 func DeleteCookies(w http.ResponseWriter, r *http.Request) {
 	cookies := r.Cookies()
 	for _, cookie := range cookies {
@@ -92,10 +129,16 @@ func DeleteCookies(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetUserFromURL(w http.ResponseWriter, r *http.Request) string {
+	// Sépare l'URL en segments
 	segments := strings.Split(r.URL.Path, "/")
+
+	// Vérifie s'il y a suffisamment de segments dans l'URL
 	if len(segments) < 2 {
 		return ""
 	}
+
+	// Récupère le dernier segment de l'URL (nom d'utilisateur)
 	username := segments[len(segments)-1]
+
 	return username
 }

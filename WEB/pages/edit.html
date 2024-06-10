@@ -13,57 +13,85 @@
     {{ template "header" . }}
     <div class="container">
         {{ template "menu" . }}
-    
         <div class="right-container">
-            <div class="section-account-info">
-                <form id="edit-profile-form" method="post">
-                    <input type="text" id="usernameEditing" name="username" placeholder="Username">
-                    <input type="email" id="emailEditing" name="email" placeholder="Email">
-                    <button name="edit" type="submit" >Edit</button>
-                </form>
-            </div>
+            <div class="section-account-info"></div>
             <div id="message" class="message"></div>
             <div class="posts-container">
-                <h3>Sécurité</h3>
+                <h2 class="settings-title">Settings</h2>
                 <hr>
-                <p>Mot de passe :</p>
+                <h3 class="settings-title-h3">Informations :</h3>
+                <form id="edit-profile-form" method="post">
+                    <input type="text" id="usernameEditing" name="username" placeholder="Change username...">
+                    <input type="email" id="emailEditing" name="email" placeholder="Change email...">
+                    <button name="edit" type="submit">✓</button>
+                </form>
                 <hr>
-                <button href="/#" onclick="redirectToDelete()">DELETE</button>
+                <h3 class="settings-title-h3">Sécurity :</h3>
+                <p class="settings-title-h3">Change password :</p>
+                <form id="edit-password-form" method="post">
+                    <input type="text" id="oldpasswordEditing" name="oldpassword" placeholder="Old Password">
+                    <input type="text" id="passwordEditing" name="password" placeholder="Password">
+                    <button name="edit" type="submit">Edit</button>
+                </form>
+                <hr>
+                <button href="/#" onclick="redirectToDelete()" id="button-settings-delete">DELETE PROFILE</button>
             </div>
-
         </div>
     </div>
     <script>
         function redirectToDelete() {
-        let username = getCookie("username");
-        if (username) {
-            fetch(`http://51.138.196.86:8081/api/delete/${username}`, {
-                method: 'DELETE'
-            })
-            .then(response => {
-                if (response.ok) {
-                    window.location.href ="/";
+            if (confirm("Êtes-vous sûr de vouloir supprimer ? Cela sera définitif.")) {
+                let username = getCookie("username");
+                if (username) {
+                    fetch(`http://localhost:8081/delete/${username}`, {
+                        method: 'DELETE'
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            window.location.href ="/";
+                        } else {
+                            console.error('Erreur lors de la suppression de l\'utilisateur');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Erreur lors de la suppression de l\'utilisateur:', error);
+                    });
                 } else {
-                    console.error('Erreur lors de la suppression de l\'utilisateur');
+                    window.location.href = "/";
                 }
-            })
-            .catch(error => {
-                console.error('Erreur lors de la suppression de l\'utilisateur:', error);
-            });
-        } else {
-            window.location.href = "/";
+            }
         }
-    }
         document.getElementById('edit-profile-form').addEventListener('submit', async function(event) {
             event.preventDefault();
             const username = document.getElementById('usernameEditing').value;
             const email = document.getElementById('emailEditing').value;
             const currentUsername = getCookie("username")
             try {
-                const response = await fetch(`http://51.138.196.86:8081/api/editing/${currentUsername}`, {
+                const response = await fetch(`http://localhost:8081/api/editing/${currentUsername}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, email })
+                    body: JSON.stringify({ username, email }),
+                    credentials: 'include'
+                });
+                const result = await response.json();
+                if (response.ok) {
+                    window.location.href = `/profile/${currentUsername}`;
+                }
+            } catch (error) {
+            }
+        });
+
+        document.getElementById('edit-password-form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const oldpassword = document.getElementById('oldpasswordEditing').value;
+            const password = document.getElementById('passwordEditing').value;
+            const currentUsername = getCookie("username")
+            try {
+                const response = await fetch(`http://localhost:8081/api/editing/password/${currentUsername}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ oldpassword, password }),
+                    credentials: 'include'
                 });
                 const result = await response.json();
                 if (response.ok) {

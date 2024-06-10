@@ -1,0 +1,250 @@
+{{ define "post" }}
+<div id="post-overlay">
+    <div class="post-content">
+        <div id="theme-button" class="Bivouac">Bivouac</div>
+        <img src="../static/img/character.png" alt="" class="img--user">
+        <div id="map-popup" class="map-popup">
+            <div id="map-close-button">
+                <img src="../static/img/icon/x.png" alt="Fermer la carte">
+            </div>
+            <div id="map" style="width: 400px; height: 400px;"></div>
+        </div>
+        <div class="post-input">
+            <form id="create-post-form" action="/create-post" method="post" enctype="multipart/form-data">
+                <input type="hidden" id="ping-lat" name="lat" value="">
+                <input type="hidden" id="ping-lng" name="lng" value="">
+                <textarea id="content" name="content" maxlength="280" placeholder="Where did you travel?!"></textarea>
+                <input type="hidden" id="theme" name="theme" value="Bivouac">
+                <div id="image-preview" class="image-preview"></div>
+                <p id="nb-word" class="text"><span>0</span>/280</p>
+                <div class="horizontal-bar"></div>
+                <div class="left-icon">
+                    <label for="images" class="image-input-label">
+                        <img src="../static/img/icon/img.png" alt="Choose image" class="icon--img">
+                    </label>
+                    <input type="file" id="images" name="images" multiple style="display: none;">
+                    <img src="../static/img/icon/ping.png" alt="" class="icon--img" onclick="toggleMapPopup()">
+                </div>
+                <div class="right-icon">
+                    <button type="submit" onclick="displayPosts()" ><img src="../static/img/icon/send.png" alt="" class="icon--img"></button>
+                    <a href="javascript:void(0)" onclick="togglePopupPost()"><img src="../static/img/icon/delete.png" alt="" class="icon--img"></a>
+                </div>
+            </form>
+            <div id="message"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let map;
+    let marker = null;
+
+    function initMap() {
+        console.log('initMap called');
+        map = new google.maps.Map(document.getElementById("map"), {
+            center: { lat: 46.227638, lng: 2.213749 }, // Centre de la France
+            zoom: 6,
+            mapTypeId: 'terrain', // Mode plan avec relief
+            streetViewControl: false, // Désactive la vue de rue
+            zoomControl: false, // Désactive le contrôle de zoom
+            mapTypeControl: false, // Désactive le contrôle de type de carte
+            disableDefaultUI: true // Désactive les éléments de l'interface utilisateur par défaut
+        });
+
+        // Ajout d'un événement de clic à la carte
+        google.maps.event.addListener(map, 'click', function(event) {
+            console.log('map click event triggered');
+            let lat = event.latLng.lat();
+            let lng = event.latLng.lng();
+
+            // Suppression du marker précédent
+            if (marker) {
+                marker.setMap(null);
+            }
+
+            // Création d'un nouveau marker rouge
+            marker = new google.maps.Marker({
+                position: { lat: lat, lng: lng },
+                map: map,
+            });
+
+            // Stockage des coordonnées du ping
+            document.getElementById('ping-lat').value = lat;
+            document.getElementById('ping-lng').value = lng;
+            console.log(`lat: ${lat}, lng: ${lng}`);
+        });
+    }
+
+    function toggleMapPopup() {
+        let mapPopup = document.getElementById('map-popup');
+        mapPopup.classList.toggle('open');
+        document.body.classList.toggle('no-scroll');
+    }
+
+    document.getElementById('map-close-button').addEventListener('click', function() {
+        // Fermer le popup ici
+        document.getElementById('map-popup').classList.remove('open');
+    });
+
+    document.getElementById('create-post-form').addEventListener('submit', async function(event) {
+        event.preventDefault();
+
+        const formData = new FormData();
+
+        formData.append('theme', document.getElementById('theme').value);
+        formData.append('content', document.getElementById('content').value);
+        formData.append('lat', document.getElementById('ping-lat').value);
+        formData.append('lng', document.getElementById('ping-lng').value);
+
+        const fileNames = [];
+        files.forEach(file => {
+            fileNames.push(file.name);
+        });
+        formData.append('images', JSON.stringify(fileNames));
+
+        const messageDiv = document.getElementById('message');
+        try {
+            const response = await fetch('http://localhost:8081/api/post/create', {
+                method: 'POST',
+                body: formData,
+                credentials: 'include'
+            });
+            const result = await response.json();
+            if (response.ok) {
+                messageDiv.textContent = 'Post created successfully!';
+                togglePopupPost()
+            } else {
+                messageDiv.textContent = `Error: ${result.error}`;
+            }
+        } catch (error) {
+            messageDiv.textContent = `Error: ${error.message}`;
+        }
+    });
+
+    const themeButton = document.getElementById('theme-button');
+    const themeInput = document.getElementById('theme');
+
+    themeButton.addEventListener('click', () => {
+        if (themeButton.classList.contains('Bivouac')) {
+            themeButton.classList.remove('Bivouac');
+            themeButton.classList.add('Alpinisme');
+            themeButton.textContent = 'Alpinisme';
+            themeInput.value = 'Alpinisme';
+        } else if (themeButton.classList.contains('Alpinisme')) {
+            themeButton.classList.remove('Alpinisme');
+            themeButton.classList.add('Treck');
+            themeButton.textContent = 'Treck';
+            themeInput.value = 'Treck';
+        } else if (themeButton.classList.contains('Treck')) {
+            themeButton.classList.remove('Treck');
+            themeButton.classList.add('Randonné');
+            themeButton.textContent = 'Randonné';
+            themeInput.value = 'Randonné';
+        } else {
+            themeButton.classList.remove('Randonné');
+            themeButton.classList.add('Bivouac');
+            themeButton.textContent = 'Bivouac';
+            themeInput.value = 'Bivouac';
+        }
+    });
+
+    let files = [];
+
+    function togglePopupPost() {
+        let popup = document.querySelector("#post-overlay");
+        popup.classList.toggle("open");
+        document.body.classList.toggle('no-scroll');
+
+        // Reset the form fields and state when the popup is opened
+        if (popup.classList.contains("open")) {
+            document.getElementById("content").value = "";
+            document.getElementById("ping-lat").value = "";
+            document.getElementById("ping-lng").value = "";
+            document.getElementById("nb-word").innerHTML = "<span>0</span>/280";
+            imagePreview.innerHTML = "";
+            files = [];
+            themeButton.className = 'Bivouac';
+            themeButton.textContent = 'Bivouac';
+            themeInput.value = 'Bivouac';
+        }
+    }
+
+    document.getElementById("content").addEventListener("input", function() {
+        var count = this.value.length;
+        document.getElementById("nb-word").innerHTML = `<span>${count}</span>/280`;
+    });
+
+    const imageInput = document.getElementById('images');
+    const imagePreview = document.getElementById('image-preview');
+    const imageInputLabel = document.querySelector('.image-input-label');
+
+    imageInput.addEventListener('change', function() {
+        const newFiles = Array.prototype.slice.call(imageInput.files);
+        files = files.concat(newFiles);
+        imageInput.value = '';
+        displayPreview();
+    });
+
+    imagePreview.addEventListener('click', function(event) {
+        if (event.target.classList.contains('image-preview-item')) {
+            event.target.remove();
+            const index = files.findIndex(file => file.name === event.target.alt);
+            if (index > -1) {
+                files.splice(index, 1);
+            }
+        }
+    });
+
+    function displayPreview() {
+        imagePreview.innerHTML = '';
+        files.forEach(file => {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const imageData = event.target.result;
+                const imageHTML = `<img src="${imageData}" alt="${file.name}" class="image-preview-item">`;
+                imagePreview.innerHTML += imageHTML;
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+    async function displayPosts() {
+            console.log("test")
+
+            try {
+                const response = await fetch(`http://localhost:8081/api/post/display`, {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                console.log("ca marche")
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.statusText}`);
+                }
+                const posts = await response.json();
+                console.log(posts)
+                const postsContainer = document.getElementById('posts-container');
+                postsContainer.innerHTML = '';  // Clear existing content
+                
+                posts.forEach(post => {
+                    console.log(post.theme)
+                    const postElement = document.createElement('div');
+                    postElement.className = 'post';
+                    postElement.innerHTML = `
+                    <div class="post-header">
+                            <h2>${post.Theme}</h2>
+                            <p>${post.Content}</p>
+                            <small>${new Date(post.CreatedAt).toLocaleString()}</small>
+                        </div>
+                        <div class="post-images">
+                            
+                        </div>
+                    `;
+                    //${(post.Images || []).map(image => `<img src="${image.url}" alt="Post Image">`).join('')}
+                    postsContainer.appendChild(postElement);
+                });
+            } catch (error) {
+                console.error('Failed to fetch posts:', error);
+            }
+        }
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDPeDO6qN2NYGOmV-LSQ3Tc7oSlCrJG1-I&callback=initMap"></script>
+{{ end }}
