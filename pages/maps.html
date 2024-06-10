@@ -57,6 +57,8 @@
 
                     marker.addListener('click', () => {
                       displayCurrentPost(lat, lng)
+                      map.setCenter({ lat, lng });
+                      map.setZoom(8);
                     });
                 } else {
                     console.error(`Coordonnées invalides : ${lat}, ${lng}`);
