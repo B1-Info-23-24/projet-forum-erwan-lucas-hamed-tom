@@ -124,6 +124,8 @@
                     if (!isNaN(lat) && !isNaN(lng)) {
                       map.setCenter({ lat, lng });
                       map.setZoom(8);
+                    } else{
+                      displayPosts()
                     }
             } catch (error) {
                 console.error('Failed to fetch posts:', error);
@@ -292,7 +294,6 @@
         async function submitComment(postId) {
             const commentInput = document.getElementById(`comment-input-${postId}`);
             const content = commentInput.value;
-
             if (!content) {
                 alert("Comment cannot be empty");
                 return;
