@@ -85,6 +85,38 @@
             window.location.href = `http://localhost:8080/maps/${postId}`;
         }
 
+        async function editPost(postId) {
+            try {
+                    const response = await fetch(`http://localhost:8081/api/post/display/${postId}`, {
+                        method: 'POST',
+                        credentials: 'include'
+                    });
+                    if (!response.ok) {
+                        throw new Error(`Error: ${response.statusText}`);
+                    }
+                    const respons = await response.json();
+
+                    // Affichez le popup d'édition
+                    togglePopupPost();
+                    console.log(respons)
+                    document.getElementById('content').value = respons.post.Content;
+                    document.getElementById('theme').value = respons.post.Theme;
+                    document.getElementById('ping-lat').value = lat;
+                    document.getElementById('ping-lng').value = lng;
+                    const themeButton = document.getElementById('theme-button');
+                    const themeInput = document.getElementById('theme');
+
+                    //change theme
+                    themeButton.classList.remove('Bivouac');
+                    themeButton.classList.add(respons.post.Theme);
+                    themeButton.textContent = respons.post.Theme;
+                    themeInput.value = respons.post.Theme;
+                } catch (error) {
+                    console.error('Failed to fetch post details for editing:', error);
+                }
+        }
+
+
         async function deletePost(postId) {
             if (confirm("Êtes-vous sûr de vouloir supprimer ? Cela sera définitif.")) {
                 try {
