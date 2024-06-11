@@ -3,12 +3,6 @@
     <div class="post-content">
         <div id="theme-button-modif" class="Bivouac">Bivouac</div>
         <img src="../static/img/character.png" alt="" class="img--user">
-        <div id="map-popup-modif" class="map-popup">
-            <div id="map-close-button">
-                <img src="../static/img/icon/x.png" alt="Fermer la carte">
-            </div>
-            <div id="map-modif" style="width: 400px; height: 400px;"></div>
-        </div>
         <div class="post-input">
             <form id="create-post-form-modif" action="/create-post" method="post" enctype="multipart/form-data">
                 <input type="hidden" id="posts-id-modif" name="lat" value="">
@@ -24,7 +18,6 @@
                         <img src="../static/img/icon/img.png" alt="Choose image" class="icon--img">
                     </label>
                     <input type="file" id="images-modif" name="images" multiple style="display: none;">
-                    <img src="../static/img/icon/ping.png" alt="" class="icon--img" onclick="toggleMapPopupModif()">
                 </div>
                 <div class="right-icon">
                     <button type="submit" onclick="displayPostsModif()"><img src="../static/img/icon/send.png" alt="" class="icon--img"></button>
@@ -37,56 +30,6 @@
 </div>
 
 <script>
-    let mapModif;
-    let markerModif = null;
-
-    function initMapModif() {
-        console.log('initMap called');
-        mapModif = new google.maps.Map(document.getElementById("map-modif"), {
-            center: { lat: 46.227638, lng: 2.213749 }, // Centre de la France
-            zoom: 6,
-            mapTypeId: 'terrain', // Mode plan avec relief
-            streetViewControl: false, // Désactive la vue de rue
-            zoomControl: false, // Désactive le contrôle de zoom
-            mapTypeControl: false, // Désactive le contrôle de type de carte
-            disableDefaultUI: true // Désactive les éléments de l'interface utilisateur par défaut
-        });
-
-        // Ajout d'un événement de clic à la carte
-        google.maps.event.addListener(mapModif, 'click', function(event) {
-            console.log('map click event triggered');
-            let lat = event.latLng.lat();
-            let lng = event.latLng.lng();
-
-            // Suppression du marker précédent
-            if (markerModif) {
-                markerModif.setMap(null);
-            }
-
-            // Création d'un nouveau marker rouge
-            markerModif = new google.maps.Marker({
-                position: { lat: lat, lng: lng },
-                map: mapModif,
-            });
-
-            // Stockage des coordonnées du ping
-            document.getElementById('ping-lat-modif').value = lat;
-            document.getElementById('ping-lng-modif').value = lng;
-            console.log(`lat: ${lat}, lng: ${lng}`);
-        });
-    }
-
-    function toggleMapPopupModif() {
-        let mapPopup = document.getElementById('map-popup-modif');
-        mapPopup.classList.toggle('open');
-        document.body.classList.toggle('no-scroll');
-    }
-
-    document.getElementById('map-close-button').addEventListener('click', function() {
-        // Fermer le popup ici
-        document.getElementById('map-popup-modif').classList.remove('open');
-    });
-
     document.getElementById('create-post-form-modif').addEventListener('submit', async function(event) {
         event.preventDefault();
 
