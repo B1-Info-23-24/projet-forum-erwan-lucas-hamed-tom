@@ -13,8 +13,8 @@ import (
 const (
 	GithubClientID       = "Ov23liWXnMmbsSDNj9vg"
 	GithubClientSecret   = "1370752a10bd312f7a3923c218789c7403fa5e6c"
-	FacebookClientID     = "445513704866124"
-	FacebookClientSecret = "021287d7a1fadd099c2b24e50ff813ea"
+	FacebookClientID     = "1397173297667540"
+	FacebookClientSecret = "0f7ef0cc1b4b51f45e9e051d1b4f8c7d"
 	GoogleClientID       = "34775775715-2fe17vhipjtnspmmf8c2d3vr96t8nvjt.apps.googleusercontent.com"
 	GoogleClientSecret   = "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"
 )
