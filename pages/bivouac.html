@@ -39,15 +39,17 @@
                 const posts = await response.json();
                 const postsContainer = document.getElementById('posts-container');
                 postsContainer.innerHTML = '';
+                const username = getCookie('username');
                 
                 for (const post of posts) {
-                    const status = await IsLiked(post.ID)
+                    const status = await IsLikezd(post.ID)
                     console.log(status)
                     const postElement = document.createElement('div');
                     postElement.className = 'post';
                     postElement.innerHTML = `
                     <div class="post-header">
-                        <button class="post-modif"><img src="../static/img/icon/3points.png" class="icon--3points"></button> 
+                        ${post.Username === username ? `<button class="post-modif" onclick="editPost(${post.ID})"><img src="../static/img/icon/3points.png" class="icon--3points"></button>` : ''}
+                        ${post.Username === username ? `<button class="post-modif" onclick="deletePost(${post.ID})"><img src="../static/img/icon/delete.png" id="icon-delete" class="icon--img"></button>` : ''}
                         <div class="container--button-post">
                             <button class="${post.Theme}">${post.Theme}<img src="../static/img/icon/${post.Theme}.png" class="icon--theme"></button> 
                             <button class="button--map" onclick="openMap(${post.ID})"><img src="../static/img/icon/ping.png" id="icon-ping" class="icon--img"></button>
@@ -177,6 +179,27 @@
                 commentInput.select();
             } catch (error) {
                 console.error('Failed to fetch comments:', error);
+            }
+        }
+
+        async function deletePost(postId) {
+            if (confirm("Êtes-vous sûr de vouloir supprimer ? Cela sera définitif.")) {
+                try {
+                    const response = await fetch(`http://localhost:8081/api/post/delete/${postId}`, {
+                        method: 'DELETE',
+                        credentials: 'include'
+                    });
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        alert(errorData.error);
+                        throw new Error(`Error: ${response.statusText}`);
+                    }
+                    const result = await response.json();
+                    console.log(result.message);
+                    displayPosts();
+                }catch (error) {
+                    console.error('Failed to delete post:',error);
+                }
             }
         }
 

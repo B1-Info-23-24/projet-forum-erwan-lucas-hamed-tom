@@ -52,6 +52,7 @@ func RegisterRoutes(r *mux.Router) {
 	r.HandleFunc("/api/post/like/{postId}", LikePost).Methods("POST")
 	r.HandleFunc("/api/post/dislike/{postId}", DislikePost).Methods("POST")
 	r.HandleFunc("/api/post/isLiked/{postId}", IsLiked).Methods("POST")
+	r.HandleFunc("/api/post/delete/{postId}", DeletePost).Methods("DELETE")
 }
 func LikePost(w http.ResponseWriter, r *http.Request) {
 	postId, err := strconv.ParseUint(mux.Vars(r)["postId"], 10, 64)
@@ -584,4 +585,31 @@ func GetCurrentPostFromProfile(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(post)
+}
+
+func DeletePost(w http.ResponseWriter, r *http.Request) {
+	postId, err := strconv.ParseUint(mux.Vars(r)["postId"], 10, 64)
+	if err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusBadRequest)
+		return
+	}
+
+	var post Post
+	if err := DB.First(&post, postId).Error; err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "Post not found"}`), http.StatusNotFound)
+		return
+	}
+
+	if err := DB.Delete(&post).Error; err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	response := struct {
+		Message string `json:"message"`
+	}{
+		Message: "Post deleted successfully",
+	}
+	json.NewEncoder(w).Encode(response)
 }
