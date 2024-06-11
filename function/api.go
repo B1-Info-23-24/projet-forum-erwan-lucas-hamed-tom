@@ -220,7 +220,7 @@ func register(w http.ResponseWriter, r *http.Request) {
 				M.Messages = "Pseudo deja utiliser"
 			}
 			M.Messages = ""
-			MessageError := err.Error()
+			MessageError = err.Error()
 			if MessageError == "UNIQUE constraint failed: users.email" {
 				M.Messages = "Email deja utiliser"
 			}
@@ -271,7 +271,6 @@ func login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-
 	// Vérifiez si l'email existe dans la base de données
 	if err := DB.Where("email = ?", loginInfo.Email).First(&user).Error; err != nil {
 		http.Error(w, `{"error": "Email not found"}`, http.StatusUnauthorized)
@@ -282,27 +281,28 @@ func login(w http.ResponseWriter, r *http.Request) {
 	loginInfo.Password = Encrypt(loginInfo.Password)
 	if user.Password != loginInfo.Password {
 		http.Error(w, `{"error": "Invalid password"}`, http.StatusUnauthorized)
-	if user.Password != loginInfo.Password {
-		http.Error(w, `{"error": "Invalid password"}`, http.StatusUnauthorized)
-		return
+		if user.Password != loginInfo.Password {
+			http.Error(w, `{"error": "Invalid password"}`, http.StatusUnauthorized)
+			return
+		}
+
+		DeleteCookies(w, r)
+		fmt.Printf("User logged in: %s\n", user.Username)
+		SetCookie(w, user)
+
+		// Log the user details in the terminal
+		log.Printf("User details: %+v\n", user)
+
+		w.Header().Set("Content-Type", "application/json")
+		response := struct {
+			Message string `json:"message"`
+			User    User   `json:"user"`
+		}{
+			Message: "Login successful",
+			User:    user,
+		}
+		json.NewEncoder(w).Encode(response)
 	}
-
-	DeleteCookies(w, r)
-	fmt.Printf("User logged in: %s\n", user.Username)
-	SetCookie(w, user)
-
-	// Log the user details in the terminal
-	log.Printf("User details: %+v\n", user)
-
-	w.Header().Set("Content-Type", "application/json")
-	response := struct {
-		Message string `json:"message"`
-		User    User   `json:"user"`
-	}{
-		Message: "Login successful",
-		User:    user,
-	}
-	json.NewEncoder(w).Encode(response)
 }
 func EditProfile(w http.ResponseWriter, r *http.Request) {
 	var editInfo struct {
