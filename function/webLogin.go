@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strings"
 )
 
 const (
@@ -14,8 +15,8 @@ const (
 	GithubClientSecret   = "1370752a10bd312f7a3923c218789c7403fa5e6c"
 	FacebookClientID     = "445513704866124"
 	FacebookClientSecret = "021287d7a1fadd099c2b24e50ff813ea"
-	GoogleClientID       = "YOUR_GOOGLE_CLIENT_ID"
-	GoogleClientSecret   = "YOUR_GOOGLE_CLIENT_SECRET"
+	GoogleClientID       = "34775775715-2fe17vhipjtnspmmf8c2d3vr96t8nvjt.apps.googleusercontent.com"
+	GoogleClientSecret   = "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"
 )
 
 func rootHandler(w http.ResponseWriter, r *http.Request) {
@@ -147,8 +148,33 @@ func googleLoginHandler(w http.ResponseWriter, r *http.Request) {
 func googleCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	code := r.URL.Query().Get("code")
 	accessToken := getGoogleAccessToken(code)
-	data := getGoogleData(accessToken)
-	loggedinHandler(w, r, data)
+	data, err := getGoogleData(accessToken)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error getting user data from Google: %v", err), http.StatusInternalServerError)
+		return
+	}
+	googleLoggedinHandler(w, r, data)
+}
+
+func getGoogleData(accessToken string) (string, error) {
+	req, err := http.NewRequest("GET", "https://www.googleapis.com/oauth2/v2/userinfo", nil)
+	if err != nil {
+		return "", err
+	}
+	req.Header.Set("Authorization", "Bearer "+accessToken)
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	respBody, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+
+	return string(respBody), nil
 }
 
 func getGoogleAccessToken(code string) string {
@@ -181,22 +207,72 @@ func getGoogleAccessToken(code string) string {
 	return gresp.AccessToken
 }
 
-func getGoogleData(accessToken string) string {
-	req, err := http.NewRequest("GET", "https://www.googleapis.com/oauth2/v2/userinfo", nil)
-	if err != nil {
-		log.Panic("API Request creation failed")
+func googleLoggedinHandler(w http.ResponseWriter, r *http.Request, data string) {
+	if data == "" {
+		http.Error(w, "UNAUTHORIZED!", http.StatusUnauthorized)
+		return
 	}
-	req.Header.Set("Authorization", "Bearer "+accessToken)
 
-	resp, err := http.DefaultClient.Do(req)
+	var parsedData map[string]interface{}
+	err := json.Unmarshal([]byte(data), &parsedData)
 	if err != nil {
-		log.Panic("Request failed")
+		log.Panic("JSON parse error")
 	}
-	defer resp.Body.Close()
+	fmt.Println("test data", parsedData)
 
-	respbody, _ := ioutil.ReadAll(resp.Body)
-	return string(respbody)
+	// Extract the necessary fields
+	email, _ := parsedData["email"].(string)
+	id := fmt.Sprintf("%v", parsedData["id"])
+	picture := fmt.Sprintf("%v", parsedData["picture"])
+
+	// Print the data for debugging purposes
+	fmt.Printf("Email: %s, ID: %s, Picture: %s\n", email, id, picture)
+
+	// Extract username from email
+	username := getUsernameFromEmail(email)
+
+	user := User{
+		Username: username,
+		Email:    email,
+		Password: id,
+	}
+
+	// Check if the user already exists in the database
+	existingUser := getUserByEmail(email)
+	if existingUser != nil {
+		user = *existingUser // Connect the existing user
+	} else {
+		// Save the new user to the database
+		result := DB.Create(&user)
+		if result.Error != nil {
+			http.Error(w, fmt.Sprintf("Error saving user to database: %v", result.Error), http.StatusInternalServerError)
+			return
+		}
+	}
+
+	SetCookie(w, user)
+	log.Printf("User details: %+v\n", user)
+
+	w.Header().Set("Content-Type", "application/json")
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
+
+// Function to extract username from email
+func getUsernameFromEmail(email string) string {
+	username := strings.Split(email, "@")[0]
+	return username
+}
+
+// Function to get user by email from the database
+func getUserByEmail(email string) *User {
+	var user User
+	result := DB.Where("email = ?", email).First(&user)
+	if result.Error != nil {
+		return nil // User not found
+	}
+	return &user
+}
+
 func loggedinHandler(w http.ResponseWriter, r *http.Request, data string) {
 	if data == "" {
 		http.Error(w, "UNAUTHORIZED!", http.StatusUnauthorized)
@@ -213,7 +289,7 @@ func loggedinHandler(w http.ResponseWriter, r *http.Request, data string) {
 	// Extract the necessary fields
 	login := parsedData["login"].(string)
 	id := fmt.Sprintf("%v", parsedData["node_id"])
-	email := ""
+	email := fmt.Sprintf("%v", parsedData["id"])
 	if parsedData["email"] != nil {
 		email = parsedData["email"].(string)
 	}
@@ -226,43 +302,28 @@ func loggedinHandler(w http.ResponseWriter, r *http.Request, data string) {
 		Password: id,
 	}
 	if !checkExistingUser(w, r, id) {
-		// Create a new user record
-
-		// Save the user to the database
 		result := DB.Create(&user)
 		if result.Error != nil {
 			http.Error(w, fmt.Sprintf("Error saving user to database: %v", result.Error), http.StatusInternalServerError)
 			return
 		}
+	} else {
+		if err := DB.Where("password = ?", user.Password).First(&user).Error; err != nil {
+			http.Error(w, `{"error": "User not found"}`, http.StatusUnauthorized)
+			return
+		}
 	}
-	fmt.Printf("New user registered: %s\n", user.Username)
-
-	// Automatically log in the user after registration
 	SetCookie(w, user)
-
-	// Log the user details in the terminal
 	log.Printf("User details: %+v\n", user)
 
 	w.Header().Set("Content-Type", "application/json")
-	// response := struct {
-	// 	Message string `json:"message"`
-	// 	User    User   `json:"user"`
-	// }{
-	// 	Message: "User registered and logged in successfully",
-	// 	User:    user,
-	// }
-	// json.NewEncoder(w).Encode(response)
-	// Redirect to home page after login
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
 func checkExistingUser(w http.ResponseWriter, r *http.Request, password string) bool {
 	var user User
-	// Check if user with the same password exists
 	result := DB.Where("password = ?", password).First(&user)
 	if result.Error == nil {
-		// fmt.Fprintf(w, "User with the same password already exists")
-
 		return true
 	}
 
