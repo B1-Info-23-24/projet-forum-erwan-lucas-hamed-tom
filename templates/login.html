@@ -11,6 +11,9 @@
             <div class="login-right-section">
                 <div class="login-form">
                     <h2 class="login-title-second">Welcome Back<br/>To <span>Forun</span></h2>
+                    <a href="/login/github"><button type="button" class="login-with-github-btn" >Github</button></a>
+                    <a href="/login/facebook"><button type="button" class="login-with-facebook-btn" >Facebook</button></a>
+                    <a href="/login/google"><button type="button" class="login-with-google-btn" >Google</button></a>
                     <form id="login-form">
                         <div class="login-input-auth">
                             <input type="email" id="email" name="email" placeholder="Email" required>
@@ -69,11 +72,13 @@
                     });
                     const result = await response.json();
         
+                    // messageDiv.innerHTML = `Error: ${result.error}`;
+
                     if (response.ok) {
-                        messageDiv.textContent = 'connection rÃ©ussi';
-                        localStorage.setItem('username', result.user.username);
-                        localStorage.setItem('userId', result.user.id);
-                        togglePopupLogin();
+                        messageDiv.textContent = 'connection réussi';
+                        // Vous pouvez stocker les informations utilisateur dans le localStorage si nécessaire
+                        localStorage.setItem('user', JSON.stringify(result.user));
+                        togglePopupLogin()
                     } else {
                         messageDiv.textContent = `${result.error}`;
                     }

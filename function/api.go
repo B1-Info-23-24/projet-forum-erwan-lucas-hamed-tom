@@ -205,6 +205,7 @@ func register(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("Registering user: %+v\n", user)
 	if !VerifyPassword(user.Password, M) {
 		http.Error(w, fmt.Sprintf(`{"error": "%v"}`, M.Messages), http.StatusBadRequest)
+		http.Error(w, fmt.Sprintf(`{"error": "%v"}`, M.Messages), http.StatusBadRequest)
 		return
 	}
 	if VerifyPassword(user.Password, M) && EmailValid(user.Email) {
@@ -218,7 +219,16 @@ func register(w http.ResponseWriter, r *http.Request) {
 			if MessageError == "UNIQUE constraint failed: users.username" {
 				M.Messages = "Pseudo deja utiliser"
 			}
+			M.Messages = ""
+			MessageError := err.Error()
+			if MessageError == "UNIQUE constraint failed: users.email" {
+				M.Messages = "Email deja utiliser"
+			}
+			if MessageError == "UNIQUE constraint failed: users.username" {
+				M.Messages = "Pseudo deja utiliser"
+			}
 			log.Printf("Failed to create user: %v", err)
+			http.Error(w, fmt.Sprintf(`{"error": "%v"}`, M.Messages), http.StatusInternalServerError)
 			http.Error(w, fmt.Sprintf(`{"error": "%v"}`, M.Messages), http.StatusInternalServerError)
 			return
 		}
@@ -261,7 +271,17 @@ func login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+
+	// Vérifiez si l'email existe dans la base de données
+	if err := DB.Where("email = ?", loginInfo.Email).First(&user).Error; err != nil {
+		http.Error(w, `{"error": "Email not found"}`, http.StatusUnauthorized)
+		return
+	}
+
+	// Vérifiez si le mot de passe correspond
 	loginInfo.Password = Encrypt(loginInfo.Password)
+	if user.Password != loginInfo.Password {
+		http.Error(w, `{"error": "Invalid password"}`, http.StatusUnauthorized)
 	if user.Password != loginInfo.Password {
 		http.Error(w, `{"error": "Invalid password"}`, http.StatusUnauthorized)
 		return
