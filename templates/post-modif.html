@@ -202,35 +202,52 @@
                     method: 'POST',
                     credentials: 'include'
                 });
-                console.log("ca marche")
                 if (!response.ok) {
                     throw new Error(`Error: ${response.statusText}`);
                 }
                 const posts = await response.json();
-                console.log(posts)
                 const postsContainer = document.getElementById('posts-container');
-                postsContainer.innerHTML = '';  // Clear existing content
+                postsContainer.innerHTML = '';
+                const username = getCookie('username');
                 
-                posts.forEach(post => {
-                    console.log(post.theme)
+                for (const post of posts) {
+                    const status = await IsLiked(post.ID)
                     const postElement = document.createElement('div');
                     postElement.className = 'post';
                     postElement.innerHTML = `
                     <div class="post-header">
-                            <h2>${post.Theme}</h2>
-                            <p>${post.Content}</p>
-                            <small>${new Date(post.CreatedAt).toLocaleString()}</small>
+                        ${post.Username === username ? `<button class="post-modif" onclick="editPost(${post.ID})"><img src="../static/img/icon/3points.png" class="icon--3points"></button>` : ''}
+                        ${post.Username === username ? `<button class="post-modif" onclick="deletePost(${post.ID})"><img src="../static/img/icon/delete.png" id="icon-delete" class="icon--img"></button>` : ''}
+                        <div class="container--button-post">
+                            <button class="${post.Theme}">${post.Theme}<img src="../static/img/icon/${post.Theme}.png" class="icon--theme"></button> 
+                            <button class="button--map" onclick="openMap(${post.ID})"><img src="../static/img/icon/ping.png" id="icon-ping" class="icon--img"></button>
+                        </div> 
+                        <div class="post-user-date-picture">
+                            <img src="../static/img/character.png" class="post-picture">
+                            <div class="post-user-date">
+                                <p class="post-username">${post.Username}</p>
+                                <small class="post-date">${new Date(post.CreatedAt).toLocaleString()}</small>
+                            </div>
                         </div>
+                        <p class="post-print-content">${post.Content}</p>
                         <div class="post-images">
-                            
                         </div>
+                        <div class="post-interaction">
+                            <button class="icon--left" onclick="likePost(${post.ID})"><img src="../static/img/icon/like_${status}.png" class="icon--img"></button>
+                            <button class="icon--left" onclick="dislikePost(${post.ID})"><img src="../static/img/icon/dislike_${status}.png" class="icon--img"></button>                            
+                            <button class="icon--right" onclick="toggleComments(${post.ID})"><img src="../static/img/icon/comment.png"  class="icon--img"></button>
+                            <button class="icon--right"><img src="../static/img/icon/favorite.png"  class="icon--img"></button>
+                        </div>
+                        <div class="comments-container" id="comments-${post.ID}">
+                        </div>
+                    </div>
                     `;
                     postsContainer.appendChild(postElement);
-                });
+                }
             } catch (error) {
                 console.error('Failed to fetch posts:', error);
             }
-        }
+        } console.error('Failed to fetch posts:', error);
 </script>
 <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMapModif"></script>
 {{ end }}
