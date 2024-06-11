@@ -44,6 +44,7 @@ func RegisterRoutes(r *mux.Router) {
 	r.HandleFunc("/api/post/create", CreatePost).Methods("POST")
 	r.HandleFunc("/api/pings", GetPings).Methods("GET")
 	r.HandleFunc("/api/post/display", DisplayPost).Methods("POST")
+	r.HandleFunc("/api/post/modif/{postId}", ModifPost).Methods("POST")
 	r.HandleFunc("/api/post/display/{lat}/{lng}", GetCurrentPost).Methods("POST")
 	r.HandleFunc("/api/post/display/{postId}", GetCurrentPostFromId).Methods("POST")
 	r.HandleFunc("/api/post/section/{section}", GetCurrentPostFromSection).Methods("POST")
@@ -467,6 +468,72 @@ func DisplayPost(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(posts)
+}
+
+func ModifPost(w http.ResponseWriter, r *http.Request) {
+	if err := r.ParseMultipartForm(10 << 20); err != nil {
+		log.Printf("Error parsing form: %v", err)
+		http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusBadRequest)
+		return
+	}
+
+	postId, err := strconv.ParseUint(mux.Vars(r)["postId"], 10, 64)
+	if err != nil {
+		log.Printf("Error parsing postId: %v", err)
+		http.Error(w, `{"error": "Invalid postId"}`, http.StatusBadRequest)
+		return
+	}
+
+	theme := r.FormValue("theme")
+	content := r.FormValue("content")
+	lat := r.FormValue("lat")
+	lng := r.FormValue("lng")
+
+	var post Post
+	if err := DB.Where("id = ?", postId).First(&post).Error; err != nil {
+		log.Printf("Post not found: %v", err)
+		http.Error(w, `{"error": "Post not found"}`, http.StatusNotFound)
+		return
+	}
+
+	post.Theme = theme
+	post.Content = content
+
+	if err := DB.Save(&post).Error; err != nil {
+		log.Printf("Error saving post: %v", err)
+		http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusInternalServerError)
+		return
+	}
+
+	var ping Ping
+	if err := DB.Where("post_id = ?", postId).First(&ping).Error; err != nil {
+		log.Printf("Ping not found: %v", err)
+		http.Error(w, `{"error": "Ping not found"}`, http.StatusNotFound)
+		return
+	}
+
+	ping.Lat = lat
+	ping.Lng = lng
+
+	if err := DB.Save(&ping).Error; err != nil {
+		log.Printf("Error saving ping: %v", err)
+		http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	response := struct {
+		Message string `json:"message"`
+		Post    Post   `json:"post"`
+	}{
+		Message: "Post updated successfully",
+		Post:    post,
+	}
+	if err := json.NewEncoder(w).Encode(response); err != nil {
+		log.Printf("Error encoding response: %v", err)
+		http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusInternalServerError)
+		return
+	}
 }
 
 func CreateComment(w http.ResponseWriter, r *http.Request) {

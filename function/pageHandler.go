@@ -7,7 +7,7 @@ import (
 )
 
 func Home(w http.ResponseWriter, r *http.Request) {
-	template, err := template.ParseFiles("./index.html", "./templates/header.html", "./templates/menu.html", "./templates/login.html", "./templates/signup.html", "./templates/post.html")
+	template, err := template.ParseFiles("./index.html", "./templates/header.html", "./templates/menu.html", "./templates/login.html", "./templates/signup.html", "./templates/post.html", "./templates/post-modif.html")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -15,7 +15,7 @@ func Home(w http.ResponseWriter, r *http.Request) {
 }
 
 func Profile(w http.ResponseWriter, r *http.Request) error {
-	tmpl, err := template.ParseFiles("./pages/profile.html", "./templates/header.html", "./templates/menu.html", "./templates/login.html", "./templates/signup.html", "./templates/post.html")
+	tmpl, err := template.ParseFiles("./pages/profile.html", "./templates/header.html", "./templates/menu.html", "./templates/login.html", "./templates/signup.html", "./templates/post.html", "./templates/post-modif.html")
 	if err != nil {
 		log.Println("Error parsing template files:", err)
 		return err
@@ -39,7 +39,7 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func Edit(w http.ResponseWriter, r *http.Request) error {
-	tmpl, err := template.ParseFiles("./pages/edit.html", "./templates/header.html", "./templates/menu.html", "./templates/login.html", "./templates/signup.html", "./templates/post.html")
+	tmpl, err := template.ParseFiles("./pages/edit.html", "./templates/header.html", "./templates/menu.html", "./templates/login.html", "./templates/signup.html", "./templates/post.html", "./templates/post-modif.html")
 	if err != nil {
 		log.Println("Error parsing template files:", err)
 		return err
@@ -63,7 +63,7 @@ func EditHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func Maps(w http.ResponseWriter, r *http.Request) error {
-	template, err := template.ParseFiles("./pages/maps.html", "./templates/header.html", "./templates/menu.html", "./templates/login.html", "./templates/signup.html", "./templates/post.html")
+	template, err := template.ParseFiles("./pages/maps.html", "./templates/header.html", "./templates/menu.html", "./templates/login.html", "./templates/signup.html", "./templates/post.html", "./templates/post-modif.html")
 	if err != nil {
 		log.Fatal(err)
 		return err
@@ -81,7 +81,7 @@ func MapsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func RandonneHandler(w http.ResponseWriter, r *http.Request) error {
-	template, err := template.ParseFiles("./pages/randonné.html", "./templates/header.html", "./templates/menu.html", "./templates/login.html", "./templates/signup.html", "./templates/post.html")
+	template, err := template.ParseFiles("./pages/randonné.html", "./templates/header.html", "./templates/menu.html", "./templates/login.html", "./templates/signup.html", "./templates/post.html", "./templates/post-modif.html")
 	if err != nil {
 		log.Fatal(err)
 		return err
@@ -90,7 +90,7 @@ func RandonneHandler(w http.ResponseWriter, r *http.Request) error {
 	return nil
 }
 func BivouacHandler(w http.ResponseWriter, r *http.Request) error {
-	template, err := template.ParseFiles("./pages/bivouac.html", "./templates/header.html", "./templates/menu.html", "./templates/login.html", "./templates/signup.html", "./templates/post.html")
+	template, err := template.ParseFiles("./pages/bivouac.html", "./templates/header.html", "./templates/menu.html", "./templates/login.html", "./templates/signup.html", "./templates/post.html", "./templates/post-modif.html")
 	if err != nil {
 		log.Fatal(err)
 		return err
@@ -99,7 +99,7 @@ func BivouacHandler(w http.ResponseWriter, r *http.Request) error {
 	return nil
 }
 func AlpinismeHandler(w http.ResponseWriter, r *http.Request) error {
-	template, err := template.ParseFiles("./pages/alpinisme.html", "./templates/header.html", "./templates/menu.html", "./templates/login.html", "./templates/signup.html", "./templates/post.html")
+	template, err := template.ParseFiles("./pages/alpinisme.html", "./templates/header.html", "./templates/menu.html", "./templates/login.html", "./templates/signup.html", "./templates/post.html", "./templates/post-modif.html")
 	if err != nil {
 		log.Fatal(err)
 		return err
@@ -108,7 +108,7 @@ func AlpinismeHandler(w http.ResponseWriter, r *http.Request) error {
 	return nil
 }
 func TreckHandler(w http.ResponseWriter, r *http.Request) error {
-	template, err := template.ParseFiles("./pages/treck.html", "./templates/header.html", "./templates/menu.html", "./templates/login.html", "./templates/signup.html", "./templates/post.html")
+	template, err := template.ParseFiles("./pages/treck.html", "./templates/header.html", "./templates/menu.html", "./templates/login.html", "./templates/signup.html", "./templates/post.html", "./templates/post-modif.html")
 	if err != nil {
 		log.Fatal(err)
 		return err

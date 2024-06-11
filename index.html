@@ -43,7 +43,6 @@
                 
                 for (const post of posts) {
                     const status = await IsLiked(post.ID)
-                    console.log(status)
                     const postElement = document.createElement('div');
                     postElement.className = 'post';
                     postElement.innerHTML = `
@@ -87,6 +86,7 @@
 
         async function editPost(postId) {
             try {
+                    console.log(postId)
                     const response = await fetch(`http://localhost:8081/api/post/display/${postId}`, {
                         method: 'POST',
                         credentials: 'include'
@@ -97,14 +97,14 @@
                     const respons = await response.json();
 
                     // Affichez le popup d'édition
-                    togglePopupPost();
-                    console.log(respons)
-                    document.getElementById('content').value = respons.post.Content;
-                    document.getElementById('theme').value = respons.post.Theme;
-                    document.getElementById('ping-lat').value = lat;
-                    document.getElementById('ping-lng').value = lng;
-                    const themeButton = document.getElementById('theme-button');
-                    const themeInput = document.getElementById('theme');
+                    togglePopupPostModif();
+                    document.getElementById('posts-id-modif').value = respons.post.ID;
+                    document.getElementById('content-modif').value = respons.post.Content;
+                    document.getElementById('theme-modif').value = respons.post.Theme;
+                    document.getElementById('ping-lat-modif').value = lat;
+                    document.getElementById('ping-lng-modif').value = lng;
+                    const themeButton = document.getElementById('theme-button-modif');
+                    const themeInput = document.getElementById('theme-modif');
 
                     //change theme
                     themeButton.classList.remove('Bivouac');
@@ -136,6 +136,12 @@
                     console.error('Failed to delete post:',error);
                 }
             }
+        }
+
+        function togglePopupPostModif() {
+            let popup = document.querySelector("#post-overlay-modif");
+            popup.classList.toggle("open");
+            document.body.classList.toggle('no-scroll');
         }
 
         async function likePost(postId) {
