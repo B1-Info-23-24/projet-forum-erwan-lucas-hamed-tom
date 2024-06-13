@@ -18,8 +18,7 @@ func StartWebServer() {
 	r.HandleFunc("/signup", RenderSignupPage).Methods("GET")
 	r.HandleFunc("/profile/{username}", RenderProfilePage).Methods("GET")
 	r.HandleFunc("/edit", RenderEditPage).Methods("GET")
-	r.HandleFunc("/maps", RenderMaps).Methods("GET")
-
+	r.HandleFunc("/maps/{postId}", RenderMaps).Methods("GET")
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))
 
 	corsMiddleware := handlers.CORS(

@@ -8,9 +8,11 @@ body {
     flex-direction: column; 
     margin: 0;
 }
+
 button{
     cursor: pointer;
 }
+
 
 .header {
     background-color: #FFF;
@@ -43,6 +45,7 @@ button{
 
 .right-container {
     width: 80%; 
+    height: 400px;
     background-color: #E9E9E9;
     display: flex;
     flex-direction: column;
@@ -90,6 +93,7 @@ button{
 
 .section-title{
     margin-left: 10px;
+    margin-top: 0%;
     font-family: 'Inter';
     font-style: normal;
     font-weight: 300;
@@ -113,6 +117,9 @@ button{
 
     border: none;
     background-color: #E9E9E9;
+    color: #000000;
+    user-select: none;
+    text-decoration:none;
 }
 
 .img--icon{
@@ -153,16 +160,13 @@ button{
 }
 
 .posts-container{
-    margin-top: 50px;
-
     width: 100%;
     height: 100%;
 
     background: #E9EAF0;
     box-shadow: inset -10px -10px 20px rgba(255, 255, 255, 0.7), inset 10px 10px 10px rgba(189, 200, 223, 0.7);
     border-radius: 15px;
-
-
+    overflow: scroll;
 }
 
 .posts{
@@ -284,6 +288,10 @@ button{
     height: 30px;
 }
 
+.container--bottom{
+    height: 100%;
+}
+
 #usernameEditing, #emailEditing, #button-settings, #oldpasswordEditing, #passwordEditing {
     font-family: 'Inter';
     font-style: normal;
@@ -360,5 +368,5 @@ button{
     box-shadow: -1px -1px 0px #ffdfdf, -2px -2px 2px #cfc9c9, inset -1px -1px 0px #FFFFFF, inset -2px -2px 2px #B8CCE0;
     border-radius: 10px;
     border: none;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
 }

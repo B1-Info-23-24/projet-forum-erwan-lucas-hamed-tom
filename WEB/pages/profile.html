@@ -34,7 +34,7 @@
 
     <script>
         function redirectToDeconnexion() {
-            if (confirm("Êtes-vous sûr de vouloir vous déconnecter ? Cela sera définitif.")) {
+            if (confirm("Vous allez être déconnecter ? ")) {
                 fetch('http://localhost:8081/api/deconnexion', {
                     method: 'POST',
                     credentials: 'include' // Inclure les cookies dans la requête

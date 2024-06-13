@@ -9,6 +9,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 	"unicode"
 )
 
@@ -137,8 +138,15 @@ func SetCookie(w http.ResponseWriter, user User) {
 func DeleteCookies(w http.ResponseWriter, r *http.Request) {
 	cookies := r.Cookies()
 	for _, cookie := range cookies {
+		// Setting MaxAge to -1 to delete the cookie
 		cookie.MaxAge = -1
+		cookie.Expires = time.Unix(0, 0)
+		cookie.Value = ""
+		// Ensuring to keep other attributes to match the original cookie
+		cookie.Path = "/"
+		cookie.HttpOnly = false
 		cookie.Secure = false
+		cookie.SameSite = http.SameSiteLaxMode
 		http.SetCookie(w, cookie)
 	}
 }

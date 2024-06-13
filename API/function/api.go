@@ -56,11 +56,14 @@ func RegisterRoutes(r *mux.Router) {
 	r.HandleFunc("/api/post/display", DisplayPost).Methods("POST")
 	r.HandleFunc("/api/post/display/{lat}/{lng}", GetCurrentPost).Methods("POST")
 	r.HandleFunc("/api/post/display/{postId}", GetCurrentPostFromId).Methods("POST")
+	r.HandleFunc("/api/post/edit/{postId}", EditPost).Methods("PUT")
+	r.HandleFunc("/api/post/delete/{postId}", DeletePost).Methods("DELETE")
 	r.HandleFunc("/api/comment/create/{postId}", CreateComment).Methods("POST")
 	r.HandleFunc("/api/comment/{postId}", GetComments).Methods("GET")
 	r.HandleFunc("/api/post/like/{postId}", LikePost).Methods("POST")
 	r.HandleFunc("/api/post/dislike/{postId}", DislikePost).Methods("POST")
 	r.HandleFunc("/api/post/isLiked/{postId}", IsLiked).Methods("POST")
+
 }
 
 type Messages struct {
@@ -481,6 +484,102 @@ func GetCurrentPost(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(post)
+}
+
+func GetCurrentPostFromSection(w http.ResponseWriter, r *http.Request) {
+	section := mux.Vars(r)["section"]
+	fmt.Println(section)
+
+	var post []Post
+	if err := DB.Where("theme = ?", section).Find(&post).Error; err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "Post not found: %v"}`, err.Error()), http.StatusNotFound)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(post)
+}
+
+func GetCurrentPostFromProfile(w http.ResponseWriter, r *http.Request) {
+	userID := mux.Vars(r)["userId"]
+
+	var post []Post
+	if err := DB.Where("user_id = ?", userID).Find(&post).Error; err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "Post not found: %v"}`, err.Error()), http.StatusNotFound)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(post)
+}
+
+func EditPost(w http.ResponseWriter, r *http.Request) {
+	postId, err := strconv.ParseUint(mux.Vars(r)["postId"], 10, 64)
+	if err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusBadRequest)
+		return
+	}
+
+	var updateData struct {
+		Theme   string `json:"theme"`
+		Content string `json:"content"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&updateData); err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusBadRequest)
+		return
+	}
+
+	var post Post
+	if err := DB.First(&post, postId).Error; err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "Post not found"}`), http.StatusNotFound)
+		return
+	}
+
+	post.Theme = updateData.Theme
+	post.Content = updateData.Content
+
+	if err := DB.Save(&post).Error; err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	response := struct {
+		Message string `json:"message"`
+		Post    Post   `json:"post"`
+	}{
+		Message: "Post updated successfully",
+		Post:    post,
+	}
+	json.NewEncoder(w).Encode(response)
+}
+
+func DeletePost(w http.ResponseWriter, r *http.Request) {
+	postId, err := strconv.ParseUint(mux.Vars(r)["postId"], 10, 64)
+	if err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusBadRequest)
+		return
+	}
+
+	var post Post
+	if err := DB.First(&post, postId).Error; err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "Post not found"}`), http.StatusNotFound)
+		return
+	}
+
+	if err := DB.Delete(&post).Error; err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	response := struct {
+		Message string `json:"message"`
+	}{
+		Message: "Post deleted successfully",
+	}
+	json.NewEncoder(w).Encode(response)
 }
 
 func GetCurrentPostFromId(w http.ResponseWriter, r *http.Request) {

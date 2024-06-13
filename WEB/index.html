@@ -27,6 +27,12 @@
         </div>
     </div>
     <script>
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
+
         async function displayPosts() {
             try {
                 const response = await fetch(`http://localhost:8081/api/post/display`, {
@@ -40,13 +46,17 @@
                 const postsContainer = document.getElementById('posts-container');
                 postsContainer.innerHTML = '';
                 
+                const username = getCookie('username');
+
                 for (const post of posts) {
-                    const status = await IsLiked(post.ID)
-                    console.log(status)
+                    const status = await IsLiked(post.ID);
+                    console.log(status);
                     const postElement = document.createElement('div');
                     postElement.className = 'post';
                     postElement.innerHTML = `
                     <div class="post-header">
+                        ${post.Username === username ? `<button class="post-modif" onclick="editPost(${post.ID})">Edit</button>` : ''}
+                        ${post.Username === username ? `<button class="post-modif" onclick="deletePost(${post.ID})"><img src="../static/img/icon/delete.png" id="icon-delete" class="icon--img"></button>` : ''}
                         <button class="post-modif"><img src="../static/img/icon/3points.png" class="icon--3points"></button> 
                         <div class="container--button-post">
                             <button class="${post.Theme}">${post.Theme}<img src="../static/img/icon/${post.Theme}.png" class="icon--theme"></button> 
@@ -133,8 +143,7 @@
                 console.error('Failed check interaction:', error);
             }
         }
-        
-        
+
         async function displayComments(postId, commentsContainer) {
             try {
                 const response = await fetch(`http://localhost:8081/api/comment/${postId}`, {
@@ -226,7 +235,28 @@
             }
         }
 
-        displayPosts();
+        async function deletePost(postId) {
+            if (confirm("Êtes-vous sûr de vouloir supprimer ? Cela sera définitif.")) {
+            try {
+                const response = await fetch(`http://localhost:8081/api/post/delete/${postId}`, {
+                method: 'DELETE',
+                credentials: 'include'
+            });
+            if (!response.ok) {
+                const errorData = await response.json();
+                alert(errorData.error);
+                throw new Error(`Error: ${response.statusText}`);
+            }
+            const result = await response.json();
+            console.log(result.message);
+            displayPosts();
+            }catch (error) {
+                console.error('Failed to delete post:', error);
+            }
+        }
+        }
+
+     displayPosts();    
     </script>
 </body>
 </html>
