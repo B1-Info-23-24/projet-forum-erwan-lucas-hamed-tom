@@ -1,0 +1,133 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/style.css">
+    <link rel="stylesheet" href="../static/popup.css">
+    <link rel="stylesheet" href="../static/login.css">
+    <link rel="stylesheet" href="../static/signup.css">
+    <link rel="stylesheet" href="../static/post.css">
+    <title>Setting</title>
+</head>
+<body>
+    {{ template "header" . }}
+    <div class="container"> 
+        {{ template "menu" . }}
+        <div class="right-container">
+            <div class="section-account-info">
+                <img src="../static/img/character.png" alt="" class="img--users">
+                <div class="account-information">
+                    <div class="account-details">
+                        <p class="account-username" id="username"></p>
+                    </div>
+                    <p class="account-email" id="email"></p>
+                    <p class="account-password" id="password"></p>
+                </div>
+            </div>
+            <div id="message" class="message"></div>
+            <div class="posts-container">
+                <h2 class="settings-title">Settings</h2>
+                <hr>
+                <h3 class="settings-title-h3">Informations :</h3>
+                <form id="edit-profile-form" method="post">
+                    <input type="text" id="usernameEditing" name="username" placeholder="Change username...">
+                    <input type="email" id="emailEditing" name="email" placeholder="Change email...">
+                    <button name="edit" type="submit">✓</button>
+                </form>
+                <hr>
+                <h3 class="settings-title-h3">Sécurity :</h3>
+                <p class="settings-title-h3">Change password :</p>
+                <form id="edit-password-form" method="post">
+                    <input type="text" id="oldpasswordEditing" name="oldpassword" placeholder="Old Password">
+                    <input type="text" id="passwordEditing" name="password" placeholder="Password">
+                    <button name="edit" type="submit">Edit</button>
+                </form>
+                <hr>
+                <button href="/#" onclick="redirectToDelete()" id="button-settings-delete">DELETE PROFILE</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        function redirectToDelete() {
+            if (confirm("Êtes-vous sûr de vouloir supprimer ? Cela sera définitif.")) {
+                let username = getCookie("username");
+                if (username) {
+                    fetch(`http://localhost:8081/api/delete/${username}`, {
+                        method: 'DELETE'
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            window.location.href ="/";
+                        } else {
+                            console.error('Erreur lors de la suppression de l\'utilisateur');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Erreur lors de la suppression de l\'utilisateur:', error);
+                    });
+                } else {
+                    window.location.href = "/";
+                }
+            }
+        }
+        document.getElementById('edit-profile-form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const username = document.getElementById('usernameEditing').value;
+            const email = document.getElementById('emailEditing').value;
+            const currentUsername = getCookie("username")
+            try {
+                const response = await fetch(`http://localhost:8081/api/editing/${currentUsername}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, email }),
+                    credentials: 'include'
+                });
+                const result = await response.json();
+                if (response.ok) {
+                    window.location.href = `/profile/${currentUsername}`;
+                }
+            } catch (error) {
+            }
+        });
+
+        document.getElementById('edit-password-form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const oldpassword = document.getElementById('oldpasswordEditing').value;
+            const password = document.getElementById('passwordEditing').value;
+            const currentUsername = getCookie("username")
+            try {
+                const response = await fetch(`http://localhost:8081/api/editing/password/${currentUsername}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ oldpassword, password }),
+                    credentials: 'include'
+                });
+                const result = await response.json();
+                if (response.ok) {
+                    window.location.href = `/profile/${currentUsername}`;
+                }
+            } catch (error) {
+            }
+        });
+
+        function getCookie(cname) {
+            let name = cname + "=";
+            let decodedCookie = decodeURIComponent(document.cookie);
+            let ca = decodedCookie.split(';');
+            for(let i = 0; i <ca.length; i++) {
+              let c = ca[i];
+              while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+              }
+              if (c.indexOf(name) == 0) {
+                console.log(name.length, c.length)
+                return c.substring(name.length, c.length);
+              }
+            }
+            return "";
+        }
+    </script>
+</body>
+</html>

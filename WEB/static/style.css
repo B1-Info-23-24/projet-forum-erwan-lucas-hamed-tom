@@ -1,0 +1,372 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&display=swap');
+
+body {
+    background-color: #E9E9E9;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column; 
+    margin: 0;
+}
+
+button{
+    cursor: pointer;
+}
+
+
+.header {
+    background-color: #FFF;
+    display: flex;
+    padding: 10px;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+}
+
+.container {
+    display: flex;
+    width: 100%;
+    margin-top: 100px; 
+}
+
+.left-container, .right-container {
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.left-container {
+    width: 20%;
+    background-color: #E9E9E9;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.right-container {
+    width: 80%; 
+    height: 400px;
+    background-color: #E9E9E9;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem; 
+    margin-top: 15px;
+}
+
+.redirection-button{
+    display: block;
+}
+
+.button-redirection{
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 300;
+    font-size: 20px;
+    line-height: 24px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px 10px 7px 20px;
+
+    background: #E7EAEC;
+    box-shadow: -1px -1px 0px #FFFFFF, -2px -2px 2px #B8CCE0, inset -1px -1px 0px #FFFFFF, inset -2px -2px 2px #B8CCE0;
+    border-radius: 10px;
+    border: none;
+    margin: 20px 0px 5px 10px;
+}
+
+.button-redirection--post{
+    padding-left: 30px;
+}
+
+.img--icon-redirection{
+    width: 25px;
+    height: 25px;
+    padding: 10px 30px;
+
+    background: #E7EAEC;
+    box-shadow: 8px 8px 16px #C9D9E8;
+    border-radius: 10px;
+    margin-left: 60px;
+}
+
+.section-title{
+    margin-left: 10px;
+    margin-top: 0%;
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 300;
+    font-size: 20px;
+    line-height: 24px;
+
+    color: #000000;
+}
+
+.button-section{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 10px 0px 20px 30px;
+
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 300;
+    font-size: 20px;
+    line-height: 24px;
+
+    border: none;
+    background-color: #E9E9E9;
+    color: #000000;
+    user-select: none;
+    text-decoration:none;
+}
+
+.img--icon{
+    height: 35px;
+    width: 35px;
+    margin-right: 50px;
+}
+
+.map{
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.img--map{
+    height: 140px;
+    width: 150px;
+}
+
+.map-title{
+    font-family: 'Outfit';
+    font-style: normal;
+    font-weight: 100;
+    font-size: 30px;
+    line-height: 50px;
+    text-align: center;
+    writing-mode: vertical-rl;
+    text-orientation: upright;
+    letter-spacing: -6px;
+    margin: 10px 10px 10px 10px;
+
+    color: #000000;
+}
+
+.img--section{
+    width: 100%;
+    height: 100%;
+}
+
+.posts-container{
+    width: 100%;
+    height: 100%;
+
+    background: #E9EAF0;
+    box-shadow: inset -10px -10px 20px rgba(255, 255, 255, 0.7), inset 10px 10px 10px rgba(189, 200, 223, 0.7);
+    border-radius: 15px;
+    overflow: scroll;
+    flex-grow: 1;}
+
+.posts{
+    flex-grow: 1;
+    overflow-y: auto; 
+}
+
+.section-account-info{
+    margin-bottom: -20px;
+
+    width: 100%;
+    height: 40%;
+
+    background: #E9EAF0;
+    box-shadow: inset -10px -10px 20px rgba(255, 255, 255, 0.7), inset 10px 10px 10px rgba(189, 200, 223, 0.7);
+    border-radius: 15px;
+}
+
+.img--logo{
+    height: 71px;
+    width: 221px;
+    margin-left: 20px;
+}
+
+.search-bar{
+    margin-top: 17px;
+    display: flex;
+    position: relative;
+}
+
+.img--search{
+    cursor: pointer;
+    height: 25px;
+    width: 25px;
+    margin-top: 25px;
+    position: absolute; 
+    left: 65px;
+    transform: translateY(-50%)
+}
+
+.button-filter{
+    height: 50px;
+    width: 50px;
+    border-radius: 50%;
+    background-color: #000000;
+    align-items: center;
+    justify-content: center;
+    border: none;
+}
+
+.img--filter{
+    height: 20px;
+    width: 20px;
+}
+
+.input--search-bar{
+    height: 50px;
+    width: 350px;
+    background-color: #EAEAEA;
+    border: none;
+    border-radius: 63px;
+    margin-right: 10px;
+    padding-left: 50px;
+    margin-left: 50px;
+}
+
+.search-bar{
+    margin-left: 100px;
+}
+
+.img--character{
+    width: 80px;
+    height: 80px;
+    margin-left: 300px;
+}
+
+.right-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.section-account-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.img--users {
+    width: 100px;
+    height: 100px;
+    margin-right: 15px; 
+    margin-left: 40px; 
+}
+
+.account-information {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.account-details {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.account-username {
+    font-weight: bold;
+    margin-right: 5px;
+}
+
+.account-email {
+    font-weight: normal;
+    font-size: 0.9em;
+}
+
+.icon--settings {
+    width: 30px;
+    height: 30px;
+}
+
+.container--bottom{
+    height: 100%;
+}
+
+#usernameEditing, #emailEditing, #button-settings, #oldpasswordEditing, #passwordEditing {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 50;
+    font-size: 15px;
+    line-height: 24px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3px 5px 4px 10px;
+
+    background: #E7EAEC;
+    box-shadow: -1px -1px 0px #FFFFFF, -2px -2px 2px #B8CCE0, inset -1px -1px 0px #FFFFFF, inset -2px -2px 2px #B8CCE0;
+    border-radius: 10px;
+    border: none;
+    margin-left: 30px;
+    margin-top: 10px;
+}
+
+#button-settings {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 50;
+    font-size: 15px;
+    line-height: 24px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px 10 px;   
+
+    background: #d8e3ea;
+    box-shadow: -1px -1px 0px #FFFFFF, -2px -2px 2px #B8CCE0, inset -1px -1px 0px #FFFFFF, inset -2px -2px 2px #B8CCE0;
+    border-radius: 10px;
+    border: none;
+    margin-left: 30px;
+    margin-top: 10px;
+}
+
+#button-settings-delete {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 50;
+    font-size: 15px;
+    line-height: 24px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px 10 px;   
+
+    background: #ecbebe;
+    box-shadow: -1px -1px 0px #ffdfdf, -2px -2px 2px #cfc9c9, inset -1px -1px 0px #FFFFFF, inset -2px -2px 2px #B8CCE0;
+    border-radius: 10px;
+    border: none;
+    margin-left: 30px;
+    margin-top: 10px;
+}
+
+#button-settings-deconnexion {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 50;
+    font-size: 15px;
+    line-height: 24px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px 10 px;   
+
+    background: #ecbebe;
+    box-shadow: -1px -1px 0px #ffdfdf, -2px -2px 2px #cfc9c9, inset -1px -1px 0px #FFFFFF, inset -2px -2px 2px #B8CCE0;
+    border-radius: 10px;
+    border: none;
+    margin-bottom: 20px;
+}

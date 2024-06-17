@@ -1,0 +1,42 @@
+{{ define "header" }}
+<div class="header">
+    <a href="/"><img src="../static/img/logo.png" alt="" class="img--logo"></a>
+    <div class="search-bar">
+        <img src="../static/img/search.png" alt="" class="img--search">
+        <form class="search-form" action="">
+            <input class="input--search-bar" name="search-bar" id="search-bar"  value="" type="text" placeholder="Search anything....">
+        </form>
+        <button class="button-filter"><img src="../static/img/filter.png" alt="" class="img--filter"></button>
+    </div>
+    <a href="/#" onclick="redirectToUserProfile()"><img src="../static/img/character.png" alt="" class="img--character"></a>
+</div>
+
+<script>
+    function redirectToUserProfile() {
+        let username = getCookie("username");
+        if (username) {
+            window.location.href = `/profile/${encodeURIComponent(username)}`;
+        } else {
+            window.location.href = "/";
+        }
+    }
+
+    function getCookie(cname) {
+        let name = cname + "=";
+        let decodedCookie = decodeURIComponent(document.cookie);
+        let ca = decodedCookie.split(';');
+        for(let i = 0; i < ca.length; i++) {
+            let c = ca[i];
+            while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+                return c.substring(name.length, c.length);
+            }
+        }
+        return "";
+    }
+</script>
+
+
+{{ end }}

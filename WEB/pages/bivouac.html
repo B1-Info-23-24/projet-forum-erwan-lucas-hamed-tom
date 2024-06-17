@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/style.css">
+    <link rel="stylesheet" href="../static/popup.css">
+    <link rel="stylesheet" href="../static/login.css">
+    <link rel="stylesheet" href="../static/signup.css">
+    <link rel="stylesheet" href="../static/post.css">
+    <link rel="stylesheet" href="../static/comment.css">
+    <title>Forum</title>
+</head>
+<body>
+    {{ template "header" . }}
+    <div class="container">
+        {{ template "menu" . }}
+    
+        <div class="right-container">
+            <div class="section-img">
+                <img src="../static/img/bivouac.png" class="img--section">
+            </div>
+            <div class="container--bottom">
+                <div id="posts-container" class="posts-container">
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        async function displayPosts() {
+            try {
+                const response = await fetch(`http://localhost:8081/api/post/section/Bivouac`, {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.statusText}`);
+                }
+                const posts = await response.json();
+                const postsContainer = document.getElementById('posts-container');
+                postsContainer.innerHTML = '';
+                const username = getCookie('username');
+                
+                for (const post of posts) {
+                    const status = await IsLikezd(post.ID)
+                    console.log(status)
+                    const postElement = document.createElement('div');
+                    postElement.className = 'post';
+                    postElement.innerHTML = `
+                    <div class="post-header">
+                        ${post.Username === username ? `<button class="post-modif" onclick="editPost(${post.ID})"><img src="../static/img/icon/3points.png" class="icon--3points"></button>` : ''}
+                        ${post.Username === username ? `<button class="post-modif" onclick="deletePost(${post.ID})"><img src="../static/img/icon/delete.png" id="icon-delete" class="icon--img"></button>` : ''}
+                        <div class="container--button-post">
+                            <button class="${post.Theme}">${post.Theme}<img src="../static/img/icon/${post.Theme}.png" class="icon--theme"></button> 
+                            <button class="button--map" onclick="openMap(${post.ID})"><img src="../static/img/icon/ping.png" id="icon-ping" class="icon--img"></button>
+                        </div> 
+                        <div class="post-user-date-picture">
+                            <img src="../static/img/character.png" class="post-picture">
+                            <div class="post-user-date">
+                                <p class="post-username">${post.Username}</p>
+                                <small class="post-date">${new Date(post.CreatedAt).toLocaleString()}</small>
+                            </div>
+                        </div>
+                        <p class="post-print-content">${post.Content}</p>
+                        <div class="post-images">
+                        </div>
+                        <div class="post-interaction">
+                            <button class="icon--left" onclick="likePost(${post.ID})"><img src="../static/img/icon/like_${status}.png" class="icon--img"></button>
+                            <button class="icon--left" onclick="dislikePost(${post.ID})"><img src="../static/img/icon/dislike_${status}.png" class="icon--img"></button>                            
+                            <button class="icon--right" onclick="toggleComments(${post.ID})"><img src="../static/img/icon/comment.png"  class="icon--img"></button>
+                            <button class="icon--right"><img src="../static/img/icon/favorite.png"  class="icon--img"></button>
+                        </div>
+                        <div class="comments-container" id="comments-${post.ID}">
+                        </div>
+                    </div>
+                    `;
+                    postsContainer.appendChild(postElement);
+                }
+            } catch (error) {
+                console.error('Failed to fetch posts:', error);
+            }
+        }
+
+        function openMap(postId) {
+            window.location.href = `http://localhost:8080/maps/${postId}`;
+        }
+
+        async function likePost(postId) {
+            try {
+                const response = await fetch(`http://localhost:8081/api/post/like/${postId}`, {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    alert(errorData.error);
+                    throw new Error(`Error: ${response.statusText}`);
+                }
+                const result = await response.json();
+                console.log(result.message);
+                displayPosts();
+            } catch (error) {
+                console.error('Failed to like post:', error);
+            }
+        }
+        
+        async function dislikePost(postId) {
+            try {
+                const response = await fetch(`http://localhost:8081/api/post/dislike/${postId}`, {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    alert(errorData.error); // Show the error message to the user
+                    throw new Error(`Error: ${response.statusText}`);
+                }
+                const result = await response.json();
+                console.log(result.message);
+                displayPosts(); // Refresh posts to reflect the new dislike count
+            } catch (error) {
+                console.error('Failed to dislike post:', error);
+            }
+        }
+
+        async function IsLiked(postId) {
+            try {
+                const response = await fetch(`http://localhost:8081/api/post/isLiked/${postId}`, {
+                    method: 'GET', // ou 'POST' si nécessaire
+                    credentials: 'include' // inclure les cookies dans la requête si nécessaire
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                const userInteraction = await response.json();
+                console.log('User interaction:', userInteraction);
+                return userInteraction
+
+            } catch (error) {
+                console.error('Failed to check interaction:', error);
+            }
+        }
+        
+        
+        async function displayComments(postId, commentsContainer) {
+            try {
+                const response = await fetch(`http://localhost:8081/api/comment/${postId}`, {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.statusText}`);
+                }
+                const comments = await response.json();
+
+                commentsContainer.innerHTML = ''; // Clear existing comments
+
+                const commentForm = document.createElement('div');
+                commentForm.className = 'comment-form';
+                commentForm.innerHTML = `
+                    <textarea class="input--comment" id="comment-input-${postId}" placeholder="Write a comment..."></textarea>
+                    <button type="submit" onclick="submitComment(${postId})" ><img src="../static/img/icon/send.png" class="icon--img"></button>
+                `;
+                commentsContainer.appendChild(commentForm);
+
+                comments.forEach(comment => {
+                    const commentElement = document.createElement('div');
+                    commentElement.className = 'comment';
+                    commentElement.innerHTML = `
+                        <div class="comment-user-data">
+                            <img src="../static/img/character.png" class="comment-picture">
+                            <div class="comment-user-date">
+                                <p class="comment-username">${comment.Username}</p>
+                                <small class="comment-date">${new Date(comment.CreatedAt).toLocaleString()}</small>
+                            </div>
+                        </div>
+                        <p class="comment-content">${comment.Content}</p>
+                    `;
+                    commentsContainer.appendChild(commentElement);
+                });
+
+                const commentInput = document.getElementById(`comment-input-${postId}`);
+                commentInput.focus();
+                commentInput.select();
+            } catch (error) {
+                console.error('Failed to fetch comments:', error);
+            }
+        }
+
+        async function deletePost(postId) {
+            if (confirm("Êtes-vous sûr de vouloir supprimer ? Cela sera définitif.")) {
+                try {
+                    const response = await fetch(`http://localhost:8081/api/post/delete/${postId}`, {
+                        method: 'DELETE',
+                        credentials: 'include'
+                    });
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        alert(errorData.error);
+                        throw new Error(`Error: ${response.statusText}`);
+                    }
+                    const result = await response.json();
+                    console.log(result.message);
+                    displayPosts();
+                }catch (error) {
+                    console.error('Failed to delete post:',error);
+                }
+            }
+        }
+
+        async function toggleComments(postId) {
+            const commentsContainer = document.getElementById(`comments-${postId}`);
+            if (commentsContainer.innerHTML === '') {
+                // Close other comment sections
+                document.querySelectorAll('.comments-container').forEach(container => {
+                    if (container.id !== `comments-${postId}`) {
+                        container.innerHTML = '';
+                    }
+                });
+                await displayComments(postId, commentsContainer);
+            } else {
+                commentsContainer.innerHTML = ''; // Close comment section
+            }
+        }
+
+        async function submitComment(postId) {
+            const commentInput = document.getElementById(`comment-input-${postId}`);
+            const content = commentInput.value;
+
+            if (!content) {
+                alert("Comment cannot be empty");
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://localhost:8081/api/comment/create/${postId}`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ content })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.statusText}`);
+                }
+
+                commentInput.value = '';
+                const commentsContainer = document.getElementById(`comments-${postId}`);
+                await displayComments(postId, commentsContainer);
+            } catch (error) {
+                console.error('Failed to submit comment:', error);
+            }
+        }
+
+        displayPosts();
+    </script>
+</body>
+</html>
