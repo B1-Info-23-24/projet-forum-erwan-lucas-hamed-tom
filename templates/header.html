@@ -3,15 +3,37 @@
     <a href="/"><img src="../static/img/logo.png" alt="" class="img--logo"></a>
     <div class="search-bar">
         <img src="../static/img/search.png" alt="" class="img--search">
-        <form class="search-form" action="">
+        <form class="search-form" onsubmit="search(event)">
             <input class="input--search-bar" name="search-bar" id="search-bar" value="" type="text" placeholder="Search anything....">
+            <button type="submit">Search</button>
         </form>
         <button class="button-filter"><img src="../static/img/filter.png" alt="" class="img--filter"></button>
     </div>
     <a href="/#" onclick="redirectToUserProfile()"><img src="../static/img/character.png" alt="" class="img--character"></a>
 </div>
 
+<div id="search-results"></div>
+
 <script>
+    function search(event) {
+        event.preventDefault();
+        let query = document.getElementById('search-bar').value;
+        fetch(`/search?query=${encodeURIComponent(query)}`)
+            .then(response => response.json())
+            .then(data => displayResults(data))
+            .catch(error => console.error('Error:', error));
+    }
+
+    function displayResults(results) {
+        let resultsContainer = document.getElementById('search-results');
+        resultsContainer.innerHTML = '';
+        results.forEach(result => {
+            let resultElement = document.createElement('div');
+            resultElement.innerHTML = `<h2>${result.title}</h2><p>${result.description}</p>`;
+            resultsContainer.appendChild(resultElement);
+        });
+    }
+
     function redirectToUserProfile() {
         let username = getCookie("username");
         if (username) {
@@ -37,6 +59,4 @@
         return "";
     }
 </script>
-
-
 {{ end }}
