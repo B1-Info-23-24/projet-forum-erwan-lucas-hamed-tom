@@ -4,8 +4,7 @@
     <div class="search-bar">
         <img src="../static/img/search.png" alt="" class="img--search">
         <form class="search-form" onsubmit="search(event)">
-            <input class="input--search-bar" name="search-bar" id="search-bar" value="" type="text" placeholder="Search anything....">
-            <button type="submit">Search</button>
+            <input oninput="search()" class="input--search-bar" name="search-bar" id="search-bar" value="" type="text" placeholder="Search anything....">
         </form>
         <button class="button-filter"><img src="../static/img/filter.png" alt="" class="img--filter"></button>
     </div>
@@ -15,24 +14,40 @@
 <div id="search-results"></div>
 
 <script>
-    function search(event) {
-        event.preventDefault();
-        let query = document.getElementById('search-bar').value;
-        fetch(`/search?query=${encodeURIComponent(query)}`)
-            .then(response => response.json())
-            .then(data => displayResults(data))
-            .catch(error => console.error('Error:', error));
-    }
+    // async function search() {
+    //     console.log("ouai")
+    //     let query = document.getElementById('search-bar').value.trim();
+    //     if (!query) {
+    //         displayResults([]);  // Clear results if query is empty
+    //         return;
+    //     }
 
-    function displayResults(results) {
-        let resultsContainer = document.getElementById('search-results');
-        resultsContainer.innerHTML = '';
-        results.forEach(result => {
-            let resultElement = document.createElement('div');
-            resultElement.innerHTML = `<h2>${result.title}</h2><p>${result.description}</p>`;
-            resultsContainer.appendChild(resultElement);
-        });
-    }
+    //     try {
+    //         let response = await fetch(`/api/search?query=${encodeURIComponent(query)}`);
+    //         if (!response.ok) {
+    //             throw new Error(`HTTP error! Status: ${response.status}`);
+    //         }
+
+    //         let data = await response.json();
+    //         displayResults(data);
+    //     } catch (error) {
+    //         console.error('Error:', error);
+    //     }
+    // }
+
+    // function displayResults(results) {
+    //     let resultsContainer = document.getElementById('search-results');
+    //     resultsContainer.innerHTML = '';
+    //     if (results.length === 0) {
+    //         resultsContainer.innerHTML = '<p>No results found</p>';
+    //         return;
+    //     }
+    //     results.forEach(result => {
+    //         let resultElement = document.createElement('div');
+    //         resultElement.innerHTML = `<h2>${result.theme}</h2><p>${result.content}</p>`;
+    //         resultsContainer.appendChild(resultElement);
+    //     });
+    // }
 
     function redirectToUserProfile() {
         let username = getCookie("username");
@@ -48,10 +63,7 @@
         let decodedCookie = decodeURIComponent(document.cookie);
         let ca = decodedCookie.split(';');
         for(let i = 0; i < ca.length; i++) {
-            let c = ca[i];
-            while (c.charAt(0) == ' ') {
-                c = c.substring(1);
-            }
+            let c = ca[i].trim();
             if (c.indexOf(name) == 0) {
                 return c.substring(name.length, c.length);
             }

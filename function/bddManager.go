@@ -1,9 +1,7 @@
 package forum
 
 import (
-	"encoding/json"
 	"log"
-	"net/http"
 	"time"
 
 	"gorm.io/driver/sqlite"
@@ -77,47 +75,4 @@ func AutoMigrate(db *gorm.DB) {
 	db.AutoMigrate(&Image{})
 	db.AutoMigrate(&Comment{})
 	db.AutoMigrate(&UserPostInteraction{})
-}
-
-// Recherche par nom d'utilisateur
-func RechercherUtilisateurParNom(username string) (*User, error) {
-	var user User
-	result := DB.Where("username = ?", username).First(&user)
-	if result.Error != nil {
-		return nil, result.Error
-	}
-	return &user, nil
-}
-
-// Recherche par thème de publication
-func RechercherPublicationsParTheme(theme string) ([]Post, error) {
-	var posts []Post
-	result := DB.Where("theme = ?", theme).Find(&posts)
-	if result.Error != nil {
-		return nil, result.Error
-	}
-	return posts, nil
-}
-
-// Recherche par ID utilisateur
-func RechercherPublicationsParUtilisateur(userID uint) ([]Post, error) {
-	var posts []Post
-	result := DB.Where("user_id = ?", userID).Find(&posts)
-	if result.Error != nil {
-		return nil, result.Error
-	}
-	return posts, nil
-}
-
-func searchHandler(w http.ResponseWriter, r *http.Request) {
-	query := r.URL.Query().Get("query")
-	// Supposons que nous recherchons par thème de publication
-	posts, err := RechercherPublicationsParTheme(query)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(posts)
 }

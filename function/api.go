@@ -54,6 +54,7 @@ func RegisterRoutes(r *mux.Router) {
 	r.HandleFunc("/api/post/dislike/{postId}", DislikePost).Methods("POST")
 	r.HandleFunc("/api/post/isLiked/{postId}", IsLiked).Methods("POST")
 	r.HandleFunc("/api/post/delete/{postId}", DeletePost).Methods("DELETE")
+	r.HandleFunc("/api/search", SearchPosts).Methods("GET")
 }
 func LikePost(w http.ResponseWriter, r *http.Request) {
 	postId, err := strconv.ParseUint(mux.Vars(r)["postId"], 10, 64)
@@ -699,4 +700,17 @@ func DeletePost(w http.ResponseWriter, r *http.Request) {
 		Message: "Post deleted successfully",
 	}
 	json.NewEncoder(w).Encode(response)
+}
+
+func SearchPosts(w http.ResponseWriter, r *http.Request) {
+	query := r.URL.Query().Get("query")
+	var posts []Post
+
+	if err := DB.Where("content LIKE ? OR theme LIKE ?", "%"+query+"%", "%"+query+"%").Find(&posts).Error; err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(posts)
 }

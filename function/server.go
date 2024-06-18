@@ -65,8 +65,6 @@ func StartWebServer() {
 	r.HandleFunc("/login/google", googleLoginHandler)
 	r.HandleFunc("/callback/google", googleCallbackHandler)
 
-	r.HandleFunc("/search", searchHandler).Methods("GET")
-
 	corsMiddleware := handlers.CORS(
 		handlers.AllowedOrigins([]string{"http://localhost:8080", "http://localhost:8081"}), // Autoriser les deux serveurs
 		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"}),
