@@ -58,21 +58,15 @@
 
 
         document.addEventListener('DOMContentLoaded', function() {
-            const username = getCookie('username');
+            const username = localStorage.getItem('username');
             if (username) {
                 fetchUserProfile(username);
             }
         });
 
-        function getCookie(name) {
-            const value = `; ${document.cookie}`;
-            const parts = value.split(`; ${name}=`);
-            if (parts.length === 2) return parts.pop().split(';').shift();
-        }
-
         async function displayPosts() {
             try {
-                const userId = getCookie('userId');
+                const userId = localStorage.getItem('userId');
                 const response = await fetch(`http://localhost:8081/api/profile/post/${userId}`, {
                     method: 'POST',
                     credentials: 'include'
@@ -83,11 +77,11 @@
                 const posts = await response.json();
                 const postsContainer = document.getElementById('posts-container');
                 postsContainer.innerHTML = '';
-                const username = getCookie('username');
+                const username = localStorage.getItem('username');
                 
                 for (const post of posts) {
-                    const status = await IsLiked(post.ID)
-                    console.log(status)
+                    const status = await IsLiked(post.ID);
+                    console.log(status);
                     const postElement = document.createElement('div');
                     postElement.className = 'post';
                     postElement.innerHTML = `
@@ -130,28 +124,20 @@
         }
 
         function redirectToDeconnexion() {
-            if (confirm("Vous allez être déconnecter ? ")) {
+            if (confirm("Vous allez être déconnecté ? ")) {
                 fetch('http://localhost:8081/api/deconnexion', {
                     method: 'POST',
-                    credentials: 'include' // Inclure les cookies dans la requête
+                    credentials: 'include'
                 })
                 .then(response => {
                     if (response.ok) {
-                        // Function to delete all cookies
-                        function deleteAllCookies() {
-                            // Get all cookies
-                            var cookies = document.cookie.split(";");
-
-                            for (var i = 0; i < cookies.length; i++) {
-                                var cookie = cookies[i];
-                                var eqPos = cookie.indexOf("=");
-                                var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
-                                document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
-                            }
+                        // Function to delete all local storage items
+                        function clearLocalStorage() {
+                            localStorage.clear();
                         }
 
-                        // Call the function to delete all cookies
-                        deleteAllCookies();
+                        // Call the function to clear local storage
+                        clearLocalStorage();
 
                         // Redirect to the home page
                         window.location.href = "/";
@@ -164,7 +150,6 @@
                 });
             }
         }
-
 
         async function deletePost(postId) {
             if (confirm("Êtes-vous sûr de vouloir supprimer ? Cela sera définitif.")) {
@@ -181,8 +166,8 @@
                     const result = await response.json();
                     console.log(result.message);
                     displayPosts();
-                }catch (error) {
-                    console.error('Failed to delete post:',error);
+                } catch (error) {
+                    console.error('Failed to delete post:', error);
                 }
             }
         }
@@ -214,12 +199,12 @@
                 });
                 if (!response.ok) {
                     const errorData = await response.json();
-                    alert(errorData.error); // Show the error message to the user
+                    alert(errorData.error);
                     throw new Error(`Error: ${response.statusText}`);
                 }
                 const result = await response.json();
                 console.log(result.message);
-                displayPosts(); // Refresh posts to reflect the new dislike count
+                displayPosts();
             } catch (error) {
                 console.error('Failed to dislike post:', error);
             }
@@ -228,8 +213,8 @@
         async function IsLiked(postId) {
             try {
                 const response = await fetch(`http://localhost:8081/api/post/isLiked/${postId}`, {
-                    method: 'GET', // ou 'POST' si nécessaire
-                    credentials: 'include' // inclure les cookies dans la requête si nécessaire
+                    method: 'GET',
+                    credentials: 'include'
                 });
                 
                 if (!response.ok) {
@@ -238,13 +223,11 @@
 
                 const userInteraction = await response.json();
                 console.log('User interaction:', userInteraction);
-                return userInteraction
-
+                return userInteraction;
             } catch (error) {
                 console.error('Failed to check interaction:', error);
             }
         }
-        
         
         async function displayComments(postId, commentsContainer) {
             try {

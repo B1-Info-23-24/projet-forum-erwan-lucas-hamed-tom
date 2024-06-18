@@ -39,11 +39,11 @@
                 const posts = await response.json();
                 const postsContainer = document.getElementById('posts-container');
                 postsContainer.innerHTML = '';
-                const username = getCookie('username');
+                const username = localStorage.getItem('username'); // Modification ici
                 
                 for (const post of posts) {
-                    const status = await IsLiked(post.ID)
-                    console.log(status)
+                    const status = await IsLiked(post.ID);
+                    console.log(status);
                     const postElement = document.createElement('div');
                     postElement.className = 'post';
                     postElement.innerHTML = `
@@ -97,7 +97,7 @@
                     console.log(result.message);
                     displayPosts();
                 }catch (error) {
-                    console.error('Failed to delete post:',error);
+                    console.error('Failed to delete post:', error);
                 }
             }
         }
@@ -147,7 +147,7 @@
         async function IsLiked(postId) {
             try {
                 const response = await fetch(`http://localhost:8081/api/post/isLiked/${postId}`, {
-                    method: 'GET', // ou 'POST' si nécessaire
+                    method: 'GET',
                     credentials: 'include' // inclure les cookies dans la requête si nécessaire
                 });
                 
@@ -157,8 +157,7 @@
 
                 const userInteraction = await response.json();
                 console.log('User interaction:', userInteraction);
-                return userInteraction
-
+                return userInteraction;
             } catch (error) {
                 console.error('Failed to check interaction:', error);
             }

@@ -72,13 +72,10 @@
                     });
                     const result = await response.json();
         
-                    // messageDiv.innerHTML = `Error: ${result.error}`;
-
                     if (response.ok) {
-                        messageDiv.textContent = 'connection réussi';
-                        // Vous pouvez stocker les informations utilisateur dans le localStorage si nécessaire
-                        localStorage.setItem('user', JSON.stringify(result.user));
-                        togglePopupLogin()
+                        messageDiv.textContent = 'Connection réussie';
+                        localStorage.setItem('username', result.user.username); // Assume 'username' is a property of 'user' in the response
+                        togglePopupLogin();
                     } else {
                         messageDiv.textContent = `${result.error}`;
                     }

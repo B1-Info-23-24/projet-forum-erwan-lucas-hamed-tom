@@ -13,7 +13,7 @@
 
 <script>
     function redirectToUserProfile() {
-        let username = getCookie("username");
+        let username = localStorage.getItem("username");
         if (username) {
             window.location.href = `/profile/${encodeURIComponent(username)}`;
         } else {

@@ -38,9 +38,6 @@
                 </div>
             </div>
             
-
-
-            
             <script>
                 function togglePopupSignup() {
                     let popup = document.querySelector("#popup-signup")
@@ -110,6 +107,7 @@
 
                         if (response.ok) {
                             errorUserDiv.textContent = 'User registered and logged in successfully!';
+                            localStorage.setItem('username', result.user.Username); // Save username to localStorage
                             window.location.href = `/profile/${result.user.Username}`;
                         } else {
                             errorUserDiv.textContent = `${result.error}`;

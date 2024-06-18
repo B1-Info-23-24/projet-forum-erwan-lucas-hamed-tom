@@ -1,30 +1,30 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>Maps</title>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../static/style.css">
     <link rel="stylesheet" href="../static/popup.css">
     <link rel="stylesheet" href="../static/login.css">
     <link rel="stylesheet" href="../static/signup.css">
     <link rel="stylesheet" href="../static/comment.css">
     <link rel="stylesheet" href="../static/maps.css">
-  </head>
-  <body>
+    <title>Maps</title>
+</head>
+<body>
     {{ template "header" . }}
     <div class="left-container">
-      <div class="container--menue">
-        <div class="container--button">
-          <button onclick="checkAndExecute(togglePopupLogin)" class="button-home">Home <img src="../static/img/icon/home.png" class="img--redirection"></button>
-          <button onclick="checkAndExecute(togglePopupLogin)" class="button-home button-home-post">Post <img src="../static/img/icon/post.png" class="img--redirection img--post"></button>
+        <div class="container--menue">
+            <div class="container--button">
+                <button onclick="checkAndExecute(togglePopupLogin)" class="button-home">Home <img src="../static/img/icon/home.png" class="img--redirection"></button>
+                <button onclick="checkAndExecute(togglePopupLogin)" class="button-home button-home-post">Post <img src="../static/img/icon/post.png" class="img--redirection img--post"></button>
+            </div>
+            <div class="container--filter"></div>
         </div>
-        <div class="container--filter">
-
-        </div>
-      </div>
-      <div id="map"></div>
+        <div id="map"></div>
     </div>
     <div class="right-container">
-      <div id="posts-container" class="posts-containers"></div>
+        <div id="posts-container" class="posts-containers"></div>
     </div>
 
     <script>
@@ -171,8 +171,8 @@
         async function IsLiked(postId) {
             try {
                 const response = await fetch(`http://localhost:8081/api/post/isLiked/${postId}`, {
-                    method: 'GET', // ou 'POST' si nécessaire
-                    credentials: 'include' // inclure les cookies dans la requête si nécessaire
+                    method: 'GET',
+                    credentials: 'include'
                 });
                 
                 if (!response.ok) {
