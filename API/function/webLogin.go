@@ -313,7 +313,6 @@ func loggedinHandler(w http.ResponseWriter, r *http.Request, data string) {
 			return
 		}
 	}
-	SetCookie(w, user)
 	log.Printf("User details: %+v\n", user)
 
 	w.Header().Set("Content-Type", "application/json")
