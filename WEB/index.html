@@ -280,8 +280,9 @@
             // console.log("fini")
             const postsContainer = document.getElementById('posts-container');
             postsContainer.innerHTML = '';
-            const username = getCookie('username');
-
+            const userId = localStorage.getItem('userId'); // Récupère userId de Local Storage
+            const username = localStorage.getItem('username'); // Récupère username de Local Storage
+            
             for (const post of data) {
                     const status = await IsLiked(post.ID)
                     const postElement = document.createElement('div');
