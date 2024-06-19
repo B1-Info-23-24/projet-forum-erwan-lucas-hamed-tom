@@ -20,6 +20,7 @@
                 <img src="../static/img/character.png" alt="" class="img--users">
                 <div class="account-information">
                     <div class="account-details">
+                        <input id="userId" type="hidden">
                         <p class="account-username" id="username"></p>
                         <a href="/edit"><img src="../static/img/icon/settings.png" alt="" class="icon--settings"></a>
                     </div>
@@ -40,7 +41,6 @@
             try {
                 const response = await fetch(`http://localhost:8081/api/profile/${username}`, {
                     method: 'GET',
-                    
                 });
                 console.log('Response status:', response.status);
                 console.log('Response headers:', response.headers);
@@ -49,24 +49,45 @@
                 }
                 const user = await response.json();
                 console.log('User data:', user);
+                document.getElementById('userId').value = user.id;
                 document.getElementById('username').textContent = user.username;
                 document.getElementById('email').textContent = user.email;
+                return user.id;
             } catch (error) {
                 console.error('Failed to fetch user profile:', error);
+                throw error; 
             }
         }
 
 
-        document.addEventListener('DOMContentLoaded', function() {
-            const username = localStorage.getItem('username');
-            if (username) {
-                fetchUserProfile(username);
+        function getNameFromURL() {
+            const pathname =  window.location.pathname;
+
+            const segments = pathname.split('/');
+            return segments.pop() || segments.pop();
+        }
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            try {
+                const username = getNameFromURL();
+                if (username) {
+                    const userId = await fetchUserProfile(username); 
+                    if (userId) {
+                        await displayPosts(userId); 
+                    } else {
+                        window.location.href = '/';
+                    }
+                } else {
+                    window.location.href = '/';
+                }
+            } catch (error) {
+                console.error('Error during initialization:', error);
+                window.location.href = '/';
             }
         });
 
-        async function displayPosts() {
+        async function displayPosts(userId) {
             try {
-                const userId = localStorage.getItem('userId');
                 const response = await fetch(`http://localhost:8081/api/profile/post/${userId}`, {
                     method: 'POST',
                     
@@ -280,10 +301,6 @@
                 console.error('Failed to submit comment:', error);
             }
         }
-        
-        
-
-        displayPosts();
     </script>
 </body>
 </html>

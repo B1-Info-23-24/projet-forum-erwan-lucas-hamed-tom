@@ -541,9 +541,10 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	post := Post{
-		UserID:  user.ID,
-		Theme:   theme,
-		Content: content,
+		UserID:   user.ID,
+		Theme:    theme,
+		Content:  content,
+		Username: username,
 	}
 
 	if err := DB.Create(&post).Error; err != nil {
