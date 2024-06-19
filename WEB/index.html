@@ -39,7 +39,7 @@
                 const posts = await response.json();
                 const postsContainer = document.getElementById('posts-container');
                 postsContainer.innerHTML = '';
-                const username = getCookie('username');
+                const username = localStorage.getItem('username');
                 
                 for (const post of posts) {
                     const status = await IsLiked(post.ID)
@@ -87,34 +87,34 @@
 
         async function editPost(postId) {
             try {
-                    console.log(postId)
-                    const response = await fetch(`http://localhost:8081/api/post/display/${postId}`, {
-                        method: 'POST',
-                        
-                    });
-                    if (!response.ok) {
-                        throw new Error(`Error: ${response.statusText}`);
-                    }
-                    const respons = await response.json();
-
-                    // Affichez le popup d'édition
-                    togglePopupPostModif();
-                    document.getElementById('posts-id-modif').value = respons.post.ID;
-                    document.getElementById('content-modif').value = respons.post.Content;
-                    document.getElementById('theme-modif').value = respons.post.Theme;
-                    document.getElementById('ping-lat-modif').value = lat;
-                    document.getElementById('ping-lng-modif').value = lng;
-                    const themeButton = document.getElementById('theme-button-modif');
-                    const themeInput = document.getElementById('theme-modif');
-
-                    //change theme
-                    themeButton.classList.remove('Bivouac');
-                    themeButton.classList.add(respons.post.Theme);
-                    themeButton.textContent = respons.post.Theme;
-                    themeInput.value = respons.post.Theme;
-                } catch (error) {
-                    console.error('Failed to fetch post details for editing:', error);
+                console.log(postId)
+                const response = await fetch(`http://localhost:8081/api/post/display/${postId}`, {
+                    method: 'POST',
+                    
+                });
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.statusText}`);
                 }
+                const respons = await response.json();
+
+                // Affichez le popup d'édition
+                togglePopupPostModif();
+                document.getElementById('posts-id-modif').value = respons.post.ID;
+                document.getElementById('content-modif').value = respons.post.Content;
+                document.getElementById('theme-modif').value = respons.post.Theme;
+                document.getElementById('ping-lat-modif').value = lat;
+                document.getElementById('ping-lng-modif').value = lng;
+                const themeButton = document.getElementById('theme-button-modif');
+                const themeInput = document.getElementById('theme-modif');
+
+                //change theme
+                themeButton.classList.remove('Bivouac');
+                themeButton.classList.add(respons.post.Theme);
+                themeButton.textContent = respons.post.Theme;
+                themeInput.value = respons.post.Theme;
+            } catch (error) {
+                console.error('Failed to fetch post details for editing:', error);
+            }
         }
 
 
@@ -133,8 +133,8 @@
                     const result = await response.json();
                     console.log(result.message);
                     displayPosts();
-                }catch (error) {
-                    console.error('Failed to delete post:',error);
+                } catch (error) {
+                    console.error('Failed to delete post:', error);
                 }
             }
         }
@@ -146,11 +146,24 @@
         }
 
         async function likePost(postId) {
+            const userId = localStorage.getItem('userId'); // Récupère userId de Local Storage
+            const username = localStorage.getItem('username'); // Récupère username de Local Storage
+
+            if (!userId || !username) {
+                console.error('UserID or Username not found in local storage');
+                return;
+            }
+
             try {
                 const response = await fetch(`http://localhost:8081/api/post/like/${postId}`, {
                     method: 'POST',
-                    
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'UserID': userId, // Ajoute userId dans les en-têtes
+                        'Username': username // Ajoute username dans les en-têtes
+                    }
                 });
+
                 if (!response.ok) {
                     const errorData = await response.json();
                     alert(errorData.error);
@@ -165,14 +178,27 @@
         }
         
         async function dislikePost(postId) {
+            const userId = localStorage.getItem('userId'); // Récupère userId de Local Storage
+            const username = localStorage.getItem('username'); // Récupère username de Local Storage
+
+            if (!userId || !username) {
+                console.error('UserID or Username not found in local storage');
+                return;
+            }
+
             try {
                 const response = await fetch(`http://localhost:8081/api/post/dislike/${postId}`, {
                     method: 'POST',
-                    
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'UserID': userId, // Ajoute userId dans les en-têtes
+                        'Username': username // Ajoute username dans les en-têtes
+                    }
                 });
+
                 if (!response.ok) {
                     const errorData = await response.json();
-                    alert(errorData.error); // Show the error message to the user
+                    alert(errorData.error);
                     throw new Error(`Error: ${response.statusText}`);
                 }
                 const result = await response.json();
@@ -184,10 +210,22 @@
         }
 
         async function IsLiked(postId) {
+            const userId = localStorage.getItem('userId'); // Récupère userId de Local Storage
+            const username = localStorage.getItem('username'); // Récupère username de Local Storage
+
+            if (!userId || !username) {
+                console.error('UserID or Username not found in local storage');
+                return;
+            }
+
             try {
                 const response = await fetch(`http://localhost:8081/api/post/isLiked/${postId}`, {
-                    method: 'GET', // ou 'POST' si nécessaire
-                     // inclure les cookies dans la requête si nécessaire
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'UserID': userId, // Ajoute userId dans les en-têtes
+                        'Username': username // Ajoute username dans les en-têtes
+                    }
                 });
                 
                 if (!response.ok) {
@@ -196,8 +234,7 @@
 
                 const userInteraction = await response.json();
                 console.log('User interaction:', userInteraction);
-                return userInteraction
-
+                return userInteraction;
             } catch (error) {
                 console.error('Failed to check interaction:', error);
             }
@@ -273,17 +310,28 @@
                 return;
             }
 
+            const userId = localStorage.getItem('userId'); // Récupère userId du Local Storage
+            const username = localStorage.getItem('username'); // Récupère username du Local Storage
+
+            if (!userId || !username) {
+                console.error('UserID or Username not found in local storage');
+                return;
+            }
+
             try {
                 const response = await fetch(`http://localhost:8081/api/comment/create/${postId}`, {
                     method: 'POST',
-                    
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'UserID': userId, // Ajoute userId dans les en-têtes
+                        'Username': username // Ajoute username dans les en-têtes
                     },
                     body: JSON.stringify({ content })
                 });
 
                 if (!response.ok) {
+                    const errorData = await response.json();
+                    alert(errorData.error);
                     throw new Error(`Error: ${response.statusText}`);
                 }
 

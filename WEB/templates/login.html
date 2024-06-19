@@ -1,8 +1,8 @@
-{{ define "login"}}
+{{ define "login" }}
 <div id="popup-login" >
 <div id="popup-overlay">
     <div class="popup-content">
-        <a href="javascipt:void(0)" onclick="togglePopupLogin()" class="popup-exit"><img src="../static/img/icon/x.png" class="img--icon-x"></a>
+        <a href="javascript:void(0)" onclick="togglePopupLogin()" class="popup-exit"><img src="../static/img/icon/x.png" class="img--icon-x"></a>
         <div class="login-container">
             <div class="login-left-section">
                 <h1 class="login-title-welcome">DECOUVREZ<br/>DE NOUVEAU<br/>HORIZONS</h1>
@@ -68,14 +68,15 @@
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ email, password }),
-       
                     });
                     const result = await response.json();
         
                     if (response.ok) {
                         messageDiv.textContent = 'Connection réussie';
                         localStorage.setItem('username', result.user.username); // Assume 'username' is a property of 'user' in the response
+                        localStorage.setItem('userId', result.user.id); // Assume 'id' is a property of 'user' in the response
                         togglePopupLogin();
+                        window.location.href = `/profile/${result.user.username}`;
                     } else {
                         messageDiv.textContent = `${result.error}`;
                     }

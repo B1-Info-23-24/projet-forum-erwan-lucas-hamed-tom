@@ -31,7 +31,6 @@
             try {
                 const response = await fetch(`http://localhost:8081/api/post/section/Alpinisme`, {
                     method: 'POST',
-
                 });
                 if (!response.ok) {
                     throw new Error(`Error: ${response.statusText}`);
@@ -117,9 +116,7 @@
                 console.error('Failed to like post:', error);
             }
         }
-        
-        
-        
+
         async function dislikePost(postId) {
             const userId = localStorage.getItem('userId'); // Récupère userId de Local Storage
             const username = localStorage.getItem('username'); // Récupère username de Local Storage
@@ -152,8 +149,7 @@
                 console.error('Failed to dislike post:', error);
             }
         }
-        
-        
+
         async function IsLiked(postId) {
             const userId = localStorage.getItem('userId'); // Récupère userId de Local Storage
             const username = localStorage.getItem('username'); // Récupère username de Local Storage
@@ -184,13 +180,11 @@
                 console.error('Failed to check interaction:', error);
             }
         }
-        
-        
+
         async function displayComments(postId, commentsContainer) {
             try {
                 const response = await fetch(`http://localhost:8081/api/comment/${postId}`, {
                     method: 'GET',
-      
                 });
                 if (!response.ok) {
                     throw new Error(`Error: ${response.statusText}`);
@@ -255,8 +249,8 @@
                 return;
             }
         
-            const userId = localStorage.getItem('userId'); // Récupère userId de Local Storage
-            const username = localStorage.getItem('username'); // Récupère username de Local Storage
+            const userId = localStorage.getItem('userId'); // Récupère userId du Local Storage
+            const username = localStorage.getItem('username'); // Récupère username du Local Storage
         
             if (!userId || !username) {
                 console.error('UserID or Username not found in local storage');
@@ -287,15 +281,12 @@
                 console.error('Failed to submit comment:', error);
             }
         }
-        
-        
-        
+
         async function deletePost(postId) {
             if (confirm("Êtes-vous sûr de vouloir supprimer ? Cela sera définitif.")) {
                 try {
                     const response = await fetch(`http://localhost:8081/api/post/delete/${postId}`, {
                         method: 'DELETE',
-                 
                     });
                     if (!response.ok) {
                         const errorData = await response.json();
@@ -305,8 +296,8 @@
                     const result = await response.json();
                     console.log(result.message);
                     displayPosts();
-                }catch (error) {
-                    console.error('Failed to delete post:',error);
+                } catch (error) {
+                    console.error('Failed to delete post:', error);
                 }
             }
         }
