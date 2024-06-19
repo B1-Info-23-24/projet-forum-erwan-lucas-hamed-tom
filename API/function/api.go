@@ -62,6 +62,7 @@ func RegisterRoutes(r *mux.Router) {
 	r.HandleFunc("/api/post/dislike/{postId}", DislikePost).Methods("POST")
 	r.HandleFunc("/api/post/isLiked/{postId}", IsLiked).Methods("GET")
 	r.HandleFunc("/api/post/delete/{postId}", DeletePost).Methods("DELETE")
+	r.HandleFunc("/api/posts/filter", FilterPosts).Methods("GET")
 }
 func LikePost(w http.ResponseWriter, r *http.Request) {
 	postId, err := strconv.ParseUint(mux.Vars(r)["postId"], 10, 64)
@@ -749,4 +750,44 @@ func DeletePost(w http.ResponseWriter, r *http.Request) {
 		Message: "Post deleted successfully",
 	}
 	json.NewEncoder(w).Encode(response)
+}
+
+func FilterPosts(w http.ResponseWriter, r *http.Request) {
+	queryParams := r.URL.Query()
+	sortBy := queryParams.Get("sortBy")
+	order := queryParams.Get("order")
+
+	var posts []Post
+	query := DB
+
+	switch sortBy {
+	case "date":
+		query = query.Order("created_at " + order)
+	case "comments":
+		query = query.Joins("LEFT JOIN comments ON comments.post_id = posts.id").
+			Group("posts.id").
+			Order("COUNT(comments.id) " + order)
+	case "likes":
+		query = query.Order("likes " + order)
+	default:
+		http.Error(w, `{"error": "Invalid sortBy parameter"}`, http.StatusBadRequest)
+		return
+	}
+
+	if err := query.Find(&posts).Error; err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusInternalServerError)
+		return
+	}
+
+	for i := range posts {
+		var images []Image
+		if err := DB.Where("post_id = ?", posts[i].ID).Find(&images).Error; err != nil {
+			http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusInternalServerError)
+			return
+		}
+		posts[i].Images = images
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(posts)
 }

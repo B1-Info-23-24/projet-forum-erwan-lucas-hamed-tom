@@ -6,7 +6,22 @@
         <form class="search-form" action="">
             <input class="input--search-bar" name="search-bar" id="search-bar"  value="" type="text" placeholder="Search anything....">
         </form>
-        <button class="button-filter"><img src="../static/img/filter.png" alt="" class="img--filter"></button>
+        <form id="filter-form" action="/filter" method="post" enctype="multipart/form-data">
+            <button class="button-filter" type="submit" onclick="toggleMenu()"><img src="../static/img/filter.png" alt="" class="img--filter" ></button>
+        </form>
+    </div>
+    <div class="filter-menu" id="filter-menu">
+        <!-- Contenu du menu filtrer -->    
+        <form id="filter-form" action="/filter" method="post" enctype="multipart/form-data">
+            <label for="sortBy">Sort By:</label>
+            <select id="sortBy" name="sortBy">
+                <option value="date">Date</option>
+                <option value="comments">Comments</option>
+                <option value="likes">Likes</option>
+            </select>
+            <!-- Autres options de filtrage à ajouter selon vos besoins -->
+            <button class="button-filter" type="submit"><img src="../static/img/filter.png" alt="" class="img--filter"></button>
+        </form>
     </div>
     <a href="/#" onclick="redirectToUserProfile()"><img src="../static/img/character.png" alt="" class="img--character"></a>
 </div>
@@ -36,7 +51,86 @@
         }
         return "";
     }
+
+    function toggleMenu() {
+        const filterMenu = document.getElementById('filter-menu');
+        filterMenu.classList.toggle('active');
+    }
+
+    document.getElementById('filter-form').addEventListener('submit', async function(event) {
+        event.preventDefault();
+        const formData = new FormData();
+        formData.append('sortBy', document.getElementById('sortBy').value);
+        // Ajoutez d'autres paramètres de filtrage si nécessaire
+
+        try {
+            const response = await fetch(`http://localhost:8081/api/posts/filter`, {
+                method: 'POST',
+                body: formData,
+            });
+
+            const result = await response.json();
+            if (response.ok) {
+                messageDiv.textContent = 'Filter applied successfully';
+                toggleMenu(); // Ferme le menu après avoir appliqué le filtre
+            } else {
+                messageDiv.textContent = `Error: ${result.error}`;
+            }
+        } catch (error) {
+            messageDiv.textContent = `Error: ${error.message}`;
+        }
+    });
+
 </script>
 
+<style>
+    .burger-menu {
+        width: 30px;
+        height: 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        cursor: pointer;
+    }
+
+    .burger-menu-line {
+        width: 100%;
+        height: 3px;
+        background-color: #000;
+    }
+
+    .filter-menu {
+        display: none;
+        position: absolute;
+        top: 60px; /* Ajustez la position selon votre mise en page */
+        right: 20px; /* Ajustez la position selon votre mise en page */
+        background-color: #fff;
+        border: 1px solid #ccc;
+        padding: 10px;
+        z-index: 1000;
+    }
+
+    .filter-menu.active {
+        display: block;
+    }
+
+    .filter-menu label {
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    .filter-menu select {
+        width: 100%;
+        padding: 5px;
+        margin-bottom: 10px;
+    }
+
+    .filter-menu button {
+        background: none;
+        border: none;
+        cursor: pointer;
+        margin-top: 5px;
+    }
+</style>
 
 {{ end }}
