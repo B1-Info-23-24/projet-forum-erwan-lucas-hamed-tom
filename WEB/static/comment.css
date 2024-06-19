@@ -1,0 +1,60 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap');
+
+.comment {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+}
+
+.comment-picture {
+    width: 40px; 
+    height: 40px;
+    margin-right: 10px; 
+    border-radius: 50%; 
+}
+
+.comment-user-data {
+    display: flex;
+}
+
+.comment-user-date {
+
+    display: flex;
+    flex-direction: column;
+}
+
+.comment-username {
+    margin: 0;
+    font-weight: bold; 
+}
+
+.comment-date {
+    font-size: 12px; 
+    color: #999; 
+}
+
+.comment-content {
+    margin-left: 5px;
+    margin-top: 5px; 
+}
+
+.comment-form{
+    display: flex;
+}
+
+.input--comment{
+    font-size: 15px;
+    font-family: 'Outfit';
+    text-align: left;
+    padding: 10px;
+    width: 80%;
+    resize: none;
+    overflow: hidden;
+    display: block;
+    border: none;
+    outline: none;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}

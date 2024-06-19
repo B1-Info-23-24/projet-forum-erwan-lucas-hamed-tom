@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/post.css">
+    <title>Créer un post</title>
+</head>
+<body>
+    {{ template "header" . }}
+    <div class="container">
+        {{ template "menu" . }}
+    
+        <div class="right-container">
+            <div class="section-create-post">
+                <form id="create-post-form" method="post" enctype="multipart/form-data">
+                    <textarea type="text" id="content" name="content" placeholder="Où avez-vous voyagé ?!"></textarea>
+                    <select id="theme" name="theme">
+                        <option value="Bivouac">Bivouac</option>
+                        <option value="Alpinisme">Alpinisme</option>
+                        <option value="Treck">Treck</option>
+                        <option value="Randonné">Randonné</option>
+                    </select>
+                    <input type="file" id="images" name="images" multiple>
+                    <p id="nb-word" class="text"><span>0</span>/280</p>
+                    <div class="horizontal-bar"></div>
+                    <div class="left-icon">
+                        <img src="../static/img/icon/img.png" alt="" class="icon--img">
+                        <img src="../static/img/icon/ping.png" alt="" class="icon--img">
+                    </div>
+                    <div class="right-icon">
+                        <img src="../static/img/icon/send.png" alt="" class="icon--img">
+                        <img src="../static/img/icon/delete.png" alt="" class="icon--img">
+                    </div>
+                    <button type="submit">Publier</button>
+                </form>
+            </div>
+        </div>        
+    </div>
+
+    <script>
+        // Ajouter un événement pour compter les caractères dans le textarea
+        document.getElementById("content").addEventListener("input", function() {
+            var count = this.value.length;
+            document.getElementById("nb-word").innerHTML = `<span>${count}</span>/280`;
+        });
+
+        // Envoyer le formulaire de création de post via AJAX
+        document.getElementById("create-post-form").addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            var formData = new FormData(this);
+            var xhr = new XMLHttpRequest();
+
+            xhr.open("POST", "http://51.138.203.4:8081/api/posts", true);
+            xhr.onload = function() {
+                if (xhr.status === 201) {
+                    // Rediriger vers la page de profil après la création du post
+                    window.location.href = "/profile/" + getCookie("username");
+                } else {
+                    console.error("Erreur lors de la création du post : " + xhr.responseText);
+                }
+            };
+            xhr.send(formData);
+        });
+
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
+    </script>
+</body>
+</html>

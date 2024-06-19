@@ -1,0 +1,236 @@
+{{ define "header" }}
+<div class="header">
+    <a href="/"><img src="../static/img/logo.png" alt="" class="img--logo"></a>
+    <div class="search-bar">
+        <img src="../static/img/search.png" alt="" class="img--search">
+        <form class="search-form" action="">
+            <input oninput="search()" class="input--search-bar" name="search-bar" id="search-bar"  value="" type="text" placeholder="Search anything....">
+        </form>
+        <button class="button-filter" onclick="toggleMenu()"><img src="../static/img/filter.png" alt="" class="img--filter"></button>
+        <div id="message-div"></div>
+    </div>
+    <div class="filter-menu" id="filter-menu">
+        <!-- Contenu du menu filtrer -->
+        <form id="filter-form">
+            <label for="sortBy">Sort By:</label>
+            <select id="sortBy" name="sortBy">
+                <option value="date">Date</option>
+                <option value="comments">Comments</option>
+                <option value="likes">Likes</option>
+            </select>
+            <label for="order">Order:</label>
+            <select id="order" name="order">
+                <option value="asc">Ascending</option>
+                <option value="desc">Descending</option>                
+            </select>
+            <!-- Autres options de filtrage à ajouter selon vos besoins -->
+            <button class="button-filter" type="submit">Submit</button>
+        </form>
+    </div>
+    <a href="/#" onclick="redirectToUserProfile()"><img src="../static/img/character.png" alt="" class="img--character"></a>
+</div>
+
+<script>
+    function displayResults(results) {
+        let resultsContainer = document.getElementById('search-results');
+        resultsContainer.innerHTML = '';
+        if (results.length === 0) {
+            resultsContainer.innerHTML = '<p>No results found</p>';
+            return;
+        }
+        results.forEach(result => {
+            let resultElement = document.createElement('div');
+            resultElement.innerHTML = `<h2>${result.theme}</h2><p>${result.content}</p>`;
+            resultsContainer.appendChild(resultElement);
+        });
+    }
+    function redirectToUserProfile() {
+        let username = localStorage.getItem("username");
+        if (username) {
+            window.location.href = `/profile/${encodeURIComponent(username)}`;
+        } else {
+            window.location.href = "/";
+        }
+    }
+
+    function getLocalStorageItem(key) {
+        return localStorage.getItem(key);
+    }
+
+    function setLocalStorageItem(key, value) {
+        localStorage.setItem(key, value);
+    }
+
+    
+    async function likePost(postId) {
+            const userId = localStorage.getItem('userId'); // Récupère userId de Local Storage
+            const username = localStorage.getItem('username'); // Récupère username de Local Storage
+
+            if (!userId || !username) {
+                console.error('UserID or Username not found in local storage');
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://51.138.203.4:8081/api/post/like/${postId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'UserID': userId, // Ajoute userId dans les en-têtes
+                        'Username': username // Ajoute username dans les en-têtes
+                    }
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    alert(errorData.error);
+                    throw new Error(`Error: ${response.statusText}`);
+                }
+                const result = await response.json();
+                console.log(result.message);
+                displayPosts();
+            } catch (error) {
+                console.error('Failed to like post:', error);
+            }
+        }
+        
+    async function dislikePost(postId) {
+            const userId = localStorage.getItem('userId'); // Récupère userId de Local Storage
+            const username = localStorage.getItem('username'); // Récupère username de Local Storage
+
+            if (!userId || !username) {
+                console.error('UserID or Username not found in local storage');
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://51.138.203.4:8081/api/post/dislike/${postId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'UserID': userId, // Ajoute userId dans les en-têtes
+                        'Username': username // Ajoute username dans les en-têtes
+                    }
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    alert(errorData.error);
+                    throw new Error(`Error: ${response.statusText}`);
+                }
+                const result = await response.json();
+                console.log(result.message);
+                displayPosts(); // Refresh posts to reflect the new dislike count
+            } catch (error) {
+                console.error('Failed to dislike post:', error);
+            }
+        }
+
+    async function IsLiked(postId) {
+            const userId = localStorage.getItem('userId'); // Récupère userId de Local Storage
+            const username = localStorage.getItem('username'); // Récupère username de Local Storage
+
+            if (!userId || !username) {
+                console.error('UserID or Username not found in local storage');
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://51.138.203.4:8081/api/post/isLiked/${postId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'UserID': userId, // Ajoute userId dans les en-têtes
+                        'Username': username // Ajoute username dans les en-têtes
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                const userInteraction = await response.json();
+                console.log('User interaction:', userInteraction);
+                return userInteraction;
+            } catch (error) {
+                console.error('Failed to check interaction:', error);
+            }
+        }
+        
+        function toggleMenu() {
+        const filterMenu = document.getElementById('filter-menu');
+        filterMenu.classList.toggle('active');
+    }
+
+    document.getElementById('filter-form').addEventListener('submit', async function(event) {
+    event.preventDefault();
+    const formData = new FormData();
+    formData.append('sortBy', document.getElementById('sortBy').value);
+    formData.append('order', document.getElementById('order').value);
+    const messageDiv = document.getElementById('message-div');
+
+    try {
+        const response = await fetch(`http://51.138.203.4:8081/api/posts/filter`, {
+            method: 'POST',
+            body: formData,
+        });
+
+        const result = await response.json();
+        if (response.ok) {
+            displayPostsFilter(result);
+            messageDiv.textContent = 'Filter applied successfully';
+        } else {
+            messageDiv.textContent = `fetch Error: ${result.error}`;
+        }
+    } catch (error) {
+        messageDiv.textContent = `button Error: ${error.message}`;
+    }
+});
+
+
+async function displayPostsFilter(posts) {
+    const postsContainer = document.getElementById('posts-container');
+    postsContainer.innerHTML = '';
+    const userId = localStorage.getItem('userId'); // Récupère userId de Local Storage
+    const username = localStorage.getItem('username'); // Récupère username de Local Storage
+
+    for (const post of posts) {
+        const status = await IsLiked(post.ID); // Assuming you have this function
+        const postElement = document.createElement('div');
+        postElement.className = 'post';
+        postElement.innerHTML = `
+            <div class="post-header">
+                ${post.Username === username ? `<button class="post-modif" onclick="editPost(${post.ID})"><img src="../static/img/icon/3points.png" class="icon--3points"></button>` : ''}
+                ${post.Username === username ? `<button class="post-modif" onclick="deletePost(${post.ID})"><img src="../static/img/icon/delete.png" id="icon-delete" class="icon--img"></button>` : ''}
+                <div class="container--button-post">
+                    <button class="${post.Theme}">${post.Theme}<img src="../static/img/icon/${post.Theme}.png" class="icon--theme"></button> 
+                    <button class="button--map" onclick="openMap(${post.ID})"><img src="../static/img/icon/ping.png" id="icon-ping" class="icon--img"></button>
+                </div> 
+                <div class="post-user-date-picture">
+                    <img src="../static/img/character.png" class="post-picture">
+                    <div class="post-user-date">
+                        <p class="post-username">${post.Username}</p>
+                        <small class="post-date">${new Date(post.CreatedAt).toLocaleString()}</small>
+                    </div>
+                </div>
+                <p class="post-print-content">${post.Content}</p>
+                <div class="post-images">
+                    ${post.Images.map(image => `<img src="${image.URL}" class="post-image">`).join('')}
+                </div>
+                <div class="post-interaction">
+                    <button class="icon--left" onclick="likePost(${post.ID})"><img src="../static/img/icon/like_${status}.png" class="icon--img"></button>
+                    <button class="icon--left" onclick="dislikePost(${post.ID})"><img src="../static/img/icon/dislike_${status}.png" class="icon--img"></button>                            
+                    <button class="icon--right" onclick="toggleComments(${post.ID})"><img src="../static/img/icon/comment.png"  class="icon--img"></button>
+                    <button class="icon--right"><img src="../static/img/icon/favorite.png"  class="icon--img"></button>
+                </div>
+                <div class="comments-container" id="comments-${post.ID}">
+                </div>
+            </div>
+        `;
+        postsContainer.appendChild(postElement);
+    }
+}
+
+</script>
+
+{{ end }}

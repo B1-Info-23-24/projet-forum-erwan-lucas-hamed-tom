@@ -1,0 +1,41 @@
+{{ define "menu"}}
+<div class="left-container">
+    <div class="redirection-button-container">
+        <button onclick="checkAndExecute(togglePopupLogin)" class="button-redirection">home <img src="../static/img/icon/home.png" class="img--icon-redirection"></button>
+        <button onclick="togglePopupPost()" class="button-redirection button-redirection--post">Post <img src="../static/img/icon/post.png" class="img--icon-redirection"></button>
+    </div>
+    <div class="section">
+        <p class="section-title">Section (4)</p>
+        <div class="section-button-container">
+            <a  href="/alpinisme" class="button-section"><img src="../static/img/icon/Alpinisme.png" class="img--icon"> Alpinisme</a>
+            <a  href="/bivouac" class="button-section"><img src="../static/img/icon/Bivouac.png" class="img--icon"> Bivouac</a>
+            <a  href="/randonne" class="button-section"><img src="../static/img/icon/Randonné.png" class="img--icon"> Randonée</a>
+            <a  href="/treck" class="button-section"><img src="../static/img/icon/Treck.png" class="img--icon"> Treck</a>
+        </div>
+    </div>
+    <div class="map">
+        <p class="map-title">MAP</p>
+        <a href="/maps/0"><img src="../static/img/map.png" class="img--map"></a>
+    </div>
+</div>
+<script>
+    function checkAndExecute(callback) {
+        if (checkUserLoggedIn()) {
+            window.location.href = '/';
+        } else {
+            callback();
+        }
+    }
+
+    function checkUserLoggedIn() {
+        return localStorage.getItem('username') !== null;
+    }
+</script>
+{{ template "post" . }}
+{{ template "post-modif" . }}
+{{ template "login" . }}
+{{ template "signup" . }}
+
+{{ end }}
+
+
