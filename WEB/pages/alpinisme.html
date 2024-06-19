@@ -31,7 +31,7 @@
             try {
                 const response = await fetch(`http://localhost:8081/api/post/section/Alpinisme`, {
                     method: 'POST',
-                    credentials: 'include'
+
                 });
                 if (!response.ok) {
                     throw new Error(`Error: ${response.statusText}`);
@@ -97,7 +97,7 @@
                         'UserID': userId, // Ajoute userId dans les en-têtes
                         'Username': username // Ajoute username dans les en-têtes
                     },
-                    credentials: 'include'
+             
                 });
                 if (!response.ok) {
                     const errorData = await response.json();
@@ -117,7 +117,7 @@
             try {
                 const response = await fetch(`http://localhost:8081/api/post/dislike/${postId}`, {
                     method: 'POST',
-                    credentials: 'include'
+
                 });
                 if (!response.ok) {
                     const errorData = await response.json();
@@ -136,7 +136,7 @@
             try {
                 const response = await fetch(`http://localhost:8081/api/post/isLiked/${postId}`, {
                     method: 'GET',
-                    credentials: 'include'
+          
                 });
                 
                 if (!response.ok) {
@@ -155,7 +155,7 @@
             try {
                 const response = await fetch(`http://localhost:8081/api/comment/${postId}`, {
                     method: 'GET',
-                    credentials: 'include'
+      
                 });
                 if (!response.ok) {
                     throw new Error(`Error: ${response.statusText}`);
@@ -223,7 +223,7 @@
             try {
                 const response = await fetch(`http://localhost:8081/api/comment/create/${postId}`, {
                     method: 'POST',
-                    credentials: 'include',
+             
                     headers: {
                         'Content-Type': 'application/json'
                     },
@@ -247,7 +247,7 @@
                 try {
                     const response = await fetch(`http://localhost:8081/api/post/delete/${postId}`, {
                         method: 'DELETE',
-                        credentials: 'include'
+                 
                     });
                     if (!response.ok) {
                         const errorData = await response.json();

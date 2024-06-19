@@ -76,7 +76,7 @@
                 const postId = getPostIdFromURL();
                 const response = await fetch(`http://localhost:8081/api/post/display/${postId}`, {
                     method: 'POST',
-                    credentials: 'include'
+                   
                 });
                 if (!response.ok) {
                     throw new Error(`Error: ${response.statusText}`);
@@ -134,7 +134,7 @@
             try {
                 const response = await fetch(`http://localhost:8081/api/post/like/${postId}`, {
                     method: 'POST',
-                    credentials: 'include'
+
                 });
                 if (!response.ok) {
                     const errorData = await response.json();
@@ -153,7 +153,7 @@
             try {
                 const response = await fetch(`http://localhost:8081/api/post/dislike/${postId}`, {
                     method: 'POST',
-                    credentials: 'include'
+
                 });
                 if (!response.ok) {
                     const errorData = await response.json();
@@ -172,7 +172,7 @@
             try {
                 const response = await fetch(`http://localhost:8081/api/post/isLiked/${postId}`, {
                     method: 'GET',
-                    credentials: 'include'
+   
                 });
                 
                 if (!response.ok) {
@@ -192,7 +192,7 @@
           try {
                 const response = await fetch(`http://localhost:8081/api/post/display/${lat}/${lng}`, {
                     method: 'POST',
-                    credentials: 'include'
+
                 });
                 if (!response.ok) {
                     throw new Error(`Error: ${response.statusText}`);
@@ -241,7 +241,7 @@
             try {
                 const response = await fetch(`http://localhost:8081/api/post/display`, {
                     method: 'POST',
-                    credentials: 'include'
+       
                 });
                 if (!response.ok) {
                     throw new Error(`Error: ${response.statusText}`);
@@ -291,7 +291,7 @@
             try {
                 const response = await fetch(`http://localhost:8081/api/comment/${postId}`, {
                     method: 'GET',
-                    credentials: 'include'
+              
                 });
                 if (!response.ok) {
                     throw new Error(`Error: ${response.statusText}`);
@@ -358,7 +358,7 @@
             try {
                 const response = await fetch(`http://localhost:8081/api/comment/create/${postId}`, {
                     method: 'POST',
-                    credentials: 'include',
+                   
                     headers: {
                         'Content-Type': 'application/json'
                     },

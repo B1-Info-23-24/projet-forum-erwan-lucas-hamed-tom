@@ -82,7 +82,7 @@
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username, email }),
-                    credentials: 'include'
+     
                 });
                 const result = await response.json();
                 if (response.ok) {
@@ -104,7 +104,7 @@
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ oldpassword, password }),
-                    credentials: 'include'
+
                 });
                 const result = await response.json();
                 if (response.ok) {

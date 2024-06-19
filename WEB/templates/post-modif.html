@@ -52,7 +52,7 @@
             const response = await fetch(`http://localhost:8081/api/post/modif/${postId}`, {
                 method: 'POST',
                 body: formData,
-                credentials: 'include'
+       
             });
             const result = await response.json();
             if (response.ok) {
