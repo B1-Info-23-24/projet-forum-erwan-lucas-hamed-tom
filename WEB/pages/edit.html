@@ -58,6 +58,15 @@
                     })
                     .then(response => {
                         if (response.ok) {
+                            // Function to delete all local storage items
+                            function clearLocalStorage() {
+                                localStorage.clear();
+                            }
+
+                            // Call the function to clear local storage
+                            clearLocalStorage();
+
+                            // Redirect to the home page
                             window.location.href ="/";
                         } else {
                             console.error('Erreur lors de la suppression de l\'utilisateur');
