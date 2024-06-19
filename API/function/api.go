@@ -70,7 +70,23 @@ func LikePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userID := GetCookie(w, r, "userId")
+	userIDStr := r.Header.Get("UserID")
+	if userIDStr == "" {
+		http.Error(w, `{"error": "Missing UserID header"}`, http.StatusBadRequest)
+		return
+	}
+
+	userID, err := strconv.ParseUint(userIDStr, 10, 64)
+	if err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "Invalid UserID: %v"}`, err.Error()), http.StatusBadRequest)
+		return
+	}
+
+	username := r.Header.Get("Username")
+	if username == "" {
+		http.Error(w, `{"error": "Missing Username header"}`, http.StatusBadRequest)
+		return
+	}
 
 	var interaction UserPostInteraction
 	if err := DB.Where("user_id = ? AND post_id = ?", userID, postId).First(&interaction).Error; err == nil {
@@ -127,7 +143,23 @@ func DislikePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userID := GetCookie(w, r, "userId")
+	userIDStr := r.Header.Get("UserID")
+	if userIDStr == "" {
+		http.Error(w, `{"error": "Missing UserID header"}`, http.StatusBadRequest)
+		return
+	}
+
+	userID, err := strconv.ParseUint(userIDStr, 10, 64)
+	if err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "Invalid UserID: %v"}`, err.Error()), http.StatusBadRequest)
+		return
+	}
+
+	username := r.Header.Get("Username")
+	if username == "" {
+		http.Error(w, `{"error": "Missing Username header"}`, http.StatusBadRequest)
+		return
+	}
 
 	var interaction UserPostInteraction
 	if err := DB.Where("user_id = ? AND post_id = ?", userID, postId).First(&interaction).Error; err == nil {
@@ -180,11 +212,34 @@ func DislikePost(w http.ResponseWriter, r *http.Request) {
 func IsLiked(w http.ResponseWriter, r *http.Request) {
 	postId, err := strconv.ParseUint(mux.Vars(r)["postId"], 10, 64)
 	if err != nil {
+		log.Println("Error parsing postId:", err)
 		http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusBadRequest)
 		return
 	}
 
-	userID := GetCookie(w, r, "userId")
+	userIDStr := r.Header.Get("UserID")
+	if userIDStr == "" {
+		log.Println("Missing UserID header")
+		http.Error(w, `{"error": "Missing UserID header"}`, http.StatusBadRequest)
+		return
+	}
+
+	userID, err := strconv.ParseUint(userIDStr, 10, 64)
+	if err != nil {
+		log.Println("Invalid UserID:", err)
+		http.Error(w, fmt.Sprintf(`{"error": "Invalid UserID: %v"}`, err.Error()), http.StatusBadRequest)
+		return
+	}
+
+	username := r.Header.Get("Username")
+	if username == "" {
+		log.Println("Missing Username header")
+		http.Error(w, `{"error": "Missing Username header"}`, http.StatusBadRequest)
+		return
+	}
+
+	log.Println("UserID:", userID, "PostID:", postId, "Username:", username)
+
 	var userInteraction string
 
 	var interaction UserPostInteraction
@@ -198,6 +253,9 @@ func IsLiked(w http.ResponseWriter, r *http.Request) {
 		userInteraction = "none"
 	}
 
+	log.Println("User interaction:", userInteraction)
+
+	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(userInteraction)
 }
 
@@ -441,11 +499,32 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userID := GetCookie(w, r, "userId")
+	userIDStr := r.Header.Get("UserID")
+	if userIDStr == "" {
+		http.Error(w, `{"error": "Missing UserID header"}`, http.StatusBadRequest)
+		return
+	}
+
+	userID, err := strconv.ParseUint(userIDStr, 10, 64)
+	if err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "Invalid UserID: %v"}`, err.Error()), http.StatusBadRequest)
+		return
+	}
+
+	username := r.Header.Get("Username")
+	if username == "" {
+		http.Error(w, `{"error": "Missing Username header"}`, http.StatusBadRequest)
+		return
+	}
+
+	log.Printf("UserID: %d, Username: %s", userID, username)
+
 	theme := r.FormValue("theme")
 	content := r.FormValue("content")
 	lat := r.FormValue("lat")
 	lng := r.FormValue("lng")
+
+	log.Printf("Theme: %s, Content: %s, Lat: %s, Lng: %s", theme, content, lat, lng)
 
 	var user User
 	if err := DB.Where("id = ?", userID).First(&user).Error; err != nil {
@@ -613,6 +692,24 @@ func CreateComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	userIDStr := r.Header.Get("UserID")
+	if userIDStr == "" {
+		http.Error(w, `{"error": "Missing UserID header"}`, http.StatusBadRequest)
+		return
+	}
+
+	userID, err := strconv.ParseUint(userIDStr, 10, 64)
+	if err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "Invalid UserID: %v"}`, err.Error()), http.StatusBadRequest)
+		return
+	}
+
+	username := r.Header.Get("Username")
+	if username == "" {
+		http.Error(w, `{"error": "Missing Username header"}`, http.StatusBadRequest)
+		return
+	}
+
 	var comment Comment
 	if err := json.NewDecoder(r.Body).Decode(&comment); err != nil {
 		http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusBadRequest)
@@ -621,8 +718,8 @@ func CreateComment(w http.ResponseWriter, r *http.Request) {
 
 	comment.CreatedAt = time.Now()
 	comment.PostID = uint(postId)
-	comment.UserID = uint(GetCookie(w, r, "userId"))
-	comment.Username = GetCoockieAsString(w, r, "username")
+	comment.UserID = uint(userID)
+	comment.Username = username
 
 	if err := DB.Create(&comment).Error; err != nil {
 		http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusInternalServerError)
