@@ -4,7 +4,7 @@ Welcome to Forun, the ultimate destination for mountain enthusiasts! With Forun,
 
 ## 🫅 Join the Forun Community
 
-To join the Forun community, simply [click here](http://98.66.228.71:8080/).
+To join the Forun community, simply [click here](http://20.40.151.10:8080/).
 
 ## 🔧 Features
 
