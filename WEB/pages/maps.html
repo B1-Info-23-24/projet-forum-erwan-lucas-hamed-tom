@@ -98,7 +98,7 @@
                             <button class="button--map" onclick="openMap(${respons.post.ID})"><img src="../static/img/icon/ping.png" id="icon-ping" class="icon--img"></button>
                         </div> 
                         <div class="post-user-date-picture">
-                            <a href="/profile/${post.Username}" ><img src="../static/img/character.png" class="post-picture"></a>
+                            <a href="/profile/${respons.post.Username}" ><img src="../static/img/character.png" class="post-picture"></a>
                             <div class="post-user-date">
                                 <p class="post-username">${respons.post.Username}</p>
                                 <small class="post-date">${new Date(respons.post.CreatedAt).toLocaleString()}</small>
