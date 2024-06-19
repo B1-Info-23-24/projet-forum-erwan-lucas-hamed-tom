@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gorilla/handlers"
@@ -62,7 +63,7 @@ func RegisterRoutes(r *mux.Router) {
 	r.HandleFunc("/api/post/dislike/{postId}", DislikePost).Methods("POST")
 	r.HandleFunc("/api/post/isLiked/{postId}", IsLiked).Methods("GET")
 	r.HandleFunc("/api/post/delete/{postId}", DeletePost).Methods("DELETE")
-	r.HandleFunc("/api/posts/filter", FilterPosts).Methods("GET")
+	r.HandleFunc("/api/posts/filter", FilterPosts).Methods("POST")
 }
 func LikePost(w http.ResponseWriter, r *http.Request) {
 	postId, err := strconv.ParseUint(mux.Vars(r)["postId"], 10, 64)
@@ -753,9 +754,19 @@ func DeletePost(w http.ResponseWriter, r *http.Request) {
 }
 
 func FilterPosts(w http.ResponseWriter, r *http.Request) {
-	queryParams := r.URL.Query()
-	sortBy := queryParams.Get("sortBy")
-	order := queryParams.Get("order")
+	sortBy := r.FormValue("sortBy")
+	order := strings.ToUpper(r.FormValue("order")) // Convert to uppercase
+
+	fmt.Printf("sortBy: %s, order: %s\n", sortBy, order) // Debugging log
+	if sortBy == "" || order == "" {
+		http.Error(w, `{"error": "sortBy and order parameters are required"}`, http.StatusBadRequest)
+		return
+	}
+
+	if order != "ASC" && order != "DESC" {
+		http.Error(w, `{"error": "Invalid order parameter, must be 'ASC' or 'DESC'"}`, http.StatusBadRequest)
+		return
+	}
 
 	var posts []Post
 	query := DB
