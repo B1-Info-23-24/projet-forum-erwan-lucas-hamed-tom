@@ -753,9 +753,40 @@ func DeletePost(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
+// Fonction pour rechercher et afficher tous les posts
 func SearchPosts(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("chemin ok")
-	response := "okokokoko"
-	json.NewEncoder(w).Encode(response)
 
+	// Récupérer le paramètre 'query' de la requête
+	query := r.URL.Query().Get("query")
+	fmt.Println("Query parameter:", query)
+
+	// Définir un tableau pour contenir les posts récupérés
+	var posts []Post
+
+	// Filtrer les posts en fonction du champ 'Content' ou d'autres critères
+	if query != "" {
+		if err := DB.Where("content LIKE ?", "%"+query+"%").Find(&posts).Error; err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	} else {
+		// Si aucun 'query' n'est spécifié, récupérer tous les posts
+		if err := DB.Find(&posts).Error; err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	}
+
+	// Afficher les posts récupérés dans la console pour le débogage
+	for _, post := range posts {
+		fmt.Printf("Post: %+v\n", post)
+	}
+
+	// Encoder les posts complets en JSON et les envoyer
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	if err := json.NewEncoder(w).Encode(posts); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
 }

@@ -296,6 +296,78 @@
         }
 
         displayPosts();
+        async function search() {
+        let query = document.getElementById('search-bar').value.trim();
+        if(query===""){
+            displayPosts()
+        }
+        console.log("Current input:", query);
+
+        if (!query) {
+            displayResults([]);  // Clear results if query is empty
+            return;
+        }
+
+        try {
+            console.log("test")
+            let response = await fetch(`http://localhost:8081/api/search?query=${encodeURIComponent(query)}`);
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            console.log("ca passe")
+
+
+            let data = await response.json();
+            console.log(data)
+
+            // if (response.ok) {
+            //     console.log(data)
+            // } else {
+            //     console.log(data)
+            // }
+            // console.log("fini")
+            const postsContainer = document.getElementById('posts-container');
+            postsContainer.innerHTML = '';
+            const username = getCookie('username');
+
+            for (const post of data) {
+                    const status = await IsLiked(post.ID)
+                    const postElement = document.createElement('div');
+                    postElement.className = 'post';
+                    postElement.innerHTML = `
+                    <div class="post-header">
+                        ${post.Username === username ? `<button class="post-modif" onclick="editPost(${post.ID})"><img src="../static/img/icon/3points.png" class="icon--3points"></button>` : ''}
+                        ${post.Username === username ? `<button class="post-modif" onclick="deletePost(${post.ID})"><img src="../static/img/icon/delete.png" id="icon-delete" class="icon--img"></button>` : ''}
+                        <div class="container--button-post">
+                            <button class="${post.Theme}">${post.Theme}<img src="../static/img/icon/${post.Theme}.png" class="icon--theme"></button> 
+                            <button class="button--map" onclick="openMap(${post.ID})"><img src="../static/img/icon/ping.png" id="icon-ping" class="icon--img"></button>
+                        </div> 
+                        <div class="post-user-date-picture">
+                            <img src="../static/img/character.png" class="post-picture">
+                            <div class="post-user-date">
+                                <p class="post-username">${post.Username}</p>
+                                <small class="post-date">${new Date(post.CreatedAt).toLocaleString()}</small>
+                            </div>
+                        </div>
+                        <p class="post-print-content">${post.Content}</p>
+                        <div class="post-images">
+                        </div>
+                        <div class="post-interaction">
+                            <button class="icon--left" onclick="likePost(${post.ID})"><img src="../static/img/icon/like_${status}.png" class="icon--img"></button>
+                            <button class="icon--left" onclick="dislikePost(${post.ID})"><img src="../static/img/icon/dislike_${status}.png" class="icon--img"></button>                            
+                            <button class="icon--right" onclick="toggleComments(${post.ID})"><img src="../static/img/icon/comment.png"  class="icon--img"></button>
+                            <button class="icon--right"><img src="../static/img/icon/favorite.png"  class="icon--img"></button>
+                        </div>
+                        <div class="comments-container" id="comments-${post.ID}">
+                        </div>
+                    </div>
+                    `;
+                    postsContainer.appendChild(postElement);
+                }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
     </script>
 </body>
 </html>

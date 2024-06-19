@@ -12,35 +12,8 @@
 </div>
 
 <script>
-    async function search() {
-        let query = document.getElementById('search-bar').value.trim();
-        if (!query) {
-            displayResults([]);  // Clear results if query is empty
-            return;
-        }
-
-        try {
-            console.log("test")
-            let response = await fetch(`http://localhost:8081/api/search?query=${encodeURIComponent(query)}`);
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-            console.log("ca passe")
-
-
-            let data = await response.json();
-            console.log(data)
-
-            // if (response.ok) {
-            //     console.log(data)
-            // } else {
-            //     console.log(data)
-            // }
-            console.log("fini")
-        } catch (error) {
-            console.error('Error:', error);
-        }
-    }
+    
+    
 
     function displayResults(results) {
         let resultsContainer = document.getElementById('search-results');
