@@ -88,7 +88,12 @@
         async function likePost(postId) {
             const userId = localStorage.getItem('userId'); // Récupère userId de Local Storage
             const username = localStorage.getItem('username'); // Récupère username de Local Storage
-            
+        
+            if (!userId || !username) {
+                console.error('UserID or Username not found in local storage');
+                return;
+            }
+        
             try {
                 const response = await fetch(`http://localhost:8081/api/post/like/${postId}`, {
                     method: 'POST',
@@ -96,14 +101,15 @@
                         'Content-Type': 'application/json',
                         'UserID': userId, // Ajoute userId dans les en-têtes
                         'Username': username // Ajoute username dans les en-têtes
-                    },
-             
+                    }
                 });
+        
                 if (!response.ok) {
                     const errorData = await response.json();
                     alert(errorData.error);
                     throw new Error(`Error: ${response.statusText}`);
                 }
+        
                 const result = await response.json();
                 console.log(result.message);
                 displayPosts();
@@ -113,17 +119,32 @@
         }
         
         
+        
         async function dislikePost(postId) {
+            const userId = localStorage.getItem('userId'); // Récupère userId de Local Storage
+            const username = localStorage.getItem('username'); // Récupère username de Local Storage
+        
+            if (!userId || !username) {
+                console.error('UserID or Username not found in local storage');
+                return;
+            }
+        
             try {
                 const response = await fetch(`http://localhost:8081/api/post/dislike/${postId}`, {
                     method: 'POST',
-
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'UserID': userId, // Ajoute userId dans les en-têtes
+                        'Username': username // Ajoute username dans les en-têtes
+                    }
                 });
+        
                 if (!response.ok) {
                     const errorData = await response.json();
                     alert(errorData.error);
                     throw new Error(`Error: ${response.statusText}`);
                 }
+        
                 const result = await response.json();
                 console.log(result.message);
                 displayPosts(); // Refresh posts to reflect the new dislike count
@@ -131,18 +152,31 @@
                 console.error('Failed to dislike post:', error);
             }
         }
-
+        
+        
         async function IsLiked(postId) {
+            const userId = localStorage.getItem('userId'); // Récupère userId de Local Storage
+            const username = localStorage.getItem('username'); // Récupère username de Local Storage
+        
+            if (!userId || !username) {
+                console.error('UserID or Username not found in local storage');
+                return;
+            }
+        
             try {
                 const response = await fetch(`http://localhost:8081/api/post/isLiked/${postId}`, {
                     method: 'GET',
-          
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'UserID': userId, // Ajoute userId dans les en-têtes
+                        'Username': username // Ajoute username dans les en-têtes
+                    }
                 });
-                
+        
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
-
+        
                 const userInteraction = await response.json();
                 console.log('User interaction:', userInteraction);
                 return userInteraction;
@@ -150,6 +184,7 @@
                 console.error('Failed to check interaction:', error);
             }
         }
+        
         
         async function displayComments(postId, commentsContainer) {
             try {
@@ -214,26 +249,37 @@
         async function submitComment(postId) {
             const commentInput = document.getElementById(`comment-input-${postId}`);
             const content = commentInput.value;
-
+        
             if (!content) {
                 alert("Comment cannot be empty");
                 return;
             }
-
+        
+            const userId = localStorage.getItem('userId'); // Récupère userId de Local Storage
+            const username = localStorage.getItem('username'); // Récupère username de Local Storage
+        
+            if (!userId || !username) {
+                console.error('UserID or Username not found in local storage');
+                return;
+            }
+        
             try {
                 const response = await fetch(`http://localhost:8081/api/comment/create/${postId}`, {
                     method: 'POST',
-             
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'UserID': userId, // Ajoute userId dans les en-têtes
+                        'Username': username // Ajoute username dans les en-têtes
                     },
                     body: JSON.stringify({ content })
                 });
-
+        
                 if (!response.ok) {
+                    const errorData = await response.json();
+                    alert(errorData.error);
                     throw new Error(`Error: ${response.statusText}`);
                 }
-
+        
                 commentInput.value = '';
                 const commentsContainer = document.getElementById(`comments-${postId}`);
                 await displayComments(postId, commentsContainer);
@@ -241,6 +287,8 @@
                 console.error('Failed to submit comment:', error);
             }
         }
+        
+        
         
         async function deletePost(postId) {
             if (confirm("Êtes-vous sûr de vouloir supprimer ? Cela sera définitif.")) {
