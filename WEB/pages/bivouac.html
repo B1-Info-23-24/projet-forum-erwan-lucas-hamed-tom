@@ -64,7 +64,7 @@
                             <button class="button--map" onclick="openMap(${post.ID})"><img src="../static/img/icon/ping.png" id="icon-ping" class="icon--img"></button>
                         </div> 
                         <div class="post-user-date-picture">
-                            <a href="http://20.199.58.192:8080/profile/${post.Username}" ><img src="../static/img/character.png" class="post-picture"></a>
+                            <a href="/profile/${post.Username}" ><img src="../static/img/character.png" class="post-picture"></a>
                             <div class="post-user-date">
                                 <p class="post-username">${post.Username}</p>
                                 <small class="post-date">${new Date(post.CreatedAt).toLocaleString()}</small>
@@ -92,7 +92,7 @@
         }
 
         function openMap(postId) {
-            window.location.href = `http://51.138.203.4:8080/maps/${postId}`;
+            window.location.href = `/maps/${postId}`;
         }
   
         async function displayComments(postId, commentsContainer) {
