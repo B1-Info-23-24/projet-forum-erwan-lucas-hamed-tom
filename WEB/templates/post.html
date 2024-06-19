@@ -26,7 +26,7 @@
                     <img src="../static/img/icon/ping.png" alt="" class="icon--img" onclick="toggleMapPopup()">
                 </div>
                 <div class="right-icon">
-                    <button type="submit" onclick="displayPosts()" ><img src="../static/img/icon/send.png" alt="" class="icon--img"></button>
+                    <button type="submit" onclick="displayPosts()"><img src="../static/img/icon/send.png" alt="" class="icon--img"></button>
                     <a href="javascript:void(0)" onclick="togglePopupPost()"><img src="../static/img/icon/delete.png" alt="" class="icon--img"></a>
                 </div>
             </form>
@@ -40,7 +40,6 @@
     let marker = null;
 
     function initMap() {
-        console.log('initMap called');
         map = new google.maps.Map(document.getElementById("map"), {
             center: { lat: 46.227638, lng: 2.213749 }, // Centre de la France
             zoom: 6,
@@ -51,27 +50,21 @@
             disableDefaultUI: true // Désactive les éléments de l'interface utilisateur par défaut
         });
 
-        // Ajout d'un événement de clic à la carte
         google.maps.event.addListener(map, 'click', function(event) {
-            console.log('map click event triggered');
             let lat = event.latLng.lat();
             let lng = event.latLng.lng();
 
-            // Suppression du marker précédent
             if (marker) {
                 marker.setMap(null);
             }
 
-            // Création d'un nouveau marker rouge
             marker = new google.maps.Marker({
                 position: { lat: lat, lng: lng },
                 map: map,
             });
 
-            // Stockage des coordonnées du ping
             document.getElementById('ping-lat').value = lat;
             document.getElementById('ping-lng').value = lng;
-            console.log(`lat: ${lat}, lng: ${lng}`);
         });
     }
 
@@ -82,25 +75,16 @@
     }
 
     document.getElementById('map-close-button').addEventListener('click', function() {
-        // Fermer le popup ici
         document.getElementById('map-popup').classList.remove('open');
     });
 
     document.getElementById('create-post-form').addEventListener('submit', async function(event) {
         event.preventDefault();
 
-        const formData = new FormData();
-
-        formData.append('theme', document.getElementById('theme').value);
-        formData.append('content', document.getElementById('content').value);
-        formData.append('lat', document.getElementById('ping-lat').value);
-        formData.append('lng', document.getElementById('ping-lng').value);
-
-        const fileNames = [];
+        const formData = new FormData(this);
         files.forEach(file => {
-            fileNames.push(file.name);
+            formData.append('images', file);
         });
-        formData.append('images', JSON.stringify(fileNames));
 
         const messageDiv = document.getElementById('message');
         try {
@@ -155,7 +139,6 @@
         popup.classList.toggle("open");
         document.body.classList.toggle('no-scroll');
 
-        // Reset the form fields and state when the popup is opened
         if (popup.classList.contains("open")) {
             document.getElementById("content").value = "";
             document.getElementById("ping-lat").value = "";
@@ -176,7 +159,6 @@
 
     const imageInput = document.getElementById('images');
     const imagePreview = document.getElementById('image-preview');
-    const imageInputLabel = document.querySelector('.image-input-label');
 
     imageInput.addEventListener('change', function() {
         const newFiles = Array.prototype.slice.call(imageInput.files);

@@ -28,10 +28,11 @@ type Post struct {
 	Likes     int       `gorm:"default:0"`
 	Dislikes  int       `gorm:"default:0"`
 }
+
 type Image struct {
-	ID     uint   `gorm:"primary_key"`
-	PostID uint   `gorm:"index"`
-	URL    string `gorm:"type:varchar(255)"`
+	ID     uint   `json:"id"`
+	PostID uint   `json:"post_id"`
+	URL    string `json:"url"`
 }
 
 type Ping struct {

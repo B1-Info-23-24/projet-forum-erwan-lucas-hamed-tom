@@ -370,3 +370,8 @@ button{
     border: none;
     margin-bottom: 20px;
 }
+
+.post-image{
+    width: 200px;
+    height: 100%;
+}
