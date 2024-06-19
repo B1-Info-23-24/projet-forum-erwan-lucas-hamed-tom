@@ -35,7 +35,7 @@ func StartWebServer() {
 	corsMiddleware := handlers.CORS(
 		handlers.AllowedOrigins([]string{"*"}),
 		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"}),
-		handlers.AllowedHeaders([]string{"Origin", "Content-Type", "Accept"}),
+		handlers.AllowedHeaders([]string{"Origin", "Content-Type", "Accept", "UserID", "Username"}),
 		handlers.AllowCredentials(),
 		handlers.MaxAge(int(12*time.Hour)),
 	)

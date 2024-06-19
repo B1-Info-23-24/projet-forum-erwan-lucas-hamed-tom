@@ -53,7 +53,7 @@
             if (confirm("Êtes-vous sûr de vouloir supprimer ? Cela sera définitif.")) {
                 let username = localStorage.getItem("username");
                 if (username) {
-                    fetch(`http://localhost:8081/api/delete/${username}`, {
+                    fetch(`http://20.74.39.125:8081/api/delete/${username}`, {
                         method: 'DELETE'
                     })
                     .then(response => {
@@ -78,7 +78,7 @@
             const email = document.getElementById('emailEditing').value;
             const currentUsername = localStorage.getItem("username");
             try {
-                const response = await fetch(`http://localhost:8081/api/editing/${currentUsername}`, {
+                const response = await fetch(`http://20.74.39.125:8081/api/editing/${currentUsername}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username, email }),
@@ -100,7 +100,7 @@
             const password = document.getElementById('passwordEditing').value;
             const currentUsername = localStorage.getItem("username");
             try {
-                const response = await fetch(`http://localhost:8081/api/editing/password/${currentUsername}`, {
+                const response = await fetch(`http://20.74.39.125:8081/api/editing/password/${currentUsername}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ oldpassword, password }),

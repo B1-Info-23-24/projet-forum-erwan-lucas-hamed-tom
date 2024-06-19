@@ -52,7 +52,7 @@
             var formData = new FormData(this);
             var xhr = new XMLHttpRequest();
 
-            xhr.open("POST", "http://localhost:8081/api/posts", true);
+            xhr.open("POST", "http://20.74.39.125:8081/api/posts", true);
             xhr.onload = function() {
                 if (xhr.status === 201) {
                     // Rediriger vers la page de profil après la création du post

@@ -29,9 +29,9 @@ func StartAPIServer() {
 	RegisterRoutes(r)
 
 	corsMiddleware := handlers.CORS(
-		handlers.AllowedOrigins([]string{"http://localhost:8080"}),
+		handlers.AllowedOrigins([]string{"*"}),
 		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"}),
-		handlers.AllowedHeaders([]string{"Origin", "Content-Type", "Accept"}),
+		handlers.AllowedHeaders([]string{"Origin", "Content-Type", "Accept", "UserId", "Username"}),
 		handlers.AllowCredentials(),
 		handlers.MaxAge(int(12*time.Hour)),
 	)
