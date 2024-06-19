@@ -695,6 +695,14 @@ func GetCurrentPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var images []Image
+	if err := DB.Where("post_id = ?", post.ID).Find(&images).Error; err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusInternalServerError)
+		return
+	}
+
+	post.Images = images
+
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(post)
 }
@@ -707,6 +715,14 @@ func GetCurrentPostFromId(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, fmt.Sprintf(`{"error": "Post not found: %v"}`, err.Error()), http.StatusNotFound)
 		return
 	}
+
+	var images []Image
+	if err := DB.Where("post_id = ?", post.ID).Find(&images).Error; err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusInternalServerError)
+		return
+	}
+
+	post.Images = images
 
 	var ping Ping
 	if err := DB.Where("post_id = ?", postId).First(&ping).Error; err != nil {
@@ -727,14 +743,24 @@ func GetCurrentPostFromSection(w http.ResponseWriter, r *http.Request) {
 	section := mux.Vars(r)["section"]
 	fmt.Println(section)
 
-	var post []Post
-	if err := DB.Where("theme = ?", section).Find(&post).Error; err != nil {
+	var posts []Post
+	if err := DB.Where("theme = ?", section).Find(&posts).Error; err != nil {
 		http.Error(w, fmt.Sprintf(`{"error": "Post not found: %v"}`, err.Error()), http.StatusNotFound)
 		return
 	}
 
+	for i := range posts {
+		var images []Image
+		if err := DB.Where("post_id = ?", posts[i].ID).Find(&images).Error; err != nil {
+			http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusInternalServerError)
+			return
+		}
+
+		posts[i].Images = images
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(post)
+	json.NewEncoder(w).Encode(posts)
 }
 
 func GetCurrentPostFromProfile(w http.ResponseWriter, r *http.Request) {
@@ -744,6 +770,16 @@ func GetCurrentPostFromProfile(w http.ResponseWriter, r *http.Request) {
 	if err := DB.Where("user_id = ?", userID).Find(&post).Error; err != nil {
 		http.Error(w, fmt.Sprintf(`{"error": "Post not found: %v"}`, err.Error()), http.StatusNotFound)
 		return
+	}
+
+	for i := range post {
+		var images []Image
+		if err := DB.Where("post_id = ?", post[i].ID).Find(&images).Error; err != nil {
+			http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusInternalServerError)
+			return
+		}
+
+		post[i].Images = images
 	}
 
 	w.Header().Set("Content-Type", "application/json")

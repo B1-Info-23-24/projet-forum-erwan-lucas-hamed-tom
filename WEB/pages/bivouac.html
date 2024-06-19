@@ -40,12 +40,22 @@
                 const postsContainer = document.getElementById('posts-container');
                 postsContainer.innerHTML = '';
                 const username = getCookie('username');
-                
+
                 for (const post of posts) {
-                    const status = await IsLikezd(post.ID)
-                    console.log(status)
+                    const status = await IsLiked(post.ID);
+                    console.log(status);
                     const postElement = document.createElement('div');
                     postElement.className = 'post';
+
+                    // Creating image elements if images exist
+                    let imagesHtml = '';
+                    console.log(post.Images);
+                    if (post.Images && post.Images.length > 0) {
+                        for (const image of post.Images) {
+                            imagesHtml += `<img src="http://localhost:8081/uploads/${image.url}" class="post-image">`;
+                        }
+                    }
+
                     postElement.innerHTML = `
                     <div class="post-header">
                         ${post.Username === username ? `<button class="post-modif" onclick="editPost(${post.ID})"><img src="../static/img/icon/3points.png" class="icon--3points"></button>` : ''}
@@ -63,12 +73,13 @@
                         </div>
                         <p class="post-print-content">${post.Content}</p>
                         <div class="post-images">
+                            ${imagesHtml}
                         </div>
                         <div class="post-interaction">
                             <button class="icon--left" onclick="likePost(${post.ID})"><img src="../static/img/icon/like_${status}.png" class="icon--img"></button>
                             <button class="icon--left" onclick="dislikePost(${post.ID})"><img src="../static/img/icon/dislike_${status}.png" class="icon--img"></button>                            
-                            <button class="icon--right" onclick="toggleComments(${post.ID})"><img src="../static/img/icon/comment.png"  class="icon--img"></button>
-                            <button class="icon--right"><img src="../static/img/icon/favorite.png"  class="icon--img"></button>
+                            <button class="icon--right" onclick="toggleComments(${post.ID})"><img src="../static/img/icon/comment.png" class="icon--img"></button>
+                            <button class="icon--right"><img src="../static/img/icon/favorite.png" class="icon--img"></button>
                         </div>
                         <div class="comments-container" id="comments-${post.ID}">
                         </div>
