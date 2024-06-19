@@ -98,7 +98,7 @@
                             <button class="button--map" onclick="openMap(${respons.post.ID})"><img src="../static/img/icon/ping.png" id="icon-ping" class="icon--img"></button>
                         </div> 
                         <div class="post-user-date-picture">
-                            <img src="../static/img/character.png" class="post-picture">
+                            <a href="http://20.199.58.192:8080/profile/${post.Username}" ><img src="../static/img/character.png" class="post-picture"></a>
                             <div class="post-user-date">
                                 <p class="post-username">${respons.post.Username}</p>
                                 <small class="post-date">${new Date(respons.post.CreatedAt).toLocaleString()}</small>
@@ -272,7 +272,7 @@
                             <button class="button--map" onclick="openMap(${post.ID})"><img src="../static/img/icon/ping.png" id="icon-ping" class="icon--img"></button>
                         </div> 
                         <div class="post-user-date-picture">
-                            <img src="../static/img/character.png" class="post-picture">
+                            <a href="http://20.199.58.192:8080/profile/${post.Username}" ><img src="../static/img/character.png" class="post-picture"></a>
                             <div class="post-user-date">
                                 <p class="post-username">${post.Username}</p>
                                 <small class="post-date">${new Date(post.CreatedAt).toLocaleString()}</small>
@@ -333,7 +333,7 @@
                             <button class="button--map" onclick="openMap(${post.ID})"><img src="../static/img/icon/ping.png" id="icon-ping" class="icon--img"></button>
                         </div> 
                         <div class="post-user-date-picture">
-                            <img src="../static/img/character.png" class="post-picture">
+                           <a href="http://20.199.58.192:8080/profile/${post.Username}" ><img src="../static/img/character.png" class="post-picture"></a>
                             <div class="post-user-date">
                                 <p class="post-username">${post.Username}</p>
                                 <small class="post-date">${new Date(post.CreatedAt).toLocaleString()}</small>
