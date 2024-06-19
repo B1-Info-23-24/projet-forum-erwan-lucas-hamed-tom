@@ -1,93 +1,139 @@
 {{ define "login" }}
-<div id="popup-login" >
-<div id="popup-overlay">
-    <div class="popup-content">
-        <a href="javascript:void(0)" onclick="togglePopupLogin()" class="popup-exit"><img src="../static/img/icon/x.png" class="img--icon-x"></a>
-        <div class="login-container">
-            <div class="login-left-section">
-                <h1 class="login-title-welcome">DECOUVREZ<br/>DE NOUVEAU<br/>HORIZONS</h1>
-                <img class="login-img-welcome" src="../static/img/welcome.png">
-            </div>
-            <div class="login-right-section">
-                <div class="login-form">
-                    <h2 class="login-title-second">Welcome Back<br/>To <span>Forun</span></h2>
-                    <a href="/login/github"><button type="button" class="login-with-github-btn" >Github</button></a>
-                    <a href="/login/facebook"><button type="button" class="login-with-facebook-btn" >Facebook</button></a>
-                    <a href="/login/google"><button type="button" class="login-with-google-btn" >Google</button></a>
-                    <form id="login-form">
-                        <div class="login-input-auth">
-                            <input type="email" id="email" name="email" placeholder="Email" required>
-                        </div>
-                        <div class="login-input-auth">
-                            <input type="password" id="password-login" name="password" placeholder="Password" required>
-                            <span class="login-password-toggle">
-                                <img src="/static/img/icon/eye_lock.png" class="login-img-eye" id="closed-eye-login" onclick="showOpen()">
-                                <img src="/static/img/icon/eye_open.png" class="login-img-eye" id="open-eye-login" onclick="showClosed()" style="display: none;">
-                            </span>
-                        </div>
-                        <div class="messageError" id="ErrorLogin"></div>
-                        <button class="login-button-auth" type="submit">Login</button>
-                    </form>
-                    <p class="message" >Don't have an account? <a onclick="togglePopupSignup(),togglePopupLogin()">Sign Up</a></p>
+<div id="popup-login">
+    <div id="popup-overlay">
+        <div class="popup-content">
+            <button onclick="togglePopupLogin()" class="popup-exit">
+                <img src="../static/img/icon/x.png" class="img--icon-x">
+            </button>
+            <div class="login-container">
+                <div class="login-left-section">
+                    <h1 class="login-title-welcome">DÉCOUVREZ<br/>DE NOUVEAUX<br/>HORIZONS</h1>
+                    <img class="login-img-welcome" src="../static/img/welcome.png" alt="Welcome">
+                </div>
+                <div class="login-right-section">
+                    <div class="login-form">
+                        <h2 class="login-title-second">Welcome Back<br/>To <span>Forun</span></h2>
+                        <button type="button" class="login-with-github-btn" onclick="GithubLogin()" id="GithubLogin">Github</button>
+                        <button type="button" class="login-with-facebook-btn" onclick="FacebookLogin()" id="FacebookLogin">Facebook</button>
+                        <button type="button" class="login-with-google-btn" onclick="GoogleLogin()" id="GoogleLogin">Google</button>
+                        <form id="login-form">
+                            <div class="login-input-auth">
+                                <input type="email" id="email" name="email" placeholder="Email" required>
+                            </div>
+                            <div class="login-input-auth">
+                                <input type="password" id="password-login" name="password" placeholder="Password" required>
+                                <span class="login-password-toggle">
+                                    <img src="/static/img/icon/eye_lock.png" class="login-img-eye" id="closed-eye-login" onclick="showOpen()">
+                                    <img src="/static/img/icon/eye_open.png" class="login-img-eye" id="open-eye-login" onclick="showClosed()" style="display: none;">
+                                </span>
+                            </div>
+                            <div class="messageError" id="ErrorLogin"></div>
+                            <button class="login-button-auth" type="submit">Login</button>
+                        </form>
+                        <p class="message">Don't have an account? <a href="javascript:void(0)" onclick="togglePopupSignup(); togglePopupLogin();">Sign Up</a></p>
+                    </div>
                 </div>
             </div>
-        </div>
-        
-        <script>
-            function togglePopupLogin(){
-                let popup = document.querySelector("#popup-login")
-                popup.classList.toggle("open")
-                document.body.classList.toggle('no-scroll');
 
-            }
-            function showOpen() {
-                const closedEye = document.getElementById('closed-eye-login');
-                const openEye = document.getElementById('open-eye-login');
-                const password = document.getElementById('password-login');
-                openEye.style.display = "block";
-                closedEye.style.display = "none";
-                password.type = "text";
-            }
-    
-            function showClosed() {
-                const closedEye = document.getElementById('closed-eye-login');
-                const openEye = document.getElementById('open-eye-login');
-                const password = document.getElementById('password-login');
-                openEye.style.display = "none";
-                closedEye.style.display = "block";
-                password.type = "password";
-            }
-    
-            document.getElementById('login-form').addEventListener('submit', async function(event) {
-                event.preventDefault();
-                const email = document.getElementById('email').value;
-                const password = document.getElementById('password-login').value;
-                const messageDiv = document.getElementById('ErrorLogin');
-                try {
-                    const response = await fetch('http://20.74.39.125:8081/api/login', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ email, password }),
-                    });
-                    const result = await response.json();
-        
+            <script>
+                async function GithubLogin() {
+                    console.log("okok");
+                    console.log("test");
+                    try {
+                        console.log("coucou");
+                        window.location.href = 'http://localhost:8081/api/login/github';
+                        console.log("Redirection vers GitHub pour l'authentification");
+                    } catch (error) {
+                        displayError(error.message);
+                    }
+                }
+
+
+
+                async function FacebookLogin() {
+                    let FacebookLogin = document.getElementById('FacebookLogin').value.trim();
+                    
+                    try {
+                        const response = await fetch('http://localhost:8081/api/login/facebook');//?FacebookLogin=${encodeURIComponent(FacebookLogin)}');
+                        const result = await response.json();
+                        handleLoginResponse(response, result);
+                    } catch (error) {
+                        displayError(error.message);
+                    }
+                }
+
+                async function GoogleLogin() {
+                    let GoogleLogin = document.getElementById('GoogleLogin').value.trim();
+
+                    try {
+                        const response = await fetch('http://localhost:8081/api/login/google');//?GoogleLogin=${encodeURIComponent(GoogleLogin)}');
+                        const result = await response.json();
+                        handleLoginResponse(response, result);
+                    } catch (error) {
+                        displayError(error.message);
+                    }
+                }
+
+                function handleLoginResponse(response, result) {
+                    const messageDiv = document.getElementById('ErrorLogin');
                     if (response.ok) {
-                        messageDiv.textContent = 'Connection réussie';
-                        localStorage.setItem('username', result.user.username); // Assume 'username' is a property of 'user' in the response
-                        localStorage.setItem('userId', result.user.id); // Assume 'id' is a property of 'user' in the response
+                        messageDiv.textContent = 'Connexion réussie';
+                        localStorage.setItem('username', result.user.username); // Assure que 'username' est une propriété de 'user' dans la réponse
+                        localStorage.setItem('userId', result.user.id); // Assure que 'id' est une propriété de 'user' dans la réponse
                         togglePopupLogin();
                         window.location.href = `/profile/${result.user.username}`;
                     } else {
-                        messageDiv.textContent = `${result.error}`;
+                        messageDiv.textContent = result.error || 'Erreur de connexion';
                     }
-                } catch (error) {
-                    messageDiv.textContent = `${error.message}`;
                 }
-            });
-                   
-        </script>
+
+                function displayError(message) {
+                    const messageDiv = document.getElementById('ErrorLogin');
+                    messageDiv.textContent = message;
+                }
+
+                function togglePopupLogin() {
+                    const popup = document.getElementById("popup-login");
+                    popup.classList.toggle("open");
+                    document.body.classList.toggle('no-scroll');
+                }
+
+                function showOpen() {
+                    const closedEye = document.getElementById('closed-eye-login');
+                    const openEye = document.getElementById('open-eye-login');
+                    const password = document.getElementById('password-login');
+                    openEye.style.display = "block";
+                    closedEye.style.display = "none";
+                    password.type = "text";
+                }
+
+                function showClosed() {
+                    const closedEye = document.getElementById('closed-eye-login');
+                    const openEye = document.getElementById('open-eye-login');
+                    const password = document.getElementById('password-login');
+                    openEye.style.display = "none";
+                    closedEye.style.display = "block";
+                    password.type = "password";
+                }
+
+                document.getElementById('login-form').addEventListener('submit', async function(event) {
+                    event.preventDefault();
+                    const email = document.getElementById('email').value;
+                    const password = document.getElementById('password-login').value;
+                    try {
+                        const response = await fetch('http://localhost:8081/api/login', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ email, password }),
+                        });
+                        const result = await response.json();
+                        handleLoginResponse(response, result);
+                    } catch (error) {
+                        displayError(error.message);
+                    }
+                });
+            </script>
+        </div>
     </div>
 </div>
-</div>
-
 {{ end }}

@@ -29,7 +29,7 @@
     <script>
         async function displayPosts() {
             try {
-                const response = await fetch(`http://20.74.39.125:8081/api/post/display`, {
+                const response = await fetch(`http://localhost:8081/api/post/display`, {
                     method: 'POST',
                     
                 });
@@ -82,13 +82,13 @@
         }
 
         function openMap(postId) {
-            window.location.href = `http://20.74.39.125:8080/maps/${postId}`;
+            window.location.href = `http://localhost:8080/maps/${postId}`;
         }
 
         async function editPost(postId) {
             try {
                 console.log(postId)
-                const response = await fetch(`http://20.74.39.125:8081/api/post/display/${postId}`, {
+                const response = await fetch(`http://localhost:8081/api/post/display/${postId}`, {
                     method: 'POST',
                     
                 });
@@ -121,7 +121,7 @@
         async function deletePost(postId) {
             if (confirm("Êtes-vous sûr de vouloir supprimer ? Cela sera définitif.")) {
                 try {
-                    const response = await fetch(`http://20.74.39.125:8081/api/post/delete/${postId}`, {
+                    const response = await fetch(`http://localhost:8081/api/post/delete/${postId}`, {
                         method: 'DELETE',
                         
                     });
@@ -147,7 +147,7 @@
 
         async function displayComments(postId, commentsContainer) {
             try {
-                const response = await fetch(`http://20.74.39.125:8081/api/comment/${postId}`, {
+                const response = await fetch(`http://localhost:8081/api/comment/${postId}`, {
                     method: 'GET',
                     
                 });
@@ -223,7 +223,7 @@
             }
 
             try {
-                const response = await fetch(`http://20.74.39.125:8081/api/comment/create/${postId}`, {
+                const response = await fetch(`http://localhost:8081/api/comment/create/${postId}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

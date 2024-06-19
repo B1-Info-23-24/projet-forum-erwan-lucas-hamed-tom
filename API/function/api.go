@@ -29,9 +29,9 @@ func StartAPIServer() {
 	RegisterRoutes(r)
 
 	corsMiddleware := handlers.CORS(
-		handlers.AllowedOrigins([]string{"*"}),
+		handlers.AllowedOrigins([]string{"http://localhost:8080"}),
 		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"}),
-		handlers.AllowedHeaders([]string{"Origin", "Content-Type", "Accept", "UserId", "Username"}),
+		handlers.AllowedHeaders([]string{"Origin", "Content-Type", "Accept", "UserId", "Username", "Content-Type", "Authorization"}),
 		handlers.AllowCredentials(),
 		handlers.MaxAge(int(12*time.Hour)),
 	)
@@ -63,6 +63,15 @@ func RegisterRoutes(r *mux.Router) {
 	r.HandleFunc("/api/post/isLiked/{postId}", IsLiked).Methods("GET")
 	r.HandleFunc("/api/post/delete/{postId}", DeletePost).Methods("DELETE")
 	r.HandleFunc("/api/search", SearchPosts).Methods("GET")
+
+	r.HandleFunc("/api/login/github", githubLoginHandler).Methods("GET")
+	r.HandleFunc("/api/callback/github", githubCallbackHandler).Methods("GET")
+
+	r.HandleFunc("/api/login/facebook", facebookLoginHandler).Methods("GET")
+	r.HandleFunc("/callback/facebook", facebookCallbackHandler).Methods("GET")
+
+	r.HandleFunc("/api/login/google", googleLoginHandler).Methods("GET")
+	r.HandleFunc("/api/callback/google", googleCallbackHandler).Methods("GET")
 
 }
 func LikePost(w http.ResponseWriter, r *http.Request) {

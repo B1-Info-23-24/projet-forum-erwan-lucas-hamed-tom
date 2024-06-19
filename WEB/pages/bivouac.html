@@ -29,7 +29,7 @@
     <script>
         async function displayPosts() {
             try {
-                const response = await fetch(`http://20.74.39.125:8081/api/post/section/Bivouac`, {
+                const response = await fetch(`http://localhost:8081/api/post/section/Bivouac`, {
                     method: 'POST',
        
                 });
@@ -82,12 +82,12 @@
         }
 
         function openMap(postId) {
-            window.location.href = `http://20.74.39.125:8080/maps/${postId}`;
+            window.location.href = `http://localhost:8080/maps/${postId}`;
         }
   
         async function displayComments(postId, commentsContainer) {
             try {
-                const response = await fetch(`http://20.74.39.125:8081/api/comment/${postId}`, {
+                const response = await fetch(`http://localhost:8081/api/comment/${postId}`, {
                     method: 'GET',
       
                 });
@@ -163,7 +163,7 @@
             }
         
             try {
-                const response = await fetch(`http://20.74.39.125:8081/api/comment/create/${postId}`, {
+                const response = await fetch(`http://localhost:8081/api/comment/create/${postId}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
