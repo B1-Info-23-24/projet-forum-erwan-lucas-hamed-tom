@@ -6,7 +6,26 @@
         <form class="search-form" action="">
             <input oninput="search()" class="input--search-bar" name="search-bar" id="search-bar"  value="" type="text" placeholder="Search anything....">
         </form>
-        <button class="button-filter"><img src="../static/img/filter.png" alt="" class="img--filter"></button>
+        <button class="button-filter" onclick="toggleMenu()"><img src="../static/img/filter.png" alt="" class="img--filter"></button>
+        <div id="message-div"></div>
+    </div>
+    <div class="filter-menu" id="filter-menu">
+        <!-- Contenu du menu filtrer -->
+        <form id="filter-form">
+            <label for="sortBy">Sort By:</label>
+            <select id="sortBy" name="sortBy">
+                <option value="date">Date</option>
+                <option value="comments">Comments</option>
+                <option value="likes">Likes</option>
+            </select>
+            <label for="order">Order:</label>
+            <select id="order" name="order">
+                <option value="asc">Ascending</option>
+                <option value="desc">Descending</option>                
+            </select>
+            <!-- Autres options de filtrage à ajouter selon vos besoins -->
+            <button class="button-filter" type="submit">Submit</button>
+        </form>
     </div>
     <a href="/#" onclick="redirectToUserProfile()"><img src="../static/img/character.png" alt="" class="img--character"></a>
 </div>
@@ -53,7 +72,7 @@
             }
 
             try {
-                const response = await fetch(`http://localhost:8081/api/post/like/${postId}`, {
+                const response = await fetch(`http://51.138.203.4:8081/api/post/like/${postId}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -85,7 +104,7 @@
             }
 
             try {
-                const response = await fetch(`http://localhost:8081/api/post/dislike/${postId}`, {
+                const response = await fetch(`http://51.138.203.4:8081/api/post/dislike/${postId}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -117,7 +136,7 @@
             }
 
             try {
-                const response = await fetch(`http://localhost:8081/api/post/isLiked/${postId}`, {
+                const response = await fetch(`http://51.138.203.4:8081/api/post/isLiked/${postId}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -138,7 +157,80 @@
             }
         }
         
-        
+        function toggleMenu() {
+        const filterMenu = document.getElementById('filter-menu');
+        filterMenu.classList.toggle('active');
+    }
+
+    document.getElementById('filter-form').addEventListener('submit', async function(event) {
+    event.preventDefault();
+    const formData = new FormData();
+    formData.append('sortBy', document.getElementById('sortBy').value);
+    formData.append('order', document.getElementById('order').value);
+    const messageDiv = document.getElementById('message-div');
+
+    try {
+        const response = await fetch(`http://51.138.203.4:8081/api/posts/filter`, {
+            method: 'POST',
+            body: formData,
+        });
+
+        const result = await response.json();
+        if (response.ok) {
+            displayPostsFilter(result);
+            messageDiv.textContent = 'Filter applied successfully';
+        } else {
+            messageDiv.textContent = `fetch Error: ${result.error}`;
+        }
+    } catch (error) {
+        messageDiv.textContent = `button Error: ${error.message}`;
+    }
+});
+
+
+async function displayPostsFilter(posts) {
+    const postsContainer = document.getElementById('posts-container');
+    postsContainer.innerHTML = '';
+    const userId = localStorage.getItem('userId'); // Récupère userId de Local Storage
+    const username = localStorage.getItem('username'); // Récupère username de Local Storage
+
+    for (const post of posts) {
+        const status = await IsLiked(post.ID); // Assuming you have this function
+        const postElement = document.createElement('div');
+        postElement.className = 'post';
+        postElement.innerHTML = `
+            <div class="post-header">
+                ${post.Username === username ? `<button class="post-modif" onclick="editPost(${post.ID})"><img src="../static/img/icon/3points.png" class="icon--3points"></button>` : ''}
+                ${post.Username === username ? `<button class="post-modif" onclick="deletePost(${post.ID})"><img src="../static/img/icon/delete.png" id="icon-delete" class="icon--img"></button>` : ''}
+                <div class="container--button-post">
+                    <button class="${post.Theme}">${post.Theme}<img src="../static/img/icon/${post.Theme}.png" class="icon--theme"></button> 
+                    <button class="button--map" onclick="openMap(${post.ID})"><img src="../static/img/icon/ping.png" id="icon-ping" class="icon--img"></button>
+                </div> 
+                <div class="post-user-date-picture">
+                    <img src="../static/img/character.png" class="post-picture">
+                    <div class="post-user-date">
+                        <p class="post-username">${post.Username}</p>
+                        <small class="post-date">${new Date(post.CreatedAt).toLocaleString()}</small>
+                    </div>
+                </div>
+                <p class="post-print-content">${post.Content}</p>
+                <div class="post-images">
+                    ${post.Images.map(image => `<img src="${image.URL}" class="post-image">`).join('')}
+                </div>
+                <div class="post-interaction">
+                    <button class="icon--left" onclick="likePost(${post.ID})"><img src="../static/img/icon/like_${status}.png" class="icon--img"></button>
+                    <button class="icon--left" onclick="dislikePost(${post.ID})"><img src="../static/img/icon/dislike_${status}.png" class="icon--img"></button>                            
+                    <button class="icon--right" onclick="toggleComments(${post.ID})"><img src="../static/img/icon/comment.png"  class="icon--img"></button>
+                    <button class="icon--right"><img src="../static/img/icon/favorite.png"  class="icon--img"></button>
+                </div>
+                <div class="comments-container" id="comments-${post.ID}">
+                </div>
+            </div>
+        `;
+        postsContainer.appendChild(postElement);
+    }
+}
+
 </script>
 
 {{ end }}

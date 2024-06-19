@@ -27,9 +27,10 @@
         </div>
     </div>
     <script>
+        
         async function displayPosts() {
             try {
-                const response = await fetch(`http://localhost:8081/api/post/display`, {
+                const response = await fetch(`http://51.138.203.4:8081/api/post/display`, {
                     method: 'POST',
                     
                 });
@@ -53,7 +54,7 @@
                     console.log(post);
                     if (post.Images && post.Images.length > 0) {
                         for (const image of post.Images) {
-                            imagesHtml += `<img src="http://localhost:8081/uploads/${image.URL}" class="post-image">`;
+                            imagesHtml += `<img src="http://51.138.203.4:8081/uploads/${image.URL}" class="post-image">`;
                         }
                     }
 
@@ -66,7 +67,7 @@
                             <button class="button--map" onclick="openMap(${post.ID})"><img src="../static/img/icon/ping.png" id="icon-ping" class="icon--img"></button>
                         </div> 
                         <div class="post-user-date-picture">
-                            <a href="http://localhost:8080/profile/${post.Username}" ><img src="../static/img/character.png" class="post-picture"></a>
+                            <a href="http://51.138.203.4:8080/profile/${post.Username}" ><img src="../static/img/character.png" class="post-picture"></a>
                             <div class="post-user-date">
                                 <p class="post-username">${post.Username}</p>
                                 <small class="post-date">${new Date(post.CreatedAt).toLocaleString()}</small>
@@ -94,13 +95,13 @@
         }
 
         function openMap(postId) {
-            window.location.href = `http://localhost:8080/maps/${postId}`;
+            window.location.href = `http://51.138.203.4:8080/maps/${postId}`;
         }
 
         async function editPost(postId) {
             try {
                 console.log(postId)
-                const response = await fetch(`http://localhost:8081/api/post/display/${postId}`, {
+                const response = await fetch(`http://51.138.203.4:8081/api/post/display/${postId}`, {
                     method: 'POST',
                     
                 });
@@ -133,7 +134,7 @@
         async function deletePost(postId) {
             if (confirm("Êtes-vous sûr de vouloir supprimer ? Cela sera définitif.")) {
                 try {
-                    const response = await fetch(`http://localhost:8081/api/post/delete/${postId}`, {
+                    const response = await fetch(`http://51.138.203.4:8081/api/post/delete/${postId}`, {
                         method: 'DELETE',
                         
                     });
@@ -159,7 +160,7 @@
 
         async function displayComments(postId, commentsContainer) {
             try {
-                const response = await fetch(`http://localhost:8081/api/comment/${postId}`, {
+                const response = await fetch(`http://51.138.203.4:8081/api/comment/${postId}`, {
                     method: 'GET',
                     
                 });
@@ -235,7 +236,7 @@
             }
 
             try {
-                const response = await fetch(`http://localhost:8081/api/comment/create/${postId}`, {
+                const response = await fetch(`http://51.138.203.4:8081/api/comment/create/${postId}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -274,7 +275,7 @@
 
         try {
             console.log("test")
-            let response = await fetch(`http://localhost:8081/api/search?query=${encodeURIComponent(query)}`);
+            let response = await fetch(`http://51.138.203.4:8081/api/search?query=${encodeURIComponent(query)}`);
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }

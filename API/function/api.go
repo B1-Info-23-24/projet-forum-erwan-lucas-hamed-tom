@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gorilla/handlers"
@@ -71,6 +72,7 @@ func RegisterRoutes(r *mux.Router) {
 	r.HandleFunc("/api/post/isLiked/{postId}", IsLiked).Methods("GET")
 	r.HandleFunc("/api/post/delete/{postId}", DeletePost).Methods("DELETE")
 	r.HandleFunc("/api/search", SearchPosts).Methods("GET")
+	r.HandleFunc("/api/posts/filter", FilterPosts).Methods("POST")
 
 }
 func LikePost(w http.ResponseWriter, r *http.Request) {
@@ -946,4 +948,54 @@ func SearchPosts(w http.ResponseWriter, r *http.Request) {
 	if err := json.NewEncoder(w).Encode(posts); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
+}
+
+func FilterPosts(w http.ResponseWriter, r *http.Request) {
+	sortBy := r.FormValue("sortBy")
+	order := strings.ToUpper(r.FormValue("order"))
+
+	fmt.Printf("sortBy: %s, order: %s\n", sortBy, order)
+	if sortBy == "" || order == "" {
+		http.Error(w, `{"error": "sortBy and order parameters are required"}`, http.StatusBadRequest)
+		return
+	}
+
+	if order != "ASC" && order != "DESC" {
+		http.Error(w, `{"error": "Invalid order parameter, must be 'ASC' or 'DESC'"}`, http.StatusBadRequest)
+		return
+	}
+
+	var posts []Post
+	query := DB
+
+	switch sortBy {
+	case "date":
+		query = query.Order("created_at " + order)
+	case "comments":
+		query = query.Joins("LEFT JOIN comments ON comments.post_id = posts.id").
+			Group("posts.id").
+			Order("COUNT(comments.id) " + order)
+	case "likes":
+		query = query.Order("likes " + order)
+	default:
+		http.Error(w, `{"error": "Invalid sortBy parameter"}`, http.StatusBadRequest)
+		return
+	}
+
+	if err := query.Find(&posts).Error; err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusInternalServerError)
+		return
+	}
+
+	for i := range posts {
+		var images []Image
+		if err := DB.Where("post_id = ?", posts[i].ID).Find(&images).Error; err != nil {
+			http.Error(w, fmt.Sprintf(`{"error": "%v"}`, err.Error()), http.StatusInternalServerError)
+			return
+		}
+		posts[i].Images = images
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(posts)
 }

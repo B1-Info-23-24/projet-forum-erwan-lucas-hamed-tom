@@ -34,7 +34,7 @@
             });
         }
 
-        fetch(`http://localhost:8081/api/pings`)
+        fetch(`http://51.138.203.4:8081/api/pings`)
         .then(response => response.json())
         .then(pings => {
             console.log(pings);
@@ -67,7 +67,7 @@
         async function displayCurrentPostFromUrl() {
           try {
                 const postId = getPostIdFromURL();
-                const response = await fetch(`http://localhost:8081/api/post/display/${postId}`, {
+                const response = await fetch(`http://51.138.203.4:8081/api/post/display/${postId}`, {
                     method: 'POST',
                 });
                 if (!response.ok) {
@@ -85,7 +85,7 @@
                     let imagesHtml = '';
                     if (respons.post.Images && respons.post.Images.length > 0) {
                         for (const image of respons.post.Images) {
-                            imagesHtml += `<img src="http://localhost:8081/uploads/${image.URL}" class="post-image">`;
+                            imagesHtml += `<img src="http://51.138.203.4:8081/uploads/${image.URL}" class="post-image">`;
                         }
                     }
 
@@ -144,7 +144,7 @@
             }
         
             try {
-                const response = await fetch(`http://localhost:8081/api/post/like/${postId}`, {
+                const response = await fetch(`http://51.138.203.4:8081/api/post/like/${postId}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -179,7 +179,7 @@
             }
         
             try {
-                const response = await fetch(`http://localhost:8081/api/post/dislike/${postId}`, {
+                const response = await fetch(`http://51.138.203.4:8081/api/post/dislike/${postId}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -215,7 +215,7 @@
             }
         
             try {
-                const response = await fetch(`http://localhost:8081/api/post/isLiked/${postId}`, {
+                const response = await fetch(`http://51.138.203.4:8081/api/post/isLiked/${postId}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -240,7 +240,7 @@
 
         async function displayCurrentPost(lat, lng) {
           try {
-                const response = await fetch(`http://localhost:8081/api/post/display/${lat}/${lng}`, {
+                const response = await fetch(`http://51.138.203.4:8081/api/post/display/${lat}/${lng}`, {
                     method: 'POST',
                 });
                 if (!response.ok) {
@@ -259,7 +259,7 @@
                     console.log(post.Images);
                     if (post.Images && post.Images.length > 0) {
                         for (const image of post.Images) {
-                            imagesHtml += `<img src="http://localhost:8081/uploads/${image.URL}" class="post-image">`;
+                            imagesHtml += `<img src="http://51.138.203.4:8081/uploads/${image.URL}" class="post-image">`;
                         }
                     }
 
@@ -302,7 +302,7 @@
 
         async function displayPosts() {
             try {
-                const response = await fetch(`http://localhost:8081/api/post/display`, {
+                const response = await fetch(`http://51.138.203.4:8081/api/post/display`, {
                     method: 'POST',
                 });
                 if (!response.ok) {
@@ -320,7 +320,7 @@
                     let imagesHtml = '';
                     if (post.Images && post.Images.length > 0) {
                         for (const image of post.Images) {
-                            imagesHtml += `<img src="http://localhost:8081/uploads/${image.URL}" class="post-image">`;
+                            imagesHtml += `<img src="http://51.138.203.4:8081/uploads/${image.URL}" class="post-image">`;
                         }
                     }
 
@@ -362,7 +362,7 @@
 
         async function displayComments(postId, commentsContainer) {
             try {
-                const response = await fetch(`http://localhost:8081/api/comment/${postId}`, {
+                const response = await fetch(`http://51.138.203.4:8081/api/comment/${postId}`, {
                     method: 'GET',
               
                 });
@@ -438,7 +438,7 @@
             }
         
             try {
-                const response = await fetch(`http://localhost:8081/api/comment/create/${postId}`, {
+                const response = await fetch(`http://51.138.203.4:8081/api/comment/create/${postId}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

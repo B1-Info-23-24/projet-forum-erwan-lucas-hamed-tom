@@ -29,7 +29,7 @@
     <script>
         async function displayPosts() {
             try {
-                const response = await fetch(`http://localhost:8081/api/post/section/Treck`, {
+                const response = await fetch(`http://51.138.203.4:8081/api/post/section/Treck`, {
                     method: 'POST',
                     
                 });
@@ -52,7 +52,7 @@
                     console.log(post.Images);
                     if (post.Images && post.Images.length > 0) {
                         for (const image of post.Images) {
-                            imagesHtml += `<img src="http://localhost:8081/uploads/${image.URL}" class="post-image">`;
+                            imagesHtml += `<img src="http://51.138.203.4:8081/uploads/${image.URL}" class="post-image">`;
                         }
                     }
 
@@ -95,7 +95,7 @@
         async function deletePost(postId) {
             if (confirm("Êtes-vous sûr de vouloir supprimer ? Cela sera définitif.")) {
                 try {
-                    const response = await fetch(`http://localhost:8081/api/post/delete/${postId}`, {
+                    const response = await fetch(`http://51.138.203.4:8081/api/post/delete/${postId}`, {
                         method: 'DELETE',
                         
                     });
@@ -114,12 +114,12 @@
         }
 
         function openMap(postId) {
-            window.location.href = `http://localhost:8080/maps/${postId}`;
+            window.location.href = `http://51.138.203.4:8080/maps/${postId}`;
         }
 
         async function displayComments(postId, commentsContainer) {
             try {
-                const response = await fetch(`http://localhost:8081/api/comment/${postId}`, {
+                const response = await fetch(`http://51.138.203.4:8081/api/comment/${postId}`, {
                     method: 'GET',
       
                 });
@@ -195,7 +195,7 @@
             }
         
             try {
-                const response = await fetch(`http://localhost:8081/api/comment/create/${postId}`, {
+                const response = await fetch(`http://51.138.203.4:8081/api/comment/create/${postId}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
