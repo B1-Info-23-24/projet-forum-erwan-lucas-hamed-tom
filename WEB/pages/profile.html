@@ -38,7 +38,7 @@
     <script>
         async function fetchUserProfile(username) {
             try {
-                const response = await fetch(`http://20.74.39.125:8081/api/profile/${username}`, {
+                const response = await fetch(`http://localhost:8081/api/profile/${username}`, {
                     method: 'GET',
                     
                 });
@@ -67,7 +67,7 @@
         async function displayPosts() {
             try {
                 const userId = localStorage.getItem('userId');
-                const response = await fetch(`http://20.74.39.125:8081/api/profile/post/${userId}`, {
+                const response = await fetch(`http://localhost:8081/api/profile/post/${userId}`, {
                     method: 'POST',
                     
                 });
@@ -81,9 +81,15 @@
                 
                 for (const post of posts) {
                     const status = await IsLiked(post.ID);
-                    console.log(status);
                     const postElement = document.createElement('div');
                     postElement.className = 'post';
+                    let imagesHtml = '';
+                    if (post.Images && post.Images.length > 0) {
+                        for (const image of post.Images) {
+                            imagesHtml += `<img src="http://localhost:8081/uploads/${image.URL}" class="post-image">`;
+                        }
+                    }
+
                     postElement.innerHTML = `
                     <div class="post-header">
                         ${post.Username === username ? `<button class="post-modif" onclick="editPost(${post.ID})"><img src="../static/img/icon/3points.png" class="icon--3points"></button>` : ''}
@@ -101,12 +107,13 @@
                         </div>
                         <p class="post-print-content">${post.Content}</p>
                         <div class="post-images">
+                            ${imagesHtml}
                         </div>
                         <div class="post-interaction">
                             <button class="icon--left" onclick="likePost(${post.ID})"><img src="../static/img/icon/like_${status}.png" class="icon--img"></button>
                             <button class="icon--left" onclick="dislikePost(${post.ID})"><img src="../static/img/icon/dislike_${status}.png" class="icon--img"></button>                            
-                            <button class="icon--right" onclick="toggleComments(${post.ID})"><img src="../static/img/icon/comment.png"  class="icon--img"></button>
-                            <button class="icon--right"><img src="../static/img/icon/favorite.png"  class="icon--img"></button>
+                            <button class="icon--right" onclick="toggleComments(${post.ID})"><img src="../static/img/icon/comment.png" class="icon--img"></button>
+                            <button class="icon--right"><img src="../static/img/icon/favorite.png" class="icon--img"></button>
                         </div>
                         <div class="comments-container" id="comments-${post.ID}">
                         </div>
@@ -120,12 +127,12 @@
         }
 
         function openMap(postId) {
-            window.location.href = `http://20.74.39.125:8080/maps/${postId}`;
+            window.location.href = `http://localhost:8080/maps/${postId}`;
         }
 
         function redirectToDeconnexion() {
             if (confirm("Vous allez être déconnecté ? ")) {
-                fetch('http://20.74.39.125:8081/api/deconnexion', {
+                fetch('http://localhost:8081/api/deconnexion', {
                     method: 'POST',
                     
                 })
@@ -154,7 +161,7 @@
         async function deletePost(postId) {
             if (confirm("Êtes-vous sûr de vouloir supprimer ? Cela sera définitif.")) {
                 try {
-                    const response = await fetch(`http://20.74.39.125:8081/api/post/delete/${postId}`, {
+                    const response = await fetch(`http://localhost:8081/api/post/delete/${postId}`, {
                         method: 'DELETE',
                         
                     });
@@ -174,7 +181,7 @@
   
         async function displayComments(postId, commentsContainer) {
             try {
-                const response = await fetch(`http://20.74.39.125:8081/api/comment/${postId}`, {
+                const response = await fetch(`http://localhost:8081/api/comment/${postId}`, {
                     method: 'GET',
                     
                 });
@@ -250,7 +257,7 @@
             }
         
             try {
-                const response = await fetch(`http://20.74.39.125:8081/api/comment/create/${postId}`, {
+                const response = await fetch(`http://localhost:8081/api/comment/create/${postId}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

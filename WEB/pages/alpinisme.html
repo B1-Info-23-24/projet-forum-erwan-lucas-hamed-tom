@@ -29,7 +29,7 @@
     <script>
         async function displayPosts() {
             try {
-                const response = await fetch(`http://20.74.39.125:8081/api/post/section/Alpinisme`, {
+                const response = await fetch(`http://localhost:8081/api/post/section/Alpinisme`, {
                     method: 'POST',
                 });
                 if (!response.ok) {
@@ -43,8 +43,19 @@
                 
                 for (const post of posts) {
                     const status = await IsLiked(post.ID);
+                    console.log(status);
                     const postElement = document.createElement('div');
                     postElement.className = 'post';
+
+                    // Creating image elements if images exist
+                    let imagesHtml = '';
+                    console.log(post.Images);
+                    if (post.Images && post.Images.length > 0) {
+                        for (const image of post.Images) {
+                            imagesHtml += `<img src="http://localhost:8081/uploads/${image.URL}" class="post-image">`;
+                        }
+                    }
+
                     postElement.innerHTML = `
                     <div class="post-header">
                         ${post.Username === username ? `<button class="post-modif" onclick="editPost(${post.ID})"><img src="../static/img/icon/3points.png" class="icon--3points"></button>` : ''}
@@ -62,6 +73,7 @@
                         </div>
                         <p class="post-print-content">${post.Content}</p>
                         <div class="post-images">
+                            ${imagesHtml}
                         </div>
                         <div class="post-interaction">
                             <button class="icon--left" onclick="likePost(${post.ID})"><img src="../static/img/icon/like_${status}.png" class="icon--img"></button>
@@ -81,12 +93,12 @@
         }
 
         function openMap(postId) {
-            window.location.href = `http://20.74.39.125:8080/maps/${postId}`;
+            window.location.href = `http://localhost:8080/maps/${postId}`;
         }
         
         async function displayComments(postId, commentsContainer) {
             try {
-                const response = await fetch(`http://20.74.39.125:8081/api/comment/${postId}`, {
+                const response = await fetch(`http://localhost:8081/api/comment/${postId}`, {
                     method: 'GET',
                 });
                 if (!response.ok) {
@@ -161,7 +173,7 @@
             }
         
             try {
-                const response = await fetch(`http://20.74.39.125:8081/api/comment/create/${postId}`, {
+                const response = await fetch(`http://localhost:8080/api/comment/create/${postId}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -188,7 +200,7 @@
         async function deletePost(postId) {
             if (confirm("Êtes-vous sûr de vouloir supprimer ? Cela sera définitif.")) {
                 try {
-                    const response = await fetch(`http://20.74.39.125:8081/api/post/delete/${postId}`, {
+                    const response = await fetch(`http://localhost:8081/api/post/delete/${postId}`, {
                         method: 'DELETE',
                     });
                     if (!response.ok) {

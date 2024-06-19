@@ -49,7 +49,7 @@
 
         const messageDiv = document.getElementById('message-modif');
         try {
-            const response = await fetch(`http://20.74.39.125:8081/api/post/modif/${postId}`, {
+            const response = await fetch(`http://localhost:8081/api/post/modif/${postId}`, {
                 method: 'POST',
                 body: formData,
        
