@@ -25,7 +25,7 @@ func rootHandler(w http.ResponseWriter, r *http.Request) {
 
 func githubLoginHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("oauisouais")
-	redirectURL := fmt.Sprintf("https://github.com/login/oauth/authorize?client_id=%s&redirect_uri=%s", GithubClientID, "http://localhost:8080/api/callback/github")
+	redirectURL := fmt.Sprintf("https://github.com/login/oauth/authorize?client_id=%s&redirect_uri=%s", GithubClientID, "http://localhost:8081/callback/github")
 	http.Redirect(w, r, redirectURL, http.StatusTemporaryRedirect)
 }
 
@@ -84,7 +84,7 @@ func getGithubData(accessToken string) string {
 }
 
 func facebookLoginHandler(w http.ResponseWriter, r *http.Request) {
-	redirectURL := fmt.Sprintf("https://www.facebook.com/v10.0/dialog/oauth?client_id=%s&redirect_uri=%s&scope=email", FacebookClientID, "http://localhost:8080/callback/facebook")
+	redirectURL := fmt.Sprintf("https://www.facebook.com/v10.0/dialog/oauth?client_id=%s&redirect_uri=%s&scope=email", FacebookClientID, "http://localhost:8081/callback/facebook")
 	http.Redirect(w, r, redirectURL, http.StatusTemporaryRedirect)
 }
 
@@ -142,7 +142,7 @@ func getFacebookData(accessToken string) string {
 }
 
 func googleLoginHandler(w http.ResponseWriter, r *http.Request) {
-	redirectURL := fmt.Sprintf("https://accounts.google.com/o/oauth2/auth?client_id=%s&redirect_uri=%s&scope=email&response_type=code", GoogleClientID, "http://localhost:8080/callback/google")
+	redirectURL := fmt.Sprintf("https://accounts.google.com/o/oauth2/auth?client_id=%s&redirect_uri=%s&scope=email&response_type=code", GoogleClientID, "http://localhost:8081/callback/google")
 	http.Redirect(w, r, redirectURL, http.StatusTemporaryRedirect)
 }
 
@@ -251,11 +251,10 @@ func googleLoggedinHandler(w http.ResponseWriter, r *http.Request, data string) 
 		}
 	}
 
-	SetCookie(w, user)
 	log.Printf("User details: %+v\n", user)
 
 	w.Header().Set("Content-Type", "application/json")
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	http.Redirect(w, r, "http://localhost:8080/", http.StatusSeeOther)
 }
 
 // Function to extract username from email
@@ -318,7 +317,7 @@ func loggedinHandler(w http.ResponseWriter, r *http.Request, data string) {
 	log.Printf("User details: %+v\n", user)
 
 	w.Header().Set("Content-Type", "application/json")
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	http.Redirect(w, r, "http://localhost:8080/", http.StatusSeeOther)
 }
 
 func checkExistingUser(w http.ResponseWriter, r *http.Request, password string) bool {

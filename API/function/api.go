@@ -65,13 +65,13 @@ func RegisterRoutes(r *mux.Router) {
 	r.HandleFunc("/api/search", SearchPosts).Methods("GET")
 
 	r.HandleFunc("/api/login/github", githubLoginHandler).Methods("GET")
-	r.HandleFunc("/api/callback/github", githubCallbackHandler).Methods("GET")
+	r.HandleFunc("/callback/github", githubCallbackHandler).Methods("GET")
 
 	r.HandleFunc("/api/login/facebook", facebookLoginHandler).Methods("GET")
 	r.HandleFunc("/callback/facebook", facebookCallbackHandler).Methods("GET")
 
 	r.HandleFunc("/api/login/google", googleLoginHandler).Methods("GET")
-	r.HandleFunc("/api/callback/google", googleCallbackHandler).Methods("GET")
+	r.HandleFunc("/callback/google", googleCallbackHandler).Methods("GET")
 
 }
 func LikePost(w http.ResponseWriter, r *http.Request) {

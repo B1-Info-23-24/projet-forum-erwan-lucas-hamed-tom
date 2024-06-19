@@ -37,12 +37,13 @@
 
             <script>
                 async function GithubLogin() {
-                    console.log("okok");
-                    console.log("test");
                     try {
-                        console.log("coucou");
                         window.location.href = 'http://localhost:8081/api/login/github';
-                        console.log("Redirection vers GitHub pour l'authentification");
+                        if (response.ok) {
+                        messageDiv.textContent = 'Connexion réussie';
+                        localStorage.setItem('username', result.user.username); // Assure que 'username' est une propriété de 'user' dans la réponse
+                        localStorage.setItem('userId', result.user.id); // Assure que 'id' est une propriété de 'user' dans la réponse
+                        }
                     } catch (error) {
                         displayError(error.message);
                     }
@@ -52,11 +53,13 @@
 
                 async function FacebookLogin() {
                     let FacebookLogin = document.getElementById('FacebookLogin').value.trim();
-                    
                     try {
-                        const response = await fetch('http://localhost:8081/api/login/facebook');//?FacebookLogin=${encodeURIComponent(FacebookLogin)}');
-                        const result = await response.json();
-                        handleLoginResponse(response, result);
+                        window.location.href ='http://localhost:8081/api/login/facebook';//?FacebookLogin=${encodeURIComponent(FacebookLogin)}');
+                        if (response.ok) {
+                        messageDiv.textContent = 'Connexion réussie';
+                        localStorage.setItem('username', result.user.username); // Assure que 'username' est une propriété de 'user' dans la réponse
+                        localStorage.setItem('userId', result.user.id); // Assure que 'id' est une propriété de 'user' dans la réponse
+                        }
                     } catch (error) {
                         displayError(error.message);
                     }
@@ -64,11 +67,13 @@
 
                 async function GoogleLogin() {
                     let GoogleLogin = document.getElementById('GoogleLogin').value.trim();
-
                     try {
-                        const response = await fetch('http://localhost:8081/api/login/google');//?GoogleLogin=${encodeURIComponent(GoogleLogin)}');
-                        const result = await response.json();
-                        handleLoginResponse(response, result);
+                        window.location.href = 'http://localhost:8081/api/login/google';//?GoogleLogin=${encodeURIComponent(GoogleLogin)}');
+                        if (response.ok) {
+                        messageDiv.textContent = 'Connexion réussie';
+                        localStorage.setItem('username', result.user.username); // Assure que 'username' est une propriété de 'user' dans la réponse
+                        localStorage.setItem('userId', result.user.id); // Assure que 'id' est une propriété de 'user' dans la réponse
+                        }
                     } catch (error) {
                         displayError(error.message);
                     }
