@@ -36,14 +36,26 @@
             </div>
 
             <script>
+
+
                 async function GithubLogin() {
+                    const origin = window.location.href;
+                    console.log("Origine :", origin);
                     try {
-                        window.location.href = 'http://localhost:8081/api/login/github';
+                        console.log("1 :", origin);
+
+                        const response = await fetch(`http://localhost:8081/api/login/github?origin=${encodeURIComponent(origin)}`);
+                        console.log("2 :", origin);
+
                         if (response.ok) {
-                        messageDiv.textContent = 'Connexion réussie';
-                        localStorage.setItem('username', result.user.username); // Assure que 'username' est une propriété de 'user' dans la réponse
-                        localStorage.setItem('userId', result.user.id); // Assure que 'id' est une propriété de 'user' dans la réponse
+                            const result = await response.json();
+                            messageDiv.textContent = 'Connexion réussie';
+                            localStorage.setItem('username', result.user.username); // Assure que 'username' est une propriété de 'user' dans la réponse
+                            localStorage.setItem('userId', result.user.id); // Assure que 'id' est une propriété de 'user' dans la réponse
+                            window.location.href = `/profile/${result.user.username}`;
                         }
+                        console.log("3 :", origin);
+
                     } catch (error) {
                         displayError(error.message);
                     }
@@ -52,28 +64,34 @@
 
 
                 async function FacebookLogin() {
+                    const origin = window.location.href;
+                    console.log("Origine :", origin);
                     let FacebookLogin = document.getElementById('FacebookLogin').value.trim();
                     try {
-                        window.location.href ='http://localhost:8081/api/login/facebook';//?FacebookLogin=${encodeURIComponent(FacebookLogin)}');
+                        window.location.href ='http://localhost:8081/api/login/facebook?origin=${encodeURIComponent(origin)}';//?FacebookLogin=${encodeURIComponent(FacebookLogin)}');
                         if (response.ok) {
                         messageDiv.textContent = 'Connexion réussie';
                         localStorage.setItem('username', result.user.username); // Assure que 'username' est une propriété de 'user' dans la réponse
                         localStorage.setItem('userId', result.user.id); // Assure que 'id' est une propriété de 'user' dans la réponse
-                        }
+                        window.location.href = `/profile/${result.user.username}`;
+                    }
                     } catch (error) {
                         displayError(error.message);
                     }
                 }
 
                 async function GoogleLogin() {
+                    const origin = window.location.href;
+                    console.log("Origine :", origin);
                     let GoogleLogin = document.getElementById('GoogleLogin').value.trim();
                     try {
-                        window.location.href = 'http://localhost:8081/api/login/google';//?GoogleLogin=${encodeURIComponent(GoogleLogin)}');
+                        window.location.href = 'http://localhost:8081/api/login/google?origin=${encodeURIComponent(origin)}';//?GoogleLogin=${encodeURIComponent(GoogleLogin)}');
                         if (response.ok) {
                         messageDiv.textContent = 'Connexion réussie';
                         localStorage.setItem('username', result.user.username); // Assure que 'username' est une propriété de 'user' dans la réponse
                         localStorage.setItem('userId', result.user.id); // Assure que 'id' est une propriété de 'user' dans la réponse
-                        }
+                        window.location.href = `/profile/${result.user.username}`;
+                    }
                     } catch (error) {
                         displayError(error.message);
                     }

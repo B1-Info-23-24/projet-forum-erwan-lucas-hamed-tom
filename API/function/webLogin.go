@@ -252,9 +252,10 @@ func googleLoggedinHandler(w http.ResponseWriter, r *http.Request, data string) 
 	}
 
 	log.Printf("User details: %+v\n", user)
+	origin := r.URL.Query().Get("origin")
 
 	w.Header().Set("Content-Type", "application/json")
-	http.Redirect(w, r, "http://localhost:8080/", http.StatusSeeOther)
+	http.Redirect(w, r, origin, http.StatusSeeOther)
 }
 
 // Function to extract username from email
@@ -315,6 +316,8 @@ func loggedinHandler(w http.ResponseWriter, r *http.Request, data string) {
 	}
 	log.Printf("User details: %+v\n", user)
 
+	origin := r.URL.Query().Get("origin")
+	fmt.Println("origin", origin)
 	w.Header().Set("Content-Type", "application/json")
 	http.Redirect(w, r, "http://localhost:8080/", http.StatusSeeOther)
 }

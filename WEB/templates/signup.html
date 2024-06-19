@@ -10,9 +10,9 @@
                 </div>
                 <div class="right-section">
                     <div class="signup-form">
-                        <a href="/login/github"><button type="button" class="login-with-github-btn" >Github</button></a>
-                        <a href="/login/facebook"><button type="button" class="login-with-facebook-btn" >Facebook</button></a>
-                        <a href="/login/google"><button type="button" class="login-with-google-btn" >Google</button></a>
+                        <button type="button" class="login-with-github-btn" onclick="GithubLogin()" id="GithubLogin">Github</button>
+                        <button type="button" class="login-with-facebook-btn" onclick="FacebookLogin()" id="FacebookLogin">Facebook</button>
+                        <button type="button" class="login-with-google-btn" onclick="GoogleLogin()" id="GoogleLogin">Google</button>
                         <form id="signup-form">
                             <div class="input-auth">
                                 <input required name="pseudo-sign" id="pseudoLogin" type="text" placeholder="Pseudo"/>
@@ -39,6 +39,57 @@
             </div>
             
             <script>
+
+async function GithubLogin() {
+                    const origin = window.location.href;
+                    console.log("Origine :", origin);
+                    try {
+                        window.location.href = 'http://localhost:8081/api/login/github?origin=${encodeURIComponent(origin)}';
+                        if (response.ok) {
+                            const result = await response.json();
+                            messageDiv.textContent = 'Connexion réussie';
+                            localStorage.setItem('username', result.user.username); // Assure que 'username' est une propriété de 'user' dans la réponse
+                            localStorage.setItem('userId', result.user.id); // Assure que 'id' est une propriété de 'user' dans la réponse
+                        }
+                    } catch (error) {
+                        displayError(error.message);
+                    }
+                }
+
+
+
+                async function FacebookLogin() {
+                    const origin = window.location.href;
+                    console.log("Origine :", origin);
+                    let FacebookLogin = document.getElementById('FacebookLogin').value.trim();
+                    try {
+                        window.location.href ='http://localhost:8081/api/login/facebook?origin=${encodeURIComponent(origin)}';//?FacebookLogin=${encodeURIComponent(FacebookLogin)}');
+                        if (response.ok) {
+                        messageDiv.textContent = 'Connexion réussie';
+                        localStorage.setItem('username', result.user.username); // Assure que 'username' est une propriété de 'user' dans la réponse
+                        localStorage.setItem('userId', result.user.id); // Assure que 'id' est une propriété de 'user' dans la réponse
+                        }
+                    } catch (error) {
+                        displayError(error.message);
+                    }
+                }
+
+                async function GoogleLogin() {
+                    const origin = window.location.href;
+                    console.log("Origine :", origin);
+                    let GoogleLogin = document.getElementById('GoogleLogin').value.trim();
+                    try {
+                        window.location.href = 'http://localhost:8081/api/login/google?origin=${encodeURIComponent(origin)}';//?GoogleLogin=${encodeURIComponent(GoogleLogin)}');
+                        if (response.ok) {
+                        messageDiv.textContent = 'Connexion réussie';
+                        localStorage.setItem('username', result.user.username); // Assure que 'username' est une propriété de 'user' dans la réponse
+                        localStorage.setItem('userId', result.user.id); // Assure que 'id' est une propriété de 'user' dans la réponse
+                        }
+                    } catch (error) {
+                        displayError(error.message);
+                    }
+                }
+
                 function togglePopupSignup() {
                     let popup = document.querySelector("#popup-signup")
                     popup.classList.toggle("open")
