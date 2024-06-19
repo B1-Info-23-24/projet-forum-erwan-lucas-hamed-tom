@@ -38,9 +38,6 @@
                 </div>
             </div>
             
-
-
-            
             <script>
                 function togglePopupSignup() {
                     let popup = document.querySelector("#popup-signup")
@@ -98,11 +95,11 @@
                     }
 
                     try {
-                        const response = await fetch('http://localhost:8081/api/register', {
+                        const response = await fetch('http://20.74.39.125:8081/api/register', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ username, password, email }),
-                            credentials: 'include'
+    
                         });
 
                         const result = await response.json();
@@ -110,7 +107,8 @@
 
                         if (response.ok) {
                             errorUserDiv.textContent = 'User registered and logged in successfully!';
-                            window.location.href = `/profile/${result.user.Username}`;
+                            localStorage.setItem('username', result.user.username); // Assume 'username' is a property of 'user' in the response
+                            localStorage.setItem('userId', result.user.id); // Assume 'id' is a property of 'user' in the response                            window.location.href = `/profile/${result.user.Username}`;
                         } else {
                             errorUserDiv.textContent = `${result.error}`;
                         }

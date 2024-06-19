@@ -38,9 +38,9 @@
     <script>
         async function fetchUserProfile(username) {
             try {
-                const response = await fetch(`http://localhost:8081/api/profile/${username}`, {
+                const response = await fetch(`http://20.74.39.125:8081/api/profile/${username}`, {
                     method: 'GET',
-                    credentials: 'include'
+                    
                 });
                 console.log('Response status:', response.status);
                 console.log('Response headers:', response.headers);
@@ -58,24 +58,18 @@
 
 
         document.addEventListener('DOMContentLoaded', function() {
-            const username = getCookie('username');
+            const username = localStorage.getItem('username');
             if (username) {
                 fetchUserProfile(username);
             }
         });
 
-        function getCookie(name) {
-            const value = `; ${document.cookie}`;
-            const parts = value.split(`; ${name}=`);
-            if (parts.length === 2) return parts.pop().split(';').shift();
-        }
-
         async function displayPosts() {
             try {
-                const userId = getCookie('userId');
-                const response = await fetch(`http://localhost:8081/api/profile/post/${userId}`, {
+                const userId = localStorage.getItem('userId');
+                const response = await fetch(`http://20.74.39.125:8081/api/profile/post/${userId}`, {
                     method: 'POST',
-                    credentials: 'include'
+                    
                 });
                 if (!response.ok) {
                     throw new Error(`Error: ${response.statusText}`);
@@ -83,11 +77,11 @@
                 const posts = await response.json();
                 const postsContainer = document.getElementById('posts-container');
                 postsContainer.innerHTML = '';
-                const username = getCookie('username');
+                const username = localStorage.getItem('username');
                 
                 for (const post of posts) {
-                    const status = await IsLiked(post.ID)
-                    console.log(status)
+                    const status = await IsLiked(post.ID);
+                    console.log(status);
                     const postElement = document.createElement('div');
                     postElement.className = 'post';
                     postElement.innerHTML = `
@@ -126,32 +120,24 @@
         }
 
         function openMap(postId) {
-            window.location.href = `http://localhost:8080/maps/${postId}`;
+            window.location.href = `http://20.74.39.125:8080/maps/${postId}`;
         }
 
         function redirectToDeconnexion() {
-            if (confirm("Vous allez être déconnecter ? ")) {
-                fetch('http://localhost:8081/api/deconnexion', {
+            if (confirm("Vous allez être déconnecté ? ")) {
+                fetch('http://20.74.39.125:8081/api/deconnexion', {
                     method: 'POST',
-                    credentials: 'include' // Inclure les cookies dans la requête
+                    
                 })
                 .then(response => {
                     if (response.ok) {
-                        // Function to delete all cookies
-                        function deleteAllCookies() {
-                            // Get all cookies
-                            var cookies = document.cookie.split(";");
-
-                            for (var i = 0; i < cookies.length; i++) {
-                                var cookie = cookies[i];
-                                var eqPos = cookie.indexOf("=");
-                                var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
-                                document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
-                            }
+                        // Function to delete all local storage items
+                        function clearLocalStorage() {
+                            localStorage.clear();
                         }
 
-                        // Call the function to delete all cookies
-                        deleteAllCookies();
+                        // Call the function to clear local storage
+                        clearLocalStorage();
 
                         // Redirect to the home page
                         window.location.href = "/";
@@ -165,13 +151,12 @@
             }
         }
 
-
         async function deletePost(postId) {
             if (confirm("Êtes-vous sûr de vouloir supprimer ? Cela sera définitif.")) {
                 try {
-                    const response = await fetch(`http://localhost:8081/api/post/delete/${postId}`, {
+                    const response = await fetch(`http://20.74.39.125:8081/api/post/delete/${postId}`, {
                         method: 'DELETE',
-                        credentials: 'include'
+                        
                     });
                     if (!response.ok) {
                         const errorData = await response.json();
@@ -181,76 +166,17 @@
                     const result = await response.json();
                     console.log(result.message);
                     displayPosts();
-                }catch (error) {
-                    console.error('Failed to delete post:',error);
+                } catch (error) {
+                    console.error('Failed to delete post:', error);
                 }
             }
         }
-
-        async function likePost(postId) {
-            try {
-                const response = await fetch(`http://localhost:8081/api/post/like/${postId}`, {
-                    method: 'POST',
-                    credentials: 'include'
-                });
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    alert(errorData.error);
-                    throw new Error(`Error: ${response.statusText}`);
-                }
-                const result = await response.json();
-                console.log(result.message);
-                displayPosts();
-            } catch (error) {
-                console.error('Failed to like post:', error);
-            }
-        }
-        
-        async function dislikePost(postId) {
-            try {
-                const response = await fetch(`http://localhost:8081/api/post/dislike/${postId}`, {
-                    method: 'POST',
-                    credentials: 'include'
-                });
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    alert(errorData.error); // Show the error message to the user
-                    throw new Error(`Error: ${response.statusText}`);
-                }
-                const result = await response.json();
-                console.log(result.message);
-                displayPosts(); // Refresh posts to reflect the new dislike count
-            } catch (error) {
-                console.error('Failed to dislike post:', error);
-            }
-        }
-
-        async function IsLiked(postId) {
-            try {
-                const response = await fetch(`http://localhost:8081/api/post/isLiked/${postId}`, {
-                    method: 'GET', // ou 'POST' si nécessaire
-                    credentials: 'include' // inclure les cookies dans la requête si nécessaire
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-
-                const userInteraction = await response.json();
-                console.log('User interaction:', userInteraction);
-                return userInteraction
-
-            } catch (error) {
-                console.error('Failed to check interaction:', error);
-            }
-        }
-        
-        
+  
         async function displayComments(postId, commentsContainer) {
             try {
-                const response = await fetch(`http://localhost:8081/api/comment/${postId}`, {
+                const response = await fetch(`http://20.74.39.125:8081/api/comment/${postId}`, {
                     method: 'GET',
-                    credentials: 'include'
+                    
                 });
                 if (!response.ok) {
                     throw new Error(`Error: ${response.statusText}`);
@@ -309,26 +235,37 @@
         async function submitComment(postId) {
             const commentInput = document.getElementById(`comment-input-${postId}`);
             const content = commentInput.value;
-
+        
             if (!content) {
                 alert("Comment cannot be empty");
                 return;
             }
-
+        
+            const userId = localStorage.getItem('userId'); // Récupère userId de Local Storage
+            const username = localStorage.getItem('username'); // Récupère username de Local Storage
+        
+            if (!userId || !username) {
+                console.error('UserID or Username not found in local storage');
+                return;
+            }
+        
             try {
-                const response = await fetch(`http://localhost:8081/api/comment/create/${postId}`, {
+                const response = await fetch(`http://20.74.39.125:8081/api/comment/create/${postId}`, {
                     method: 'POST',
-                    credentials: 'include',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'UserID': userId, // Ajoute userId dans les en-têtes
+                        'Username': username // Ajoute username dans les en-têtes
                     },
                     body: JSON.stringify({ content })
                 });
-
+        
                 if (!response.ok) {
+                    const errorData = await response.json();
+                    alert(errorData.error);
                     throw new Error(`Error: ${response.statusText}`);
                 }
-
+        
                 commentInput.value = '';
                 const commentsContainer = document.getElementById(`comments-${postId}`);
                 await displayComments(postId, commentsContainer);
@@ -336,6 +273,8 @@
                 console.error('Failed to submit comment:', error);
             }
         }
+        
+        
 
         displayPosts();
     </script>

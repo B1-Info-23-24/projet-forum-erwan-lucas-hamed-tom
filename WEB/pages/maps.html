@@ -1,30 +1,30 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>Maps</title>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../static/style.css">
     <link rel="stylesheet" href="../static/popup.css">
     <link rel="stylesheet" href="../static/login.css">
     <link rel="stylesheet" href="../static/signup.css">
     <link rel="stylesheet" href="../static/comment.css">
     <link rel="stylesheet" href="../static/maps.css">
-  </head>
-  <body>
+    <title>Maps</title>
+</head>
+<body>
     {{ template "header" . }}
     <div class="left-container">
-      <div class="container--menue">
-        <div class="container--button">
-          <button onclick="checkAndExecute(togglePopupLogin)" class="button-home">Home <img src="../static/img/icon/home.png" class="img--redirection"></button>
-          <button onclick="checkAndExecute(togglePopupLogin)" class="button-home button-home-post">Post <img src="../static/img/icon/post.png" class="img--redirection img--post"></button>
+        <div class="container--menue">
+            <div class="container--button">
+                <button onclick="checkAndExecute(togglePopupLogin)" class="button-home">Home <img src="../static/img/icon/home.png" class="img--redirection"></button>
+                <button onclick="checkAndExecute(togglePopupLogin)" class="button-home button-home-post">Post <img src="../static/img/icon/post.png" class="img--redirection img--post"></button>
+            </div>
+            <div class="container--filter"></div>
         </div>
-        <div class="container--filter">
-
-        </div>
-      </div>
-      <div id="map"></div>
+        <div id="map"></div>
     </div>
     <div class="right-container">
-      <div id="posts-container" class="posts-containers"></div>
+        <div id="posts-container" class="posts-containers"></div>
     </div>
 
     <script>
@@ -41,7 +41,7 @@
             });
         }
 
-        fetch(`http://localhost:8081/api/pings`)
+        fetch(`http://20.74.39.125:8081/api/pings`)
         .then(response => response.json())
         .then(pings => {
             console.log(pings);
@@ -74,9 +74,9 @@
         async function displayCurrentPostFromUrl() {
           try {
                 const postId = getPostIdFromURL();
-                const response = await fetch(`http://localhost:8081/api/post/display/${postId}`, {
+                const response = await fetch(`http://20.74.39.125:8081/api/post/display/${postId}`, {
                     method: 'POST',
-                    credentials: 'include'
+                   
                 });
                 if (!response.ok) {
                     throw new Error(`Error: ${response.statusText}`);
@@ -131,16 +131,30 @@
         }
 
         async function likePost(postId) {
+            const userId = localStorage.getItem('userId'); // Récupère userId de Local Storage
+            const username = localStorage.getItem('username'); // Récupère username de Local Storage
+        
+            if (!userId || !username) {
+                console.error('UserID or Username not found in local storage');
+                return;
+            }
+        
             try {
-                const response = await fetch(`http://localhost:8081/api/post/like/${postId}`, {
+                const response = await fetch(`http://20.74.39.125:8081/api/post/like/${postId}`, {
                     method: 'POST',
-                    credentials: 'include'
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'UserID': userId, // Ajoute userId dans les en-têtes
+                        'Username': username // Ajoute username dans les en-têtes
+                    }
                 });
+        
                 if (!response.ok) {
                     const errorData = await response.json();
                     alert(errorData.error);
                     throw new Error(`Error: ${response.statusText}`);
                 }
+        
                 const result = await response.json();
                 console.log(result.message);
                 displayPosts();
@@ -149,17 +163,33 @@
             }
         }
         
+        
+        
         async function dislikePost(postId) {
+            const userId = localStorage.getItem('userId'); // Récupère userId de Local Storage
+            const username = localStorage.getItem('username'); // Récupère username de Local Storage
+        
+            if (!userId || !username) {
+                console.error('UserID or Username not found in local storage');
+                return;
+            }
+        
             try {
-                const response = await fetch(`http://localhost:8081/api/post/dislike/${postId}`, {
+                const response = await fetch(`http://20.74.39.125:8081/api/post/dislike/${postId}`, {
                     method: 'POST',
-                    credentials: 'include'
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'UserID': userId, // Ajoute userId dans les en-têtes
+                        'Username': username // Ajoute username dans les en-têtes
+                    }
                 });
+        
                 if (!response.ok) {
                     const errorData = await response.json();
-                    alert(errorData.error); // Show the error message to the user
+                    alert(errorData.error);
                     throw new Error(`Error: ${response.statusText}`);
                 }
+        
                 const result = await response.json();
                 console.log(result.message);
                 displayPosts(); // Refresh posts to reflect the new dislike count
@@ -167,32 +197,48 @@
                 console.error('Failed to dislike post:', error);
             }
         }
+        
+        
+
 
         async function IsLiked(postId) {
+            const userId = localStorage.getItem('userId'); // Récupère userId de Local Storage
+            const username = localStorage.getItem('username'); // Récupère username de Local Storage
+        
+            if (!userId || !username) {
+                console.error('UserID or Username not found in local storage');
+                return;
+            }
+        
             try {
-                const response = await fetch(`http://localhost:8081/api/post/isLiked/${postId}`, {
-                    method: 'GET', // ou 'POST' si nécessaire
-                    credentials: 'include' // inclure les cookies dans la requête si nécessaire
+                const response = await fetch(`http://20.74.39.125:8081/api/post/isLiked/${postId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'UserID': userId, // Ajoute userId dans les en-têtes
+                        'Username': username // Ajoute username dans les en-têtes
+                    }
                 });
-                
+        
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
-
+        
                 const userInteraction = await response.json();
                 console.log('User interaction:', userInteraction);
-                return userInteraction
-
+                return userInteraction;
             } catch (error) {
                 console.error('Failed to check interaction:', error);
             }
         }
+        
+        
 
         async function displayCurrentPost(lat, lng) {
           try {
-                const response = await fetch(`http://localhost:8081/api/post/display/${lat}/${lng}`, {
+                const response = await fetch(`http://20.74.39.125:8081/api/post/display/${lat}/${lng}`, {
                     method: 'POST',
-                    credentials: 'include'
+
                 });
                 if (!response.ok) {
                     throw new Error(`Error: ${response.statusText}`);
@@ -239,9 +285,9 @@
 
         async function displayPosts() {
             try {
-                const response = await fetch(`http://localhost:8081/api/post/display`, {
+                const response = await fetch(`http://20.74.39.125:8081/api/post/display`, {
                     method: 'POST',
-                    credentials: 'include'
+       
                 });
                 if (!response.ok) {
                     throw new Error(`Error: ${response.statusText}`);
@@ -289,9 +335,9 @@
 
         async function displayComments(postId, commentsContainer) {
             try {
-                const response = await fetch(`http://localhost:8081/api/comment/${postId}`, {
+                const response = await fetch(`http://20.74.39.125:8081/api/comment/${postId}`, {
                     method: 'GET',
-                    credentials: 'include'
+              
                 });
                 if (!response.ok) {
                     throw new Error(`Error: ${response.statusText}`);
@@ -350,25 +396,37 @@
         async function submitComment(postId) {
             const commentInput = document.getElementById(`comment-input-${postId}`);
             const content = commentInput.value;
+        
             if (!content) {
                 alert("Comment cannot be empty");
                 return;
             }
-
+        
+            const userId = localStorage.getItem('userId'); // Récupère userId de Local Storage
+            const username = localStorage.getItem('username'); // Récupère username de Local Storage
+        
+            if (!userId || !username) {
+                console.error('UserID or Username not found in local storage');
+                return;
+            }
+        
             try {
-                const response = await fetch(`http://localhost:8081/api/comment/create/${postId}`, {
+                const response = await fetch(`http://20.74.39.125:8081/api/comment/create/${postId}`, {
                     method: 'POST',
-                    credentials: 'include',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'UserID': userId, // Ajoute userId dans les en-têtes
+                        'Username': username // Ajoute username dans les en-têtes
                     },
                     body: JSON.stringify({ content })
                 });
-
+        
                 if (!response.ok) {
+                    const errorData = await response.json();
+                    alert(errorData.error);
                     throw new Error(`Error: ${response.statusText}`);
                 }
-
+        
                 commentInput.value = '';
                 const commentsContainer = document.getElementById(`comments-${postId}`);
                 await displayComments(postId, commentsContainer);
@@ -376,6 +434,8 @@
                 console.error('Failed to submit comment:', error);
             }
         }
+        
+        
 
         const postId = getPostIdFromURL();
         if (postId == 0){

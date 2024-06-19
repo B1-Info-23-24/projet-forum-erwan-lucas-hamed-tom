@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -52,9 +51,9 @@
     <script>
         function redirectToDelete() {
             if (confirm("Êtes-vous sûr de vouloir supprimer ? Cela sera définitif.")) {
-                let username = getCookie("username");
+                let username = localStorage.getItem("username");
                 if (username) {
-                    fetch(`http://localhost:8081/api/delete/${username}`, {
+                    fetch(`http://20.74.39.125:8081/api/delete/${username}`, {
                         method: 'DELETE'
                     })
                     .then(response => {
@@ -72,23 +71,26 @@
                 }
             }
         }
+
         document.getElementById('edit-profile-form').addEventListener('submit', async function(event) {
             event.preventDefault();
             const username = document.getElementById('usernameEditing').value;
             const email = document.getElementById('emailEditing').value;
-            const currentUsername = getCookie("username")
+            const currentUsername = localStorage.getItem("username");
             try {
-                const response = await fetch(`http://localhost:8081/api/editing/${currentUsername}`, {
+                const response = await fetch(`http://20.74.39.125:8081/api/editing/${currentUsername}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username, email }),
-                    credentials: 'include'
+     
                 });
                 const result = await response.json();
                 if (response.ok) {
-                    window.location.href = `/profile/${currentUsername}`;
+                    localStorage.setItem("username", username); // Update local storage
+                    window.location.href = `/profile/${username}`;
                 }
             } catch (error) {
+                console.error('Error updating profile:', error);
             }
         });
 
@@ -96,38 +98,31 @@
             event.preventDefault();
             const oldpassword = document.getElementById('oldpasswordEditing').value;
             const password = document.getElementById('passwordEditing').value;
-            const currentUsername = getCookie("username")
+            const currentUsername = localStorage.getItem("username");
             try {
-                const response = await fetch(`http://localhost:8081/api/editing/password/${currentUsername}`, {
+                const response = await fetch(`http://20.74.39.125:8081/api/editing/password/${currentUsername}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ oldpassword, password }),
-                    credentials: 'include'
+
                 });
                 const result = await response.json();
                 if (response.ok) {
                     window.location.href = `/profile/${currentUsername}`;
                 }
             } catch (error) {
+                console.error('Error updating password:', error);
             }
         });
 
-        function getCookie(cname) {
-            let name = cname + "=";
-            let decodedCookie = decodeURIComponent(document.cookie);
-            let ca = decodedCookie.split(';');
-            for(let i = 0; i <ca.length; i++) {
-              let c = ca[i];
-              while (c.charAt(0) == ' ') {
-                c = c.substring(1);
-              }
-              if (c.indexOf(name) == 0) {
-                console.log(name.length, c.length)
-                return c.substring(name.length, c.length);
-              }
-            }
-            return "";
+        function populateAccountInfo() {
+            const username = localStorage.getItem("username");
+            const email = localStorage.getItem("email");
+            document.getElementById("username").textContent = username;
+            document.getElementById("email").textContent = email;
         }
+
+        populateAccountInfo();
     </script>
 </body>
 </html>
