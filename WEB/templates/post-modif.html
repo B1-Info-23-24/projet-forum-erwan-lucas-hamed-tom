@@ -14,9 +14,6 @@
                 <p id="nb-word-modif" class="text"><span>0</span>/280</p>
                 <div class="horizontal-bar"></div>
                 <div class="left-icon">
-                    <label for="images-modif" class="image-input-label">
-                        <img src="../static/img/icon/img.png" alt="Choose image" class="icon--img">
-                    </label>
                     <input type="file" id="images-modif" name="images" multiple style="display: none;">
                 </div>
                 <div class="right-icon">
@@ -126,18 +123,5 @@
             }
         }
     });
-
-    function displayPreviewModif() {
-        imagePreviewModif.innerHTML = '';
-        filesModif.forEach(file => {
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                const imageData = event.target.result;
-                const imageHTML = `<img src="${imageData}" alt="${file.name}" class="image-preview-item">`;
-                imagePreviewModif.innerHTML += imageHTML;
-            };
-            reader.readAsDataURL(file);
-        });
-    }
 </script>
 {{ end }}

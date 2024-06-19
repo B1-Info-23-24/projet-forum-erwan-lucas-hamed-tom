@@ -131,8 +131,8 @@
                             ${imagesHtml}
                         </div>
                         <div class="post-interaction">
-                            <button class="icon--left" onclick="likePost(${post.ID})"><img src="../static/img/icon/like_${status}.png" class="icon--img"></button>
-                            <button class="icon--left" onclick="dislikePost(${post.ID})"><img src="../static/img/icon/dislike_${status}.png" class="icon--img"></button>                            
+                            <button class="icon--left" onclick="likePostProfile(${post.ID})"><img src="../static/img/icon/like_${status}.png" class="icon--img"></button>
+                            <button class="icon--left" onclick="dislikePostProfile(${post.ID})"><img src="../static/img/icon/dislike_${status}.png" class="icon--img"></button>                            
                             <button class="icon--right" onclick="toggleComments(${post.ID})"><img src="../static/img/icon/comment.png" class="icon--img"></button>
                             <button class="icon--right"><img src="../static/img/icon/favorite.png" class="icon--img"></button>
                         </div>
@@ -197,6 +197,107 @@
                 } catch (error) {
                     console.error('Failed to delete post:', error);
                 }
+            }
+        }
+
+        async function IsLiked(postId) {
+            const userId = localStorage.getItem('userId'); // Récupère userId de Local Storage
+            const username = localStorage.getItem('username'); // Récupère username de Local Storage
+        
+            if (!userId || !username) {
+                console.error('UserID or Username not found in local storage');
+                return;
+            }
+        
+            try {
+                const response = await fetch(`http://localhost:8081/api/post/isLiked/${postId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'UserID': userId, // Ajoute userId dans les en-têtes
+                        'Username': username // Ajoute username dans les en-têtes
+                    }
+                });
+        
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+        
+                const userInteraction = await response.json();
+                console.log('User interaction:', userInteraction);
+                return userInteraction;
+            } catch (error) {
+                console.error('Failed to check interaction:', error);
+            }
+        }
+
+        async function likePostProfile(postId) {
+            const userId = localStorage.getItem('userId'); // Récupère userId de Local Storage
+            const username = localStorage.getItem('username'); // Récupère username de Local Storage
+        
+            if (!userId || !username) {
+                console.error('UserID or Username not found in local storage');
+                return;
+            }
+        
+            try {
+                const response = await fetch(`http://localhost:8081/api/post/like/${postId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'UserID': userId, // Ajoute userId dans les en-têtes
+                        'Username': username // Ajoute username dans les en-têtes
+                    }
+                });
+        
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    alert(errorData.error);
+                    throw new Error(`Error: ${response.statusText}`);
+                }
+        
+                const result = await response.json();
+                console.log(result.message);
+                const userid = document.getElementById("userId").value;
+                displayPosts(userid);
+            } catch (error) {
+                console.error('Failed to like post:', error);
+            }
+        }
+        
+        
+        
+        async function dislikePostProfile(postId) {
+            const userId = localStorage.getItem('userId'); // Récupère userId de Local Storage
+            const username = localStorage.getItem('username'); // Récupère username de Local Storage
+        
+            if (!userId || !username) {
+                console.error('UserID or Username not found in local storage');
+                return;
+            }
+        
+            try {
+                const response = await fetch(`http://localhost:8081/api/post/dislike/${postId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'UserID': userId, // Ajoute userId dans les en-têtes
+                        'Username': username // Ajoute username dans les en-têtes
+                    }
+                });
+        
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    alert(errorData.error);
+                    throw new Error(`Error: ${response.statusText}`);
+                }
+        
+                const result = await response.json();
+                console.log(result.message);
+                const userid = document.getElementById("userId").value;
+                displayPosts(userid);
+            } catch (error) {
+                console.error('Failed to dislike post:', error);
             }
         }
   
